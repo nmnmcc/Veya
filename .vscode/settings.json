@@ -1,0 +1,10 @@
+{
+  "js/ts.tsdk.path": "node_modules/typescript/lib",
+  "js/ts.preferences.autoImportFileExcludePatterns": [".ref/**"],
+  "files.watcherExclude": {
+    ".ref/**": true
+  },
+  "search.exclude": {
+    ".ref/**": true
+  }
+}

@@ -1,4 +1,15 @@
 {
-  "name": "vibeo.ts",
-  "packageManager": "yarn@4.15.0"
+  "name": "veya",
+  "description": "A programmable video creation library for TypeScript.",
+  "packageManager": "yarn@4.15.0",
+  "devDependencies": {
+    "@effect/language-service": "latest",
+    "@types/node": "24",
+    "prettier": "^3.8.3",
+    "tsx": "^4.22.3",
+    "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "effect": "^4.0.0-beta.69"
+  }
 }

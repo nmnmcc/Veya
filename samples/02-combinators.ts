@@ -1,4 +1,4 @@
-import { Image, Sequence, Slot, Track, Video, pipe } from "../src/index";
+import { Gap, Image, Sequence, Track, Video, pipe } from "../src/index";
 
 const intro = pipe(
   Video.make("assets/intro.mp4"),
@@ -23,7 +23,7 @@ const logo = pipe(
 
 const picture = pipe(
   Track.make([intro]),
-  Track.prepend(Slot.make("500 millis")),
+  Track.prepend(Gap.make("500 millis")),
   Track.append(logo),
   Track.withName("picture"),
   Track.withMetadata({
@@ -33,7 +33,7 @@ const picture = pipe(
 
 const captions = Track.withName(
   Track.append(
-    Track.make([Slot.make("1 second")]),
+    Track.make([Gap.make("1 second")]),
     Image.make("assets/caption.png", {
       fit: "contain",
       duration: "3 seconds",

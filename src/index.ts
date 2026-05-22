@@ -37,11 +37,11 @@ export * as Image from "./Image";
 export * as Sequence from "./Sequence";
 
 /**
- * Empty timing slots.
+ * Empty timeline gaps.
  *
  * @since 0.1.0
  */
-export * as Slot from "./Slot";
+export * as Gap from "./Gap";
 
 /**
  * Shared timing options.

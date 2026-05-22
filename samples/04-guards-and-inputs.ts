@@ -1,12 +1,4 @@
-import {
-  Anchor,
-  Clip,
-  Image,
-  Sequence,
-  Slot,
-  Track,
-  Video,
-} from "../src/index";
+import { Anchor, Clip, Gap, Image, Sequence, Track, Video } from "../src/index";
 
 const sources = [
   Clip.video(new URL("https://cdn.example.com/intro.mp4"), {
@@ -20,7 +12,7 @@ const sources = [
       source: "memory",
     },
   }),
-  Clip.slot("1 second"),
+  Clip.gap("1 second"),
 ];
 
 const sequence = Sequence.make({
@@ -32,10 +24,10 @@ const namedSequence = Sequence.withName(sequence, "guard-demo");
 
 const values: ReadonlyArray<unknown> = [
   sequence,
-  Track.make([Slot.make()]),
+  Track.make([Gap.make()]),
   Video.make("assets/video.mp4"),
   Image.make("assets/image.png"),
-  Slot.make("500 millis"),
+  Gap.make("500 millis"),
   Anchor.frame(12),
   Anchor.time("3 seconds"),
   { duration: "1 second" },
@@ -54,8 +46,8 @@ const labels = values.map((value) => {
   if (Clip.isImage(value)) {
     return "Image";
   }
-  if (Clip.isSlot(value)) {
-    return "Slot";
+  if (Clip.isGap(value)) {
+    return "Gap";
   }
   if (Anchor.isFrame(value)) {
     return "Frame";

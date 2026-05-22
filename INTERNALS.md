@@ -26,7 +26,7 @@ The current layout borrows these Effect patterns:
 
 Public modules live directly under `src/`:
 
-- `Sequence.ts`, `Track.ts`, `Clip.ts`, `Slot.ts`, `Video.ts`, `Image.ts`,
+- `Sequence.ts`, `Track.ts`, `Clip.ts`, `Gap.ts`, `Video.ts`, `Image.ts`,
   `Anchor.ts`, and `Timing.ts` define exported types, constructors, guards, and
   combinators.
 - `index.ts` is the package facade and exports module namespaces.
@@ -64,15 +64,16 @@ Construction should be conservative:
 
 - Normalize only explicit convenience inputs, such as `Duration.Input` for
   timing.
-- Preserve explicit timeline semantics. In particular, a track item must already
-  be a `Clip` or `Sequence`.
+- Preserve independent track semantics. In particular, a track item must already
+  be a `Clip` or `Sequence`, and timing gaps belong to the track that contains
+  them.
 - Reject plain objects as track items. Empty timing must be represented with
-  `Slot.make()`.
+  `Gap.make()`.
 - Throw early when runtime input is invalid. A future validation layer may return
   typed Effect errors, but constructors currently fail fast.
 
-`Track.make` is the main boundary for enforcing valid track elements. `Slot.make`
-is the boundary for empty timing blocks.
+`Track.make` is the main boundary for enforcing valid track elements. `Gap.make`
+is the boundary for empty timing spans.
 
 ## Immutability
 
@@ -84,7 +85,7 @@ Examples:
 ```ts
 Sequence.withName(sequence, "intro");
 Video.withFit(video, "cover");
-Slot.withDuration(slot, "1 second");
+Gap.withDuration(gap, "1 second");
 ```
 
 When adding combinators, prefer Effect-style overloads that support both direct

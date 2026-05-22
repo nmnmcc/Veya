@@ -1,8 +1,8 @@
 import {
   Anchor,
+  Gap,
   Image,
   Sequence,
-  Slot,
   Timing,
   Video,
   pipe,
@@ -36,8 +36,8 @@ const sequence = Sequence.make({
   name: "timed-placement",
   framerate: 30,
   tracks: [
-    [Slot.make(openingWindow), Slot.make("2 seconds")],
-    [titleCard, background],
+    [titleCard, Gap.make("2 seconds")],
+    [Gap.make("1 second"), background],
     [
       Image.make({
         source: "assets/outro.png",

@@ -1,5 +1,5 @@
 /**
- * Empty timeline slots.
+ * Empty timeline gaps.
  *
  * @since 0.1.0
  */
@@ -10,31 +10,31 @@ import * as internal from "./internal/clip";
  * @category models
  * @since 0.1.0
  */
-export type Slot = Clip.Slot;
+export type Gap = Clip.Gap;
 
 /**
  * @category models
  * @since 0.1.0
  */
-export type Options = Clip.SlotOptions;
+export type Options = Clip.GapOptions;
 
 /**
  * @category models
  * @since 0.1.0
  */
-export type Input = Clip.SlotInput;
+export type Input = Clip.GapInput;
 
 /**
  * @category constructors
  * @since 0.1.0
  */
-export const make: (input?: Input | undefined) => Slot = internal.slot;
+export const make: (input?: Input | undefined) => Gap = internal.gap;
 
 /**
  * @category guards
  * @since 0.1.0
  */
-export const isSlot: (input: unknown) => input is Slot = internal.isSlot;
+export const isGap: (input: unknown) => input is Gap = internal.isGap;
 
 export {
   withDuration,

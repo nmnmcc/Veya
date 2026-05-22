@@ -1,5 +1,5 @@
 /**
- * Shared timing options for sequences, tracks, slots, and media clips.
+ * Shared timing options for sequences, gaps, and media clips.
  *
  * @since 0.1.0
  */

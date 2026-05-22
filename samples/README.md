@@ -12,7 +12,7 @@ yarn tsx samples/04-guards-and-inputs.ts
 
 ## What Each Sample Covers
 
-- `01-basic-sequence.ts`: sequences, tracks, slots, videos, images, nested sequences, and
+- `01-basic-sequence.ts`: sequences, tracks, gaps, videos, images, nested sequences, and
   JSON serialization.
 - `02-combinators.ts`: data-last `pipe` usage, data-first combinators,
   immutable updates, track edits, sequence edits, and clip-specific options.

@@ -1,5 +1,5 @@
 /**
- * Primitive timeline clips: empty slots, videos, and images.
+ * Primitive timeline clips: gaps, videos, and images.
  *
  * @since 0.1.0
  */
@@ -27,7 +27,7 @@ export type TypeId = typeof TypeId;
  * @category models
  * @since 0.1.0
  */
-export type Clip = Slot | Video | Image;
+export type Clip = Gap | Video | Image;
 
 /**
  * @category models
@@ -72,24 +72,24 @@ export interface BaseOptions extends Timing.Options {
 }
 
 /**
- * A timing placeholder. Slots are useful as the rhythmic base layer of a sequence.
+ * An explicit empty span owned by one track.
  *
  * @category models
  * @since 0.1.0
  */
-export interface Slot extends Base<"Slot"> {}
+export interface Gap extends Base<"Gap"> {}
 
 /**
  * @category models
  * @since 0.1.0
  */
-export interface SlotOptions extends BaseOptions {}
+export interface GapOptions extends BaseOptions {}
 
 /**
  * @category models
  * @since 0.1.0
  */
-export type SlotInput = Slot | SlotOptions | Duration.Input;
+export type GapInput = Gap | GapOptions | Duration.Input;
 
 /**
  * @category models
@@ -151,7 +151,7 @@ export interface ImageOptionsWithSource extends ImageOptions {
  * @category constructors
  * @since 0.1.0
  */
-export const slot: (input?: SlotInput | undefined) => Slot = internal.slot;
+export const gap: (input?: GapInput | undefined) => Gap = internal.gap;
 
 /**
  * @category constructors
@@ -271,7 +271,7 @@ export const isClip: (input: unknown) => input is Clip = internal.isClip;
  * @category guards
  * @since 0.1.0
  */
-export const isSlot: (input: unknown) => input is Slot = internal.isSlot;
+export const isGap: (input: unknown) => input is Gap = internal.isGap;
 
 /**
  * @category guards

@@ -1,16 +1,4 @@
-import { Image, Sequence, Slot, Track, Video, pipe } from "../src/index";
-
-const timingBase = Track.make({
-  name: "beats",
-  items: [
-    Slot.make("2 seconds"),
-    Slot.make("3 seconds"),
-    Slot.make("1 second"),
-  ],
-  metadata: {
-    role: "timing-grid",
-  },
-});
+import { Gap, Image, Sequence, Track, Video, pipe } from "../src/index";
 
 const lowerThird = Sequence.make({
   name: "lower-third",
@@ -30,7 +18,6 @@ const program = pipe(
     size: [1920, 1080],
     framerate: 30,
     tracks: [
-      timingBase,
       Track.make({
         name: "picture",
         items: [
@@ -38,11 +25,22 @@ const program = pipe(
             fit: "cover",
             duration: "2 seconds",
           }),
+          Gap.make("500 millis"),
           Image.make("assets/cover.png", {
             fit: "contain",
             duration: "3 seconds",
           }),
           lowerThird,
+        ],
+      }),
+      Track.make({
+        name: "caption",
+        items: [
+          Gap.make("1 second"),
+          Image.make("assets/caption.png", {
+            fit: "contain",
+            duration: "2 seconds",
+          }),
         ],
       }),
     ],

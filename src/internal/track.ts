@@ -43,7 +43,7 @@ const ensureElement = (input: Track.Element): Track.Element => {
     return input;
   }
   throw new TypeError(
-    "Track items must be Clip or Sequence values. Use Slot.make() for empty slots.",
+    "Track items must be Clip or Sequence values. Use Gap.make() for empty spans.",
   );
 };
 

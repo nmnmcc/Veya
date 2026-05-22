@@ -61,14 +61,14 @@ const sourceToJSON = (source: Clip.MediaSource): unknown => {
   };
 };
 
-const SlotProto = {
+const GapProto = {
   ...CommonProto,
-  _tag: "Slot",
-  toJSON(this: Clip.Slot) {
+  _tag: "Gap",
+  toJSON(this: Clip.Gap) {
     return baseToJSON(this);
   },
-  toString(this: Clip.Slot) {
-    return `Slot(${JSON.stringify(this.toJSON())})`;
+  toString(this: Clip.Gap) {
+    return `Gap(${JSON.stringify(this.toJSON())})`;
   },
 };
 
@@ -107,7 +107,7 @@ const hasDurationObjectKey = (
   input: Readonly<Record<PropertyKey, unknown>>,
 ): boolean => durationObjectKeys.some((key) => key in input);
 
-const isSlotOptions = (input: unknown): input is Clip.SlotOptions => {
+const isGapOptions = (input: unknown): input is Clip.GapOptions => {
   if (!isRecord(input) || Duration.isDuration(input) || Array.isArray(input)) {
     return false;
   }
@@ -152,19 +152,19 @@ const optionsFromSource = <
 };
 
 /** @internal */
-export const slot = (input?: Clip.SlotInput | undefined): Clip.Slot => {
-  if (isSlot(input)) {
+export const gap = (input?: Clip.GapInput | undefined): Clip.Gap => {
+  if (isGap(input)) {
     return input;
   }
-  const options: Clip.SlotOptions =
+  const options: Clip.GapOptions =
     input === undefined
       ? {}
-      : isSlotOptions(input)
+      : isGapOptions(input)
         ? input
         : { duration: input };
-  const self = Object.create(SlotProto) as Record<PropertyKey, unknown>;
+  const self = Object.create(GapProto) as Record<PropertyKey, unknown>;
   assignBase(self, options);
-  return self as unknown as Clip.Slot;
+  return self as unknown as Clip.Gap;
 };
 
 /** @internal */
@@ -265,8 +265,8 @@ export const isClip = (input: unknown): input is Clip.Clip =>
   hasProperty(input, TypeId);
 
 /** @internal */
-export const isSlot = (input: unknown): input is Clip.Slot =>
-  isClip(input) && input._tag === "Slot";
+export const isGap = (input: unknown): input is Clip.Gap =>
+  isClip(input) && input._tag === "Gap";
 
 /** @internal */
 export const isVideo = (input: unknown): input is Clip.Video =>

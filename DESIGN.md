@@ -24,35 +24,41 @@ Implementation-level details live in `INTERNALS.md`.
 A video is a tree of timeline containers:
 
 - `Sequence` is a reusable timeline. It can be the whole video or a nested fragment.
-- `Track` is a layer inside a sequence.
-- `Slot` is an explicit empty time block.
+- `Track` is an independent layer inside a sequence.
+- `Gap` is an explicit empty span inside one track.
 - `Video` and `Image` are media blocks.
 - `Anchor` and `Timing` describe where a block lives in time.
 
-At the top level, users should be able to read a sequence as a layered score:
+At the top level, users should be able to read a sequence as independent
+layered timelines:
 
 ```ts
 Sequence.make({
   tracks: [
-    [Slot.make("2 seconds"), Slot.make("3 seconds")],
-    [Video.make("intro.mp4"), Image.make("cover.png")],
+    [Video.make("intro.mp4"), Gap.make("500 millis"), Image.make("cover.png")],
+    [Gap.make("1 second"), Image.make("caption.png")],
   ],
 });
 ```
 
-## Explicit Timing Blocks
+## Independent Tracks
 
-Empty timeline positions are meaningful, so they must be explicit. The API uses
-`Slot.make()` instead of accepting `{}` because a plain object does not say
+Tracks do not share an alignment grid and do not need corresponding items in
+other tracks. Each track is evaluated as its own ordered timeline. When a track
+needs silence or empty visual time before, between, or after content, that
+absence is represented directly in the same track with `Gap.make()`.
+
+Empty timeline spans are meaningful, so they must be explicit. The API uses
+`Gap.make()` instead of accepting `{}` because a plain object does not say
 whether the author meant "empty time", "unfinished content", or "invalid input".
 
-This keeps the timeline readable:
+This keeps each track readable without implying cross-track alignment:
 
 ```ts
-[Slot.make(), Slot.make("1 second"), Video.make("clip.mp4")];
+[Gap.make("1 second"), Video.make("clip.mp4")];
 ```
 
-Slots are not media. They are rhythm, spacing, and alignment tools.
+Gaps are not media. They are spacing tools for a single track.
 
 ## Composition
 
@@ -63,7 +69,7 @@ intros, lower thirds, transitions, title cards, or repeated visual motifs.
 The central design shape should remain:
 
 ```txt
-Sequence -> Track -> Slot | Video | Image | Sequence
+Sequence -> Track -> Gap | Video | Image | Sequence
 ```
 
 New features should extend this model rather than bypass it.
@@ -73,7 +79,7 @@ New features should extend this model rather than bypass it.
 - Prefer declarative data over immediate rendering side effects.
 - Prefer explicit concepts over clever shorthand.
 - Keep values immutable from the user's perspective.
-- Expose small named constructors such as `Sequence.make`, `Slot.make`, and
+- Expose small named constructors such as `Sequence.make`, `Gap.make`, and
   `Video.make`.
 - Expose transformation helpers such as `withDuration`, `withName`, and
   `withFit` when they make sequence descriptions easier to compose.
@@ -93,7 +99,7 @@ The sequence model should remain renderer-neutral for as long as possible.
 Future design work should clarify:
 
 - whether track order is bottom-to-top or top-to-bottom;
-- how media duration interacts with slot duration;
+- how media duration interacts with gap duration;
 - how transitions, masks, layout, and effects are represented;
 - how validation should be reported to users;
 - where renderer-specific APIs begin.

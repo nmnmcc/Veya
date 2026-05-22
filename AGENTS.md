@@ -3,7 +3,7 @@
 ## Structure
 
 - `src/` contains the library source. Public modules: `Sequence.ts`, `Track.ts`,
-  `Clip.ts`, `Slot.ts`, `Video.ts`, `Image.ts`, `Anchor.ts`, and `Timing.ts`.
+  `Clip.ts`, `Gap.ts`, `Video.ts`, `Image.ts`, `Anchor.ts`, and `Timing.ts`.
 - Keep concrete constructors and normalization helpers in `src/internal/`.
 - Keep the package facade in `src/index.ts`.
 - Keep design rationale in `DESIGN.md`.

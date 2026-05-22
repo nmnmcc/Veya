@@ -43,7 +43,8 @@ const baseToJSON = (self: Clip.Base<string>): Record<string, unknown> => {
   return json;
 };
 
-const sourceToJSON = (source: Clip.MediaSource): unknown => {
+/** @internal */
+export const sourceToJSON = (source: Clip.MediaSource): unknown => {
   if (typeof source === "string") {
     return source;
   }
@@ -72,36 +73,22 @@ const GapProto = {
   },
 };
 
-const VideoProto = {
+const mediaProto = <Self extends Clip.Media>(
+  definition: Clip.MediaDefinition<string, Self>,
+) => ({
   ...CommonProto,
-  _tag: "Video",
-  toJSON(this: Clip.Video) {
+  _tag: definition.tag,
+  toJSON(this: Self) {
     const json = baseToJSON(this);
-    json["source"] = sourceToJSON(this.source);
-    setIfDefined(json, "fit", this.fit);
-    setIfDefined(json, "playback", this.playback);
-    setIfDefined(json, "speed", this.speed);
-    setIfDefined(json, "volume", this.volume);
-    return json;
+    return definition.toJSON?.(this, json) ?? json;
   },
-  toString(this: Clip.Video) {
-    return `Video(${JSON.stringify(this.toJSON())})`;
+  toString(this: Self) {
+    return (
+      definition.toString?.(this) ??
+      `${definition.tag}(${JSON.stringify(this.toJSON())})`
+    );
   },
-};
-
-const ImageProto = {
-  ...CommonProto,
-  _tag: "Image",
-  toJSON(this: Clip.Image) {
-    const json = baseToJSON(this);
-    json["source"] = sourceToJSON(this.source);
-    setIfDefined(json, "fit", this.fit);
-    return json;
-  },
-  toString(this: Clip.Image) {
-    return `Image(${JSON.stringify(this.toJSON())})`;
-  },
-};
+});
 
 const hasDurationObjectKey = (
   input: Readonly<Record<PropertyKey, unknown>>,
@@ -117,6 +104,16 @@ const isGapOptions = (input: unknown): input is Clip.GapOptions => {
   return !hasDurationObjectKey(input);
 };
 
+const assignDefined = (
+  self: Record<PropertyKey, unknown>,
+  fields: object,
+): void => {
+  const record = fields as Record<PropertyKey, unknown>;
+  for (const key of Reflect.ownKeys(fields)) {
+    setIfDefined(self, key, record[key]);
+  }
+};
+
 const assignBase = (
   self: Record<PropertyKey, unknown>,
   options: Clip.BaseOptions,
@@ -127,28 +124,6 @@ const assignBase = (
   setIfDefined(self, "out", normalizedTiming.out);
   setIfDefined(self, "duration", normalizedTiming.duration);
   setIfDefined(self, "metadata", options.metadata);
-};
-
-const optionsFromSource = <
-  Options extends { readonly source: Clip.MediaSource },
->(
-  sourceOrOptions: Clip.MediaSource | Options,
-  options: Omit<Options, "source"> | undefined,
-): {
-  readonly source: Clip.MediaSource;
-  readonly options: Omit<Options, "source">;
-} => {
-  if (isRecord(sourceOrOptions) && "source" in sourceOrOptions) {
-    const { source, ...rest } = sourceOrOptions;
-    return {
-      source: source as Clip.MediaSource,
-      options: rest as Omit<Options, "source">,
-    };
-  }
-  return {
-    source: sourceOrOptions,
-    options: options ?? ({} as Omit<Options, "source">),
-  };
 };
 
 /** @internal */
@@ -168,38 +143,25 @@ export const gap = (input?: Clip.GapInput | undefined): Clip.Gap => {
 };
 
 /** @internal */
-export const video = (
-  sourceOrOptions: Clip.MediaSource | Clip.VideoOptionsWithSource,
-  options?: Clip.VideoOptions | undefined,
-): Clip.Video => {
-  const normalized = optionsFromSource<Clip.VideoOptionsWithSource>(
-    sourceOrOptions,
-    options,
-  );
-  const self = Object.create(VideoProto) as Record<PropertyKey, unknown>;
-  assignBase(self, normalized.options);
-  self["source"] = normalized.source;
-  setIfDefined(self, "fit", normalized.options.fit);
-  setIfDefined(self, "playback", normalized.options.playback);
-  setIfDefined(self, "speed", normalized.options.speed);
-  setIfDefined(self, "volume", normalized.options.volume);
-  return self as unknown as Clip.Video;
-};
-
-/** @internal */
-export const image = (
-  sourceOrOptions: Clip.MediaSource | Clip.ImageOptionsWithSource,
-  options?: Clip.ImageOptions | undefined,
-): Clip.Image => {
-  const normalized = optionsFromSource<Clip.ImageOptionsWithSource>(
-    sourceOrOptions,
-    options,
-  );
-  const self = Object.create(ImageProto) as Record<PropertyKey, unknown>;
-  assignBase(self, normalized.options);
-  self["source"] = normalized.source;
-  setIfDefined(self, "fit", normalized.options.fit);
-  return self as unknown as Clip.Image;
+export const makeMedia = <
+  Tag extends string,
+  Fields extends object,
+  Self extends Clip.Media<Tag, Fields>,
+>(
+  definition: Clip.MediaDefinition<Tag, Self>,
+  fields: Fields,
+  options?: Clip.BaseOptions | undefined,
+): Self => {
+  if (definition.tag === "Gap") {
+    throw new TypeError("Media definitions cannot use the reserved Gap tag.");
+  }
+  const self = Object.create(mediaProto(definition)) as Record<
+    PropertyKey,
+    unknown
+  >;
+  assignBase(self, options ?? {});
+  assignDefined(self, fields);
+  return self as unknown as Self;
 };
 
 /** @internal */
@@ -241,24 +203,12 @@ export const withMetadata = <A extends Clip.Clip>(
 ): A => copyWith(self, { metadata });
 
 /** @internal */
-export const withFit = <A extends Clip.Video | Clip.Image>(
+export const withProperties = <A extends Clip.Clip, Properties extends object>(
   self: A,
-  fit: Clip.Fit,
-): A => copyWith(self, { fit });
-
-/** @internal */
-export const withPlayback = (
-  self: Clip.Video,
-  playback: Clip.Playback,
-): Clip.Video => copyWith(self, { playback });
-
-/** @internal */
-export const withSpeed = (self: Clip.Video, speed: number): Clip.Video =>
-  copyWith(self, { speed });
-
-/** @internal */
-export const withVolume = (self: Clip.Video, volume: number): Clip.Video =>
-  copyWith(self, { volume });
+  properties: Properties,
+): A & Readonly<Properties> =>
+  copyWith(self, properties as Readonly<Record<PropertyKey, unknown>>) as A &
+    Readonly<Properties>;
 
 /** @internal */
 export const isClip = (input: unknown): input is Clip.Clip =>
@@ -269,9 +219,11 @@ export const isGap = (input: unknown): input is Clip.Gap =>
   isClip(input) && input._tag === "Gap";
 
 /** @internal */
-export const isVideo = (input: unknown): input is Clip.Video =>
-  isClip(input) && input._tag === "Video";
+export const isMedia = (input: unknown): input is Clip.Media =>
+  isClip(input) && input._tag !== "Gap";
 
 /** @internal */
-export const isImage = (input: unknown): input is Clip.Image =>
-  isClip(input) && input._tag === "Image";
+export const hasTag = <Tag extends string>(
+  input: unknown,
+  tag: Tag,
+): input is Clip.Media<Tag> => isClip(input) && input._tag === tag;

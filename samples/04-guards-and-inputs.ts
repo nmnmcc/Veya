@@ -1,17 +1,51 @@
-import { Anchor, Clip, Gap, Image, Sequence, Track, Video } from "../src/index";
+import { Anchor, Clip, Gap, Sequence, Track } from "@veya/core";
+import { Image } from "@veya/image";
+import { Video } from "@veya/video";
+
+type AudioWaveform = Clip.Media<
+  "AudioWaveform",
+  {
+    readonly source: Clip.MediaSource;
+    readonly color: string;
+  }
+>;
+
+const audioWaveformDefinition: Clip.MediaDefinition<
+  "AudioWaveform",
+  AudioWaveform
+> = {
+  tag: "AudioWaveform",
+  toJSON(self, json) {
+    json["source"] = Clip.sourceToJSON(self.source);
+    json["color"] = self.color;
+    return json;
+  },
+};
+
+const audioWaveform = Clip.makeMedia(
+  audioWaveformDefinition,
+  {
+    source: "assets/dialogue.wav",
+    color: "cyan",
+  },
+  {
+    duration: "2 seconds",
+  },
+);
 
 const sources = [
-  Clip.video(new URL("https://cdn.example.com/intro.mp4"), {
+  Video.make(new URL("https://cdn.example.com/intro.mp4"), {
     id: "remote-video",
     duration: "2 seconds",
   }),
-  Clip.image(new Uint8Array([137, 80, 78, 71]), {
+  Image.make(new Uint8Array([137, 80, 78, 71]), {
     id: "generated-image",
     fit: "contain",
     metadata: {
       source: "memory",
     },
   }),
+  audioWaveform,
   Clip.gap("1 second"),
 ];
 
@@ -27,6 +61,7 @@ const values: ReadonlyArray<unknown> = [
   Track.make([Gap.make()]),
   Video.make("assets/video.mp4"),
   Image.make("assets/image.png"),
+  audioWaveform,
   Gap.make("500 millis"),
   Anchor.frame(12),
   Anchor.time("3 seconds"),
@@ -40,11 +75,14 @@ const labels = values.map((value) => {
   if (Track.isTrack(value)) {
     return "Track";
   }
-  if (Clip.isVideo(value)) {
+  if (Video.isVideo(value)) {
     return "Video";
   }
-  if (Clip.isImage(value)) {
+  if (Image.isImage(value)) {
     return "Image";
+  }
+  if (Clip.hasTag(value, "AudioWaveform")) {
+    return "AudioWaveform";
   }
   if (Clip.isGap(value)) {
     return "Gap";

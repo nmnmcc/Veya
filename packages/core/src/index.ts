@@ -16,18 +16,11 @@ export {
 export * as Anchor from "./Anchor";
 
 /**
- * Primitive clips and shared clip combinators.
+ * Primitive clips and media extension points.
  *
  * @since 0.1.0
  */
 export * as Clip from "./Clip";
-
-/**
- * Image clips.
- *
- * @since 0.1.0
- */
-export * as Image from "./Image";
 
 /**
  * Composable timeline containers.
@@ -56,10 +49,3 @@ export * as Timing from "./Timing";
  * @since 0.1.0
  */
 export * as Track from "./Track";
-
-/**
- * Video clips.
- *
- * @since 0.1.0
- */
-export * as Video from "./Video";

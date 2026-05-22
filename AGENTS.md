@@ -2,10 +2,16 @@
 
 ## Structure
 
-- `src/` contains the library source. Public modules: `Sequence.ts`, `Track.ts`,
-  `Clip.ts`, `Gap.ts`, `Video.ts`, `Image.ts`, `Anchor.ts`, and `Timing.ts`.
-- Keep concrete constructors and normalization helpers in `src/internal/`.
-- Keep the package facade in `src/index.ts`.
+- This repository is a Yarn monorepo.
+- `packages/core/` contains the `@veya/core` orchestration package.
+- `packages/core/src/` contains core timeline source. Public modules:
+  `Sequence.ts`, `Track.ts`, `Clip.ts`, `Gap.ts`, `Anchor.ts`, and
+  `Timing.ts`.
+- `packages/video/` contains the `@veya/video` media package.
+- `packages/image/` contains the `@veya/image` media package.
+- Keep concrete constructors and normalization helpers in each package's
+  `src/internal/` directory.
+- Keep the core package facade in `packages/core/src/index.ts`.
 - Keep design rationale in `DESIGN.md`.
 - Keep implementation rationale in `INTERNALS.md`.
 - Treat `.ref/` as read-only reference material.
@@ -29,7 +35,7 @@
 ## Testing
 
 - No test framework is configured.
-- Run `yarn exec tsc --noEmit` for every change.
+- Run `yarn typecheck` for every change.
 - Add a small `yarn tsx -e ...` smoke test when runtime construction or
   serialization changes.
 - If tests are added later, prefer colocated `*.test.ts` files or `test/`.

@@ -26,13 +26,19 @@ A video is a tree of timeline containers:
 - `Sequence` is a reusable timeline. It can be the whole video or a nested fragment.
 - `Track` is an independent layer inside a sequence.
 - `Gap` is an explicit empty span inside one track.
-- `Video` and `Image` are media blocks.
+- Media blocks are clip values supplied by concrete packages or user code.
+  `@veya/video` and `@veya/image` provide the built-in video and image media
+  types.
 - `Anchor` and `Timing` describe where a block lives in time.
 
 At the top level, users should be able to read a sequence as independent
 layered timelines:
 
 ```ts
+import { Gap, Sequence } from "@veya/core";
+import { Image } from "@veya/image";
+import { Video } from "@veya/video";
+
 Sequence.make({
   tracks: [
     [Video.make("intro.mp4"), Gap.make("500 millis"), Image.make("cover.png")],
@@ -69,10 +75,11 @@ intros, lower thirds, transitions, title cards, or repeated visual motifs.
 The central design shape should remain:
 
 ```txt
-Sequence -> Track -> Gap | Video | Image | Sequence
+Sequence -> Track -> Gap | Media | Sequence
 ```
 
-New features should extend this model rather than bypass it.
+New concrete media packages should extend this model through the core media
+extension point rather than bypass it.
 
 ## API Principles
 
@@ -80,10 +87,13 @@ New features should extend this model rather than bypass it.
 - Prefer explicit concepts over clever shorthand.
 - Keep values immutable from the user's perspective.
 - Expose small named constructors such as `Sequence.make`, `Gap.make`, and
-  `Video.make`.
+  media-package constructors like `Video.make`.
 - Expose transformation helpers such as `withDuration`, `withName`, and
-  `withFit` when they make sequence descriptions easier to compose.
+  media-specific helpers like `withFit` when they make sequence descriptions
+  easier to compose.
 - Let TypeScript guide authors toward valid timelines.
+- Keep `@veya/core` focused on orchestration. Concrete media packages should
+  own their own fields, guards, and media-specific combinators.
 
 ## Renderer Boundary
 

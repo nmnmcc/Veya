@@ -1,15 +1,22 @@
 {
   "name": "veya",
   "description": "A programmable video creation library for TypeScript.",
+  "private": true,
+  "type": "module",
   "packageManager": "yarn@4.15.0",
+  "workspaces": [
+    "./packages/*"
+  ],
+  "scripts": {
+    "format": "prettier --write .",
+    "smoke": "tsx samples/01-basic-sequence.ts && tsx samples/02-combinators.ts && tsx samples/03-anchors-and-timing.ts && tsx samples/04-guards-and-inputs.ts",
+    "typecheck": "tsc -b --noEmit"
+  },
   "devDependencies": {
     "@effect/language-service": "latest",
     "@types/node": "24",
     "prettier": "^3.8.3",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3"
-  },
-  "dependencies": {
-    "effect": "^4.0.0-beta.69"
   }
 }

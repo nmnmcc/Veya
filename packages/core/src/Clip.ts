@@ -1,5 +1,5 @@
 /**
- * Primitive timeline clips: gaps, videos, and images.
+ * Primitive timeline clips and extension points for custom media clips.
  *
  * @since 0.1.0
  */
@@ -27,19 +27,7 @@ export type TypeId = typeof TypeId;
  * @category models
  * @since 0.1.0
  */
-export type Clip = Gap | Video | Image;
-
-/**
- * @category models
- * @since 0.1.0
- */
-export type Fit = "contain" | "cover" | "fill" | "none";
-
-/**
- * @category models
- * @since 0.1.0
- */
-export type Playback = "clip" | "loop" | "freeze";
+export type Clip = Gap | Media;
 
 /**
  * @category models
@@ -92,59 +80,31 @@ export interface GapOptions extends BaseOptions {}
 export type GapInput = Gap | GapOptions | Duration.Input;
 
 /**
+ * A media clip supplied by a concrete package or user extension.
+ *
  * @category models
  * @since 0.1.0
  */
-export interface Video extends Base<"Video"> {
-  readonly source: MediaSource;
-  readonly fit?: Fit;
-  readonly playback?: Playback;
-  readonly speed?: number;
-  readonly volume?: number;
-}
+export type Media<
+  Tag extends string = string,
+  Fields extends object = object,
+> = Base<Tag> & Readonly<Fields>;
 
 /**
+ * Runtime behavior for a concrete media type.
+ *
  * @category models
  * @since 0.1.0
  */
-export interface VideoOptions extends BaseOptions {
-  readonly fit?: Fit | undefined;
-  readonly playback?: Playback | undefined;
-  readonly speed?: number | undefined;
-  readonly volume?: number | undefined;
-}
-
-/**
- * @category models
- * @since 0.1.0
- */
-export interface VideoOptionsWithSource extends VideoOptions {
-  readonly source: MediaSource;
-}
-
-/**
- * @category models
- * @since 0.1.0
- */
-export interface Image extends Base<"Image"> {
-  readonly source: MediaSource;
-  readonly fit?: Fit;
-}
-
-/**
- * @category models
- * @since 0.1.0
- */
-export interface ImageOptions extends BaseOptions {
-  readonly fit?: Fit | undefined;
-}
-
-/**
- * @category models
- * @since 0.1.0
- */
-export interface ImageOptionsWithSource extends ImageOptions {
-  readonly source: MediaSource;
+export interface MediaDefinition<
+  Tag extends string,
+  Self extends Media<Tag> = Media<Tag>,
+> {
+  readonly tag: Tag;
+  readonly toJSON?:
+    | ((self: Self, base: Record<string, unknown>) => Record<string, unknown>)
+    | undefined;
+  readonly toString?: ((self: Self) => string) | undefined;
 }
 
 /**
@@ -154,22 +114,20 @@ export interface ImageOptionsWithSource extends ImageOptions {
 export const gap: (input?: GapInput | undefined) => Gap = internal.gap;
 
 /**
+ * Builds a custom media clip from a media definition and concrete fields.
+ *
  * @category constructors
  * @since 0.1.0
  */
-export const video: {
-  (source: MediaSource, options?: VideoOptions | undefined): Video;
-  (options: VideoOptionsWithSource): Video;
-} = internal.video;
-
-/**
- * @category constructors
- * @since 0.1.0
- */
-export const image: {
-  (source: MediaSource, options?: ImageOptions | undefined): Image;
-  (options: ImageOptionsWithSource): Image;
-} = internal.image;
+export const makeMedia: <
+  const Tag extends string,
+  Fields extends object,
+  Self extends Media<Tag, Fields> = Media<Tag, Fields>,
+>(
+  definition: MediaDefinition<Tag, Self>,
+  fields: Fields,
+  options?: BaseOptions | undefined,
+) => Self = internal.makeMedia;
 
 /**
  * @category combinators
@@ -229,37 +187,22 @@ export const withMetadata: {
  * @category combinators
  * @since 0.1.0
  */
-export const withFit: {
-  (fit: Fit): <A extends Video | Image>(self: A) => A;
-  <A extends Video | Image>(self: A, fit: Fit): A;
-} = dual(2, internal.withFit);
+export const withProperties: {
+  <Properties extends object>(
+    properties: Properties,
+  ): <A extends Clip>(self: A) => A & Readonly<Properties>;
+  <A extends Clip, Properties extends object>(
+    self: A,
+    properties: Properties,
+  ): A & Readonly<Properties>;
+} = dual(2, internal.withProperties);
 
 /**
- * @category combinators
+ * @category serialization
  * @since 0.1.0
  */
-export const withPlayback: {
-  (playback: Playback): (self: Video) => Video;
-  (self: Video, playback: Playback): Video;
-} = dual(2, internal.withPlayback);
-
-/**
- * @category combinators
- * @since 0.1.0
- */
-export const withSpeed: {
-  (speed: number): (self: Video) => Video;
-  (self: Video, speed: number): Video;
-} = dual(2, internal.withSpeed);
-
-/**
- * @category combinators
- * @since 0.1.0
- */
-export const withVolume: {
-  (volume: number): (self: Video) => Video;
-  (self: Video, volume: number): Video;
-} = dual(2, internal.withVolume);
+export const sourceToJSON: (source: MediaSource) => unknown =
+  internal.sourceToJSON;
 
 /**
  * @category guards
@@ -277,10 +220,13 @@ export const isGap: (input: unknown) => input is Gap = internal.isGap;
  * @category guards
  * @since 0.1.0
  */
-export const isVideo: (input: unknown) => input is Video = internal.isVideo;
+export const isMedia: (input: unknown) => input is Media = internal.isMedia;
 
 /**
  * @category guards
  * @since 0.1.0
  */
-export const isImage: (input: unknown) => input is Image = internal.isImage;
+export const hasTag: <const Tag extends string>(
+  input: unknown,
+  tag: Tag,
+) => input is Media<Tag> = internal.hasTag;

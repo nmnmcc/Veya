@@ -1,4 +1,6 @@
-import { Gap, Image, Sequence, Track, Video, pipe } from "../src/index";
+import { Gap, Sequence, Track, pipe } from "@veya/core";
+import { Image } from "@veya/image";
+import { Video } from "@veya/video";
 
 const intro = pipe(
   Video.make("assets/intro.mp4"),

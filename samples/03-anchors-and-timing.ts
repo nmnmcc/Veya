@@ -1,12 +1,6 @@
-import {
-  Anchor,
-  Gap,
-  Image,
-  Sequence,
-  Timing,
-  Video,
-  pipe,
-} from "../src/index";
+import { Anchor, Gap, Sequence, Timing, pipe } from "@veya/core";
+import { Image } from "@veya/image";
+import { Video } from "@veya/video";
 
 const openingWindow = Timing.make({
   in: Anchor.frame(0),

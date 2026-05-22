@@ -6,11 +6,11 @@ __metadata:
   cacheKey: 10c0
 
 "@effect/language-service@npm:latest":
-  version: 0.86.1
-  resolution: "@effect/language-service@npm:0.86.1"
+  version: 0.86.2
+  resolution: "@effect/language-service@npm:0.86.2"
   bin:
     effect-language-service: cli.js
-  checksum: 10c0/251042e626135313b8ad3a2f0891a6083e9bb2a011c120e34721417a5a06fbe43b3f0256232f20648bf139830f67d3604394119ea0193a6a73e8a552bed01f5c
+  checksum: 10c0/fe27ac518e1aa292d5badb0c055fbebf6d6bb75758a6a169d9d7ea5dff8a58a89f486331cc520f8427a7fff596497c3bbae40f1e65b2165c3beca07cfe9f168c
   languageName: node
   linkType: hard
 
@@ -263,6 +263,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@veya/core@workspace:*, @veya/core@workspace:packages/core":
+  version: 0.0.0-use.local
+  resolution: "@veya/core@workspace:packages/core"
+  dependencies:
+    effect: "npm:^4.0.0-beta.70"
+  languageName: unknown
+  linkType: soft
+
+"@veya/image@workspace:packages/image":
+  version: 0.0.0-use.local
+  resolution: "@veya/image@workspace:packages/image"
+  dependencies:
+    "@veya/core": "workspace:*"
+    effect: "npm:^4.0.0-beta.70"
+  languageName: unknown
+  linkType: soft
+
+"@veya/video@workspace:packages/video":
+  version: 0.0.0-use.local
+  resolution: "@veya/video@workspace:packages/video"
+  dependencies:
+    "@veya/core": "workspace:*"
+    effect: "npm:^4.0.0-beta.70"
+  languageName: unknown
+  linkType: soft
+
 "abbrev@npm:^4.0.0":
   version: 4.0.0
   resolution: "abbrev@npm:4.0.0"
@@ -284,9 +310,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"effect@npm:^4.0.0-beta.69":
-  version: 4.0.0-beta.69
-  resolution: "effect@npm:4.0.0-beta.69"
+"effect@npm:^4.0.0-beta.70":
+  version: 4.0.0-beta.70
+  resolution: "effect@npm:4.0.0-beta.70"
   dependencies:
     "@standard-schema/spec": "npm:^1.1.0"
     fast-check: "npm:^4.8.0"
@@ -298,7 +324,7 @@ __metadata:
     toml: "npm:^4.1.1"
     uuid: "npm:^14.0.0"
     yaml: "npm:^2.9.0"
-  checksum: 10c0/fd46b389ed6f150dde550fa398af89e89819cd2e7dd70b5fce8fe539f24dcce2696284b572bad93eb739316874e7637ed1c7a36b8f46580709b78a1f9a26f2a5
+  checksum: 10c0/6ba1d7fe3b83ef991a7d1f2e2b98d311dd0e135c5f17c45b69f2a721e1ead5923a55b293a3619bdbc541dc29b91b486f52ea34aef5110f60e38e4d2c0daa0a02
   languageName: node
   linkType: hard
 
@@ -723,7 +749,6 @@ __metadata:
   dependencies:
     "@effect/language-service": "npm:latest"
     "@types/node": "npm:24"
-    effect: "npm:^4.0.0-beta.69"
     prettier: "npm:^3.8.3"
     tsx: "npm:^4.22.3"
     typescript: "npm:^6.0.3"

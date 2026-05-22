@@ -5,7 +5,9 @@ Effect-style declarative model for composing moving images as structured
 sequences, independent tracks, gaps, and media clips.
 
 ```ts
-import { Gap, Image, Sequence, Video, pipe } from "veya";
+import { Gap, Sequence, pipe } from "@veya/core";
+import { Image } from "@veya/image";
+import { Video } from "@veya/video";
 
 const program = pipe(
   Sequence.make({
@@ -41,6 +43,7 @@ const base = Sequence.make({
 Plain objects are intentionally not accepted as track items. Use `Gap.make()`
 when empty time on a track is meaningful.
 
-The source follows the Effect layout: public modules such as `Sequence.ts` and
-`Video.ts` expose types, constructors, guards, and data-first/data-last
-combinators, while concrete object construction lives under `src/internal`.
+The core package focuses on timeline orchestration: sequences, tracks, gaps,
+anchors, timing, and the `Clip.makeMedia` extension point for custom media.
+Concrete media implementations live in separate workspace packages such as
+`@veya/video` and `@veya/image`.

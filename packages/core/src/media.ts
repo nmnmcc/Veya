@@ -52,3 +52,10 @@ export interface AudioBuffer {
   readonly sampleRate: SampleRate;
   readonly channels: readonly Float32Array[];
 }
+
+export interface SilentAudioChunk {
+  readonly _tag: "SilentAudioChunk";
+  readonly samples: SampleCount;
+}
+
+export type AudioChunk = AudioBuffer | SilentAudioChunk;

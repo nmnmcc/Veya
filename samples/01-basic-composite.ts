@@ -23,14 +23,6 @@ export const composite = Composite.make({
   audio: {
     sampleRate,
     channels,
-    tracks: [
-      AudioTrack.make([
-        Silence.make({
-          sampleRate,
-          channels,
-          samples: SampleCount(48000),
-        }),
-      ]),
-    ],
+    tracks: [AudioTrack.make([Silence.make(SampleCount(48000))])],
   },
 });

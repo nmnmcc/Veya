@@ -1,5 +1,5 @@
 {
-  "name": "@veya/source",
+  "name": "@veya/source-video",
   "dependencies": {
     "effect": "^4.0.0-beta.70"
   },

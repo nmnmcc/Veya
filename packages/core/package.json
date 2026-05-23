@@ -1,5 +1,6 @@
 {
   "name": "@veya/core",
+  "type": "module",
   "dependencies": {
     "effect": "^4.0.0-beta.70"
   },

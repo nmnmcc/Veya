@@ -1,51 +1,63 @@
-/**
- * @since 0.1.0
- */
-export {
-  /**
-   * @since 0.1.0
-   */
-  pipe,
-} from "effect/Function";
+import { Array, Chunk, Context, Effect, Stream, pipe } from "effect";
 
-/**
- * Timeline anchors.
- *
- * @since 0.1.0
- */
-export * as Anchor from "./Anchor";
+export namespace Element {
+  export interface Element<E = never, R = never> {
+    readonly name: string;
 
-/**
- * Primitive clips and media extension points.
- *
- * @since 0.1.0
- */
-export * as Clip from "./Clip";
+    readonly rasterize: Stream.Stream<Uint8Array, E, R>;
+  }
 
-/**
- * Composable timeline containers.
- *
- * @since 0.1.0
- */
-export * as Sequence from "./Sequence";
+  export const make = <E = never, R = never>(element: Element<E, R>): Element<E, R> => element;
+}
 
-/**
- * Empty timeline gaps.
- *
- * @since 0.1.0
- */
-export * as Gap from "./Gap";
+export namespace Sequence {
+  export interface Sequence<E = never, R = never> extends Element.Element<E, R> {}
 
-/**
- * Shared timing options.
- *
- * @since 0.1.0
- */
-export * as Timing from "./Timing";
+  export const make = <
+    E = never,
+    R = never,
+    Tracks extends readonly Track.Track<E, R>[] = readonly Track.Track<E, R>[],
+  >(
+    name: string,
+    tracks: Tracks,
+  ): Sequence<E, R | Compositor.Service> => {
+    return {
+      name,
+      rasterize: pipe(
+        tracks,
+        ([head, ...tail]) => {
+          if (!head) return Stream.empty;
 
-/**
- * Timeline layers.
- *
- * @since 0.1.0
- */
-export * as Track from "./Track";
+          return Array.reduce(
+            tail,
+            Stream.map(head.rasterize, (frame) => [frame]),
+            (accumulator, track) =>
+              Stream.zipWith(accumulator, track.rasterize, (frames, frame) => Array.append(frames, frame)),
+          );
+        },
+        Stream.mapEffect((frames) => Compositor.Service.use((compositor) => compositor.composite(frames))),
+      ),
+    };
+  };
+}
+
+export namespace Track {
+  export interface Track<E = never, R = never> extends Chunk.Chunk<Element.Element<E, R>>, Element.Element<E, R> {}
+
+  export const make = <E, R>(name: string, elements: Array<Element.Element<E, R>>): Track<E, R> => {
+    return Object.assign(Chunk.fromArrayUnsafe(elements), {
+      name,
+      rasterize: Array.reduce(elements, Stream.empty as Stream.Stream<Uint8Array, E, R>, (a, c) =>
+        Stream.concat(a, c.rasterize),
+      ),
+    });
+  };
+}
+
+export namespace Compositor {
+  export interface Compositor {
+    readonly composite: (frames: Uint8Array[]) => Effect.Effect<Uint8Array>;
+  }
+
+  export class Service extends Context.Service<Service, Compositor>()("@veya/core/index/Service") {}
+}

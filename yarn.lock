@@ -263,28 +263,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@veya/core@workspace:*, @veya/core@workspace:packages/core":
+"@veya/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@veya/core@workspace:packages/core"
   dependencies:
-    effect: "npm:^4.0.0-beta.70"
-  languageName: unknown
-  linkType: soft
-
-"@veya/image@workspace:packages/image":
-  version: 0.0.0-use.local
-  resolution: "@veya/image@workspace:packages/image"
-  dependencies:
-    "@veya/core": "workspace:*"
-    effect: "npm:^4.0.0-beta.70"
-  languageName: unknown
-  linkType: soft
-
-"@veya/video@workspace:packages/video":
-  version: 0.0.0-use.local
-  resolution: "@veya/video@workspace:packages/video"
-  dependencies:
-    "@veya/core": "workspace:*"
     effect: "npm:^4.0.0-beta.70"
   languageName: unknown
   linkType: soft

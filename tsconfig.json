@@ -1,9 +1,4 @@
 {
   "files": [],
-  "references": [
-    { "path": "./packages/core" },
-    { "path": "./packages/video" },
-    { "path": "./packages/image" },
-    { "path": "./samples" }
-  ]
+  "references": [{ "path": "./packages/core" }]
 }

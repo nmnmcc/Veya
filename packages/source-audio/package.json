@@ -1,5 +1,5 @@
 {
-  "name": "@veya/source-video",
+  "name": "@veya/source-audio",
   "type": "module",
   "dependencies": {
     "@veya/core": "workspace:*",

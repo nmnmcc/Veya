@@ -1,4 +1,5 @@
-import { Stream } from "effect";
+import { Effect, Stream } from "effect";
+import { Effectable } from "./Effectable";
 import type { AudioChunk } from "./media";
 
 export namespace AudioClip {
@@ -8,5 +9,9 @@ export namespace AudioClip {
 
   export type Render<E, R> = Stream.Stream<AudioChunk, E, R>;
 
-  export const make = <E = never, R = never>(element: AudioClip<E, R>) => element;
+  export const make = <ClipE = never, ClipR = never, E = never, R = never>(
+    element: Effectable<AudioClip<ClipE, ClipR>, E, R>,
+  ): AudioClip<ClipE | E, ClipR | R> => ({
+    render: Stream.unwrap(Effect.map(Effectable.resolve(element), (element) => element.render)),
+  });
 }

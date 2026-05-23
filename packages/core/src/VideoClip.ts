@@ -1,4 +1,5 @@
-import { Stream } from "effect";
+import { Effect, Stream } from "effect";
+import { Effectable } from "./Effectable";
 import type { Bitmap } from "./media";
 
 export namespace VideoClip {
@@ -8,5 +9,9 @@ export namespace VideoClip {
 
   export type Render<E, R> = Stream.Stream<Bitmap, E, R>;
 
-  export const make = <E = never, R = never>(element: VideoClip<E, R>) => element;
+  export const make = <ClipE = never, ClipR = never, E = never, R = never>(
+    element: Effectable<VideoClip<ClipE, ClipR>, E, R>,
+  ): VideoClip<ClipE | E, ClipR | R> => ({
+    render: Stream.unwrap(Effect.map(Effectable.resolve(element), (element) => element.render)),
+  });
 }

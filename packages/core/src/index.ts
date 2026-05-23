@@ -1,4 +1,5 @@
 export * from "./media";
+export * from "./Effectable";
 export * from "./VideoClip";
 export * from "./AudioClip";
 export * from "./Gap";

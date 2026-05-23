@@ -263,7 +263,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@veya/core@workspace:packages/core":
+"@veya/core@workspace:*, @veya/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@veya/core@workspace:packages/core"
   dependencies:
@@ -271,10 +271,29 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@veya/source@workspace:packages/source":
+"@veya/source-audio@workspace:packages/source-audio":
   version: 0.0.0-use.local
-  resolution: "@veya/source@workspace:packages/source"
+  resolution: "@veya/source-audio@workspace:packages/source-audio"
   dependencies:
+    "@veya/core": "workspace:*"
+    effect: "npm:^4.0.0-beta.70"
+  languageName: unknown
+  linkType: soft
+
+"@veya/source-image@workspace:packages/source-image":
+  version: 0.0.0-use.local
+  resolution: "@veya/source-image@workspace:packages/source-image"
+  dependencies:
+    "@veya/core": "workspace:*"
+    effect: "npm:^4.0.0-beta.70"
+  languageName: unknown
+  linkType: soft
+
+"@veya/source-video@workspace:packages/source-video":
+  version: 0.0.0-use.local
+  resolution: "@veya/source-video@workspace:packages/source-video"
+  dependencies:
+    "@veya/core": "workspace:*"
     effect: "npm:^4.0.0-beta.70"
   languageName: unknown
   linkType: soft

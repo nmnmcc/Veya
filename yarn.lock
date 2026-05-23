@@ -271,6 +271,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@veya/source@workspace:packages/source":
+  version: 0.0.0-use.local
+  resolution: "@veya/source@workspace:packages/source"
+  dependencies:
+    effect: "npm:^4.0.0-beta.70"
+  languageName: unknown
+  linkType: soft
+
 "abbrev@npm:^4.0.0":
   version: 4.0.0
   resolution: "abbrev@npm:4.0.0"

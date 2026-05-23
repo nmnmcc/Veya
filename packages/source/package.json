@@ -1,5 +1,5 @@
 {
-  "name": "@veya/core",
+  "name": "@veya/source",
   "dependencies": {
     "effect": "^4.0.0-beta.70"
   },

@@ -1,5 +1,5 @@
 import { Data, Duration, Effect } from "effect";
-import { Effectable, FrameCount } from "@veya/core";
+import { Effectable } from "@veya/core";
 import type { FrameCount as FrameCountType } from "@veya/core";
 import { VideoProbe } from "./VideoProbe";
 
@@ -22,8 +22,6 @@ export namespace VideoFrame {
     readonly reason?: unknown;
   }> {}
 
-  export const frames = (frames: number): FrameCountType => FrameCount(frames);
-
   export const seconds = (seconds: number): TimeInput => Duration.seconds(seconds);
 
   export const millis = (millis: number): TimeInput => Duration.millis(millis);
@@ -36,7 +34,7 @@ export namespace VideoFrame {
   ): Effect.Effect<
     number | undefined,
     SourceE | E | VideoProbe.VideoProbeError | VideoFrameError,
-    SourceR | R | VideoProbe.Service
+    SourceR | R | VideoProbe
   > => {
     if (options.framerate !== undefined) return Effectable.resolve(options.framerate);
     if (!inputs.some((input) => input !== undefined && requiresFramerate(input))) return Effect.succeed(undefined);
@@ -48,7 +46,8 @@ export namespace VideoFrame {
 
     return Effect.gen(function* () {
       const source = yield* Effectable.resolve(sourceInput);
-      const metadata = yield* VideoProbe.Service.use(({ probe }) => probe(source));
+      const { probe } = yield* VideoProbe;
+      const metadata = yield* probe(source);
 
       return metadata.framerate;
     });
@@ -57,11 +56,7 @@ export namespace VideoFrame {
   export const resolveOffset = <SourceE = never, SourceR = never, E = never, R = never>(
     input: Effectable<Input, E, R>,
     options: ResolveOptions<SourceE, SourceR, E, R>,
-  ): Effect.Effect<
-    Index,
-    SourceE | E | VideoProbe.VideoProbeError | VideoFrameError,
-    SourceR | R | VideoProbe.Service
-  > => {
+  ): Effect.Effect<Index, SourceE | E | VideoProbe.VideoProbeError | VideoFrameError, SourceR | R | VideoProbe> => {
     return Effect.gen(function* () {
       const resolvedInput = yield* Effectable.resolve(input);
 
@@ -79,19 +74,16 @@ export namespace VideoFrame {
   ): Effect.Effect<
     FrameCountType,
     SourceE | E | VideoProbe.VideoProbeError | VideoFrameError,
-    SourceR | R | VideoProbe.Service
+    SourceR | R | VideoProbe
   > => {
     return Effect.gen(function* () {
       const resolvedInput = yield* Effectable.resolve(input);
 
-      return yield* Effect.map(
-        resolveFrameNumber(resolvedInput, {
-          ...options,
-          defaultRounding: "ceil",
-          minimum: 1,
-        }),
-        FrameCount,
-      );
+      return yield* resolveFrameNumber(resolvedInput, {
+        ...options,
+        defaultRounding: "ceil",
+        minimum: 1,
+      });
     });
   };
 
@@ -101,11 +93,7 @@ export namespace VideoFrame {
       readonly defaultRounding: Rounding;
       readonly minimum: number;
     },
-  ): Effect.Effect<
-    number,
-    SourceE | E | VideoProbe.VideoProbeError | VideoFrameError,
-    SourceR | R | VideoProbe.Service
-  > => {
+  ): Effect.Effect<number, SourceE | E | VideoProbe.VideoProbeError | VideoFrameError, SourceR | R | VideoProbe> => {
     if (typeof input === "number") return validateFrameNumber(input, options.minimum);
 
     return Effect.gen(function* () {

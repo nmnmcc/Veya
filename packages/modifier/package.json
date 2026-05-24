@@ -1,0 +1,13 @@
+{
+  "name": "@veya/modifier",
+  "type": "module",
+  "dependencies": {
+    "@veya/core": "workspace:*",
+    "effect": "^4.0.0-beta.70"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    }
+  }
+}

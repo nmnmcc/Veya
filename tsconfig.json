@@ -2,8 +2,13 @@
   "files": [],
   "references": [
     { "path": "./packages/core" },
+    { "path": "./packages/modifier" },
     { "path": "./packages/source-video" },
     { "path": "./packages/source-image" },
-    { "path": "./packages/source-audio" }
+    { "path": "./packages/source-svg" },
+    { "path": "./packages/source-svg-resvg" },
+    { "path": "./packages/source-color" },
+    { "path": "./packages/source-audio" },
+    { "path": "./samples" }
   ]
 }

@@ -1,6 +1,8 @@
 import { Array, Effect, Stream, pipe } from "effect";
-import type { AudioBuffer, AudioChunk, Bitmap, ChannelCount, SampleRate, Size } from "./media";
+import type { AudioBuffer, Bitmap, ChannelCount, Samplerate, Size } from "./media";
 import type { AudioClip } from "./AudioClip";
+import { CompositeAudioContext } from "./CompositeAudioContext";
+import { CompositeVideoContext } from "./CompositeVideoContext";
 import type { AudioTrack } from "./AudioTrack";
 import { Compositor } from "./Compositor";
 import { Effectable } from "./Effectable";
@@ -8,9 +10,9 @@ import type { VideoClip } from "./VideoClip";
 import type { VideoTrack } from "./VideoTrack";
 
 export namespace Composite {
-  export interface Composite<E = never, R = never> {
-    readonly video: Video<E, R>;
-    readonly audio: Audio<E, R>;
+  export interface Composite<VideoE = never, VideoR = never, AudioE = VideoE, AudioR = VideoR> {
+    readonly video: Video<VideoE, VideoR>;
+    readonly audio: Audio<AudioE, AudioR>;
   }
 
   export interface Video<E = never, R = never> extends VideoClip.VideoClip<E, R> {
@@ -19,25 +21,36 @@ export namespace Composite {
   }
 
   export interface Audio<E = never, R = never> extends AudioClip.AudioClip<E, R> {
-    readonly sampleRate: Effectable<SampleRate, E, R>;
+    readonly samplerate: Effectable<Samplerate, E, R>;
     readonly channels: Effectable<ChannelCount, E, R>;
   }
 
-  export interface VideoOptions<Tracks extends readonly VideoTrack.VideoTrack<E, R>[], E = never, R = never> {
+  type AnyVideoTrack = VideoTrack.VideoTrack<any, any>;
+  type AnyAudioTrack = AudioTrack.AudioTrack<any, any>;
+  type VideoTrackError<Tracks extends readonly AnyVideoTrack[]> =
+    Tracks[number] extends VideoTrack.VideoTrack<infer E, any> ? E : never;
+  type VideoTrackContext<Tracks extends readonly AnyVideoTrack[]> =
+    Tracks[number] extends VideoTrack.VideoTrack<any, infer R> ? R : never;
+  type AudioTrackError<Tracks extends readonly AnyAudioTrack[]> =
+    Tracks[number] extends AudioTrack.AudioTrack<infer E, any> ? E : never;
+  type AudioTrackContext<Tracks extends readonly AnyAudioTrack[]> =
+    Tracks[number] extends AudioTrack.AudioTrack<any, infer R> ? R : never;
+
+  export interface VideoOptions<Tracks extends readonly AnyVideoTrack[], E = never, R = never> {
     readonly size: Effectable<Size, E, R>;
     readonly framerate: Effectable<number, E, R>;
     readonly tracks: Effectable<Tracks, E, R>;
   }
 
-  export interface AudioOptions<Tracks extends readonly AudioTrack.AudioTrack<E, R>[], E = never, R = never> {
-    readonly sampleRate: Effectable<SampleRate, E, R>;
+  export interface AudioOptions<Tracks extends readonly AnyAudioTrack[], E = never, R = never> {
+    readonly samplerate: Effectable<Samplerate, E, R>;
     readonly channels: Effectable<ChannelCount, E, R>;
     readonly tracks: Effectable<Tracks, E, R>;
   }
 
   export interface Options<
-    VideoTracks extends readonly VideoTrack.VideoTrack<E, R>[],
-    AudioTracks extends readonly AudioTrack.AudioTrack<E, R>[],
+    VideoTracks extends readonly AnyVideoTrack[],
+    AudioTracks extends readonly AnyAudioTrack[],
     E = never,
     R = never,
   > {
@@ -46,13 +59,18 @@ export namespace Composite {
   }
 
   export const make = <
-    VideoTracks extends readonly VideoTrack.VideoTrack<E, R>[],
-    AudioTracks extends readonly AudioTrack.AudioTrack<E, R>[],
+    VideoTracks extends readonly AnyVideoTrack[],
+    AudioTracks extends readonly AnyAudioTrack[],
     E = never,
     R = never,
   >(
     options: Effectable<Options<VideoTracks, AudioTracks, E, R>, E, R>,
-  ): Composite<E | Compositor.CompositorError, R | Compositor.Service> => {
+  ): Composite<
+    E | VideoTrackError<VideoTracks> | Compositor.CompositorError,
+    R | Exclude<VideoTrackContext<VideoTracks>, CompositeVideoContext> | Compositor,
+    E | AudioTrackError<AudioTracks> | Compositor.CompositorError,
+    R | Exclude<AudioTrackContext<AudioTracks>, CompositeAudioContext> | Compositor
+  > => {
     return {
       video: {
         size: Effect.flatMap(Effectable.resolve(options), ({ video }) => Effectable.resolve(video.size)),
@@ -60,28 +78,28 @@ export namespace Composite {
         render: Stream.unwrap(Effect.map(resolveVideoOptions(options), renderVideo)),
       },
       audio: {
-        sampleRate: Effect.flatMap(Effectable.resolve(options), ({ audio }) => Effectable.resolve(audio.sampleRate)),
+        samplerate: Effect.flatMap(Effectable.resolve(options), ({ audio }) => Effectable.resolve(audio.samplerate)),
         channels: Effect.flatMap(Effectable.resolve(options), ({ audio }) => Effectable.resolve(audio.channels)),
         render: Stream.unwrap(Effect.map(resolveAudioOptions(options), renderAudio)),
       },
     };
   };
 
-  interface ResolvedVideoOptions<Tracks extends readonly VideoTrack.VideoTrack<E, R>[], E, R> {
+  interface ResolvedVideoOptions<Tracks extends readonly AnyVideoTrack[]> {
     readonly size: Size;
     readonly framerate: number;
     readonly tracks: Tracks;
   }
 
-  interface ResolvedAudioOptions<Tracks extends readonly AudioTrack.AudioTrack<E, R>[], E, R> {
-    readonly sampleRate: SampleRate;
+  interface ResolvedAudioOptions<Tracks extends readonly AnyAudioTrack[]> {
+    readonly samplerate: Samplerate;
     readonly channels: ChannelCount;
     readonly tracks: Tracks;
   }
 
-  const resolveVideoOptions = <Tracks extends readonly VideoTrack.VideoTrack<E, R>[], E, R>(
-    options: Effectable<Options<Tracks, readonly AudioTrack.AudioTrack<E, R>[], E, R>, E, R>,
-  ): Effect.Effect<ResolvedVideoOptions<Tracks, E, R>, E, R> => {
+  const resolveVideoOptions = <Tracks extends readonly AnyVideoTrack[], E, R>(
+    options: Effectable<Options<Tracks, readonly AnyAudioTrack[], E, R>, E, R>,
+  ): Effect.Effect<ResolvedVideoOptions<Tracks>, E, R> => {
     return Effect.gen(function* () {
       const { video } = yield* Effectable.resolve(options);
       const size = yield* Effectable.resolve(video.size);
@@ -92,26 +110,27 @@ export namespace Composite {
     });
   };
 
-  const resolveAudioOptions = <Tracks extends readonly AudioTrack.AudioTrack<E, R>[], E, R>(
-    options: Effectable<Options<readonly VideoTrack.VideoTrack<E, R>[], Tracks, E, R>, E, R>,
-  ): Effect.Effect<ResolvedAudioOptions<Tracks, E, R>, E, R> => {
+  const resolveAudioOptions = <Tracks extends readonly AnyAudioTrack[], E, R>(
+    options: Effectable<Options<readonly AnyVideoTrack[], Tracks, E, R>, E, R>,
+  ): Effect.Effect<ResolvedAudioOptions<Tracks>, E, R> => {
     return Effect.gen(function* () {
       const { audio } = yield* Effectable.resolve(options);
-      const sampleRate = yield* Effectable.resolve(audio.sampleRate);
+      const samplerate = yield* Effectable.resolve(audio.samplerate);
       const channels = yield* Effectable.resolve(audio.channels);
       const tracks = yield* Effectable.resolve(audio.tracks);
 
-      return { sampleRate, channels, tracks };
+      return { samplerate, channels, tracks };
     });
   };
 
   const renderVideo = <E, R>({
+    framerate,
     size,
     tracks,
-  }: ResolvedVideoOptions<readonly VideoTrack.VideoTrack<E, R>[], E, R>): Stream.Stream<
+  }: ResolvedVideoOptions<readonly VideoTrack.VideoTrack<E, R>[]>): Stream.Stream<
     Bitmap,
     E | Compositor.CompositorError,
-    R | Compositor.Service
+    Exclude<R, CompositeVideoContext> | Compositor
   > => {
     return pipe(
       tracks,
@@ -124,18 +143,19 @@ export namespace Composite {
           (a, c) => Stream.zipWith(a, c.render, (frames, frame) => Array.append(frames, frame)),
         );
       },
-      Stream.mapEffect((frames) => Compositor.Service.use(({ compositeVideo }) => compositeVideo(frames, { size }))),
+      Stream.provideService(CompositeVideoContext, { size, framerate }),
+      Stream.mapEffect((frames) => Compositor.use(({ compositeVideo }) => compositeVideo(frames, { size }))),
     );
   };
 
   const renderAudio = <E, R>({
-    sampleRate,
+    samplerate,
     channels,
     tracks,
-  }: ResolvedAudioOptions<readonly AudioTrack.AudioTrack<E, R>[], E, R>): Stream.Stream<
-    AudioChunk,
+  }: ResolvedAudioOptions<readonly AudioTrack.AudioTrack<E, R>[]>): Stream.Stream<
+    AudioBuffer,
     E | Compositor.CompositorError,
-    R | Compositor.Service
+    Exclude<R, CompositeAudioContext> | Compositor
   > => {
     return pipe(
       tracks,
@@ -148,27 +168,8 @@ export namespace Composite {
           (a, c) => Stream.zipWith(a, c.render, (buffers, buffer) => Array.append(buffers, buffer)),
         );
       },
-      Stream.mapEffect((buffers) =>
-        Compositor.Service.use(({ mixAudio }) =>
-          mixAudio(
-            Array.map(buffers, (buffer) => materializeAudioChunk(buffer, { sampleRate, channels })),
-            { sampleRate, channels },
-          ),
-        ),
-      ),
+      Stream.provideService(CompositeAudioContext, { samplerate, channels }),
+      Stream.mapEffect((buffers) => Compositor.use(({ mixAudio }) => mixAudio(buffers, { samplerate, channels }))),
     );
   };
-
-  const materializeAudioChunk = (chunk: AudioChunk, options: Compositor.AudioMixOptions): AudioBuffer => {
-    if (isSilentAudioChunk(chunk))
-      return {
-        sampleRate: options.sampleRate,
-        channels: globalThis.Array.from({ length: options.channels }, () => new Float32Array(chunk.samples)),
-      };
-
-    return chunk;
-  };
-
-  const isSilentAudioChunk = (chunk: AudioChunk): chunk is Extract<AudioChunk, { readonly _tag: "SilentAudioChunk" }> =>
-    "_tag" in chunk && chunk._tag === "SilentAudioChunk";
 }

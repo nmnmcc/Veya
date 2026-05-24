@@ -2,6 +2,8 @@ export * from "./media";
 export * from "./Effectable";
 export * from "./VideoClip";
 export * from "./AudioClip";
+export * from "./CompositeAudioContext";
+export * from "./CompositeVideoContext";
 export * from "./Gap";
 export * from "./Compositor";
 export * from "./Composite";

@@ -1,6 +1,8 @@
 import { Context, Data } from "effect";
 import type { Effect } from "effect";
-import type { AudioBuffer, Bitmap, ChannelCount, SampleRate, Size } from "./media";
+import type { AudioBuffer, Bitmap, ChannelCount, Samplerate, Size } from "./media";
+
+export class Compositor extends Context.Service<Compositor, Compositor.Compositor>()("@veya/core/Compositor") {}
 
 export namespace Compositor {
   export class CompositorError extends Data.TaggedError("CompositorError")<{}> {}
@@ -10,7 +12,7 @@ export namespace Compositor {
   }
 
   export interface AudioMixOptions {
-    readonly sampleRate: SampleRate;
+    readonly samplerate: Samplerate;
     readonly channels: ChannelCount;
   }
 
@@ -24,6 +26,4 @@ export namespace Compositor {
       options: AudioMixOptions,
     ) => Effect.Effect<AudioBuffer, CompositorError>;
   }
-
-  export class Service extends Context.Service<Service, Compositor>()("@veya/core/index/Compositor/Service") {}
 }

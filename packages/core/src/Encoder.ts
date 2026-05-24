@@ -2,6 +2,8 @@ import { Context, Data } from "effect";
 import type { Stream } from "effect";
 import type { Composite } from "./Composite";
 
+export class Encoder extends Context.Service<Encoder, Encoder.Encoder>()("@veya/core/Encoder") {}
+
 export namespace Encoder {
   export class EncoderError extends Data.TaggedError("EncoderError")<{}> {}
 
@@ -34,6 +36,4 @@ export namespace Encoder {
       options: Options,
     ) => EncodedFile<E | EncoderError, R>;
   }
-
-  export class Service extends Context.Service<Service, Encoder>()("@veya/core/index/Encoder/Service") {}
 }

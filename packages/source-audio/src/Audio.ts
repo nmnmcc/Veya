@@ -1,25 +1,20 @@
-import { Context, Data, Effect, Stream } from "effect";
+import { Effect, Stream } from "effect";
 import { Effectable } from "@veya/core";
-import type { AudioChunk, AudioClip, ChannelCount, SampleCount, SampleRate } from "@veya/core";
-import { AudioProbe } from "./AudioProbe";
+import type { AudioClip, ChannelCount, SampleCount, Samplerate } from "@veya/core";
+import { AudioSource } from "./AudioSource";
 
 export namespace Audio {
-  export type MediaSource<E = never, R = never> = AudioProbe.MediaSource<E, R>;
+  export type MediaSource<E = never, R = never> = AudioSource.MediaSource<E, R>;
 
-  export class AudioSourceError extends Data.TaggedError("AudioSourceError")<{
-    readonly reason?: unknown;
-  }> {}
+  export type Service = InstanceType<typeof AudioSource>;
 
-  export interface DecodeOptions {
-    readonly sampleRate?: SampleRate;
-    readonly channels?: ChannelCount;
-    readonly offset?: SampleCount;
-    readonly samples?: SampleCount;
-    readonly speed?: number;
-  }
+  export const AudioSourceError = AudioSource.AudioSourceError;
+  export type AudioSourceError = AudioSource.AudioSourceError;
+
+  export type DecodeOptions = AudioSource.DecodeOptions;
 
   export interface Options<E = never, R = never> {
-    readonly sampleRate?: Effectable<SampleRate, E, R>;
+    readonly samplerate?: Effectable<Samplerate, E, R>;
     readonly channels?: Effectable<ChannelCount, E, R>;
     readonly offset?: Effectable<SampleCount, E, R>;
     readonly duration?: Effectable<SampleCount, E, R>;
@@ -31,58 +26,47 @@ export namespace Audio {
     SourceR | R | Service
   > {
     readonly source: Effectable<MediaSource<SourceE, SourceR>, E, R>;
-    readonly sampleRate?: Effectable<SampleRate, E, R>;
+    readonly samplerate?: Effectable<Samplerate, E, R>;
     readonly channels?: Effectable<ChannelCount, E, R>;
     readonly offset?: Effectable<SampleCount, E, R>;
     readonly duration?: Effectable<SampleCount, E, R>;
     readonly speed?: Effectable<number, E, R>;
   }
 
-  export interface AudioSource {
-    readonly decode: <SourceE = never, SourceR = never>(
-      source: MediaSource<SourceE, SourceR>,
-      options: DecodeOptions,
-    ) => Stream.Stream<AudioChunk, SourceE | AudioSourceError, SourceR>;
-  }
-
-  export class Service extends Context.Service<Service, AudioSource>()("@veya/source-audio/Audio/Service") {}
-
-  export const make = <SourceE = never, SourceR = never, E = never, R = never>(
+  export const make = Effect.fn("Audio.make")(function* <SourceE = never, SourceR = never, E = never, R = never>(
     source: Effectable<MediaSource<SourceE, SourceR>, E, R>,
     options: Effectable<Options<E, R>, E, R> = {},
-  ): Audio<SourceE, SourceR, E, R> => {
-    const immediateOptions = Effect.isEffect(options) ? undefined : options;
+  ): Effect.fn.Return<Audio<SourceE, SourceR, E, R>, E, R> {
+    const resolvedSource = yield* Effectable.resolve(source);
+    const resolvedOptions = yield* Effectable.resolve(options);
 
     return {
-      source,
-      sampleRate: immediateOptions?.sampleRate,
-      channels: immediateOptions?.channels,
-      offset: immediateOptions?.offset,
-      duration: immediateOptions?.duration,
-      speed: immediateOptions?.speed,
+      source: resolvedSource,
+      samplerate: resolvedOptions.samplerate,
+      channels: resolvedOptions.channels,
+      offset: resolvedOptions.offset,
+      duration: resolvedOptions.duration,
+      speed: resolvedOptions.speed,
       render: Stream.unwrap(
-        Service.use(({ decode }) =>
-          Effect.gen(function* () {
-            const resolvedSource = yield* Effectable.resolve(source);
-            const resolvedOptions = yield* Effectable.resolve(options);
-            const decodeOptions = yield* resolveDecodeOptions(resolvedOptions);
+        Effect.gen(function* () {
+          const { decode } = yield* AudioSource;
+          const decodeOptions = yield* resolveDecodeOptions(resolvedOptions);
 
-            return decode(resolvedSource, decodeOptions);
-          }),
-        ),
+          return decode(resolvedSource, decodeOptions);
+        }),
       ),
     };
-  };
+  });
 
   const resolveDecodeOptions = <E, R>(options: Options<E, R>): Effect.Effect<DecodeOptions, E, R> => {
     return Effect.gen(function* () {
-      const sampleRate = options.sampleRate === undefined ? undefined : yield* Effectable.resolve(options.sampleRate);
+      const samplerate = options.samplerate === undefined ? undefined : yield* Effectable.resolve(options.samplerate);
       const channels = options.channels === undefined ? undefined : yield* Effectable.resolve(options.channels);
       const offset = options.offset === undefined ? undefined : yield* Effectable.resolve(options.offset);
       const samples = options.duration === undefined ? undefined : yield* Effectable.resolve(options.duration);
       const speed = options.speed === undefined ? undefined : yield* Effectable.resolve(options.speed);
 
-      return { sampleRate, channels, offset, samples, speed };
+      return { samplerate, channels, offset, samples, speed };
     });
   };
 }

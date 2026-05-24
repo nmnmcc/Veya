@@ -1,0 +1,15 @@
+{
+  "name": "@veya/source-svg-resvg",
+  "type": "module",
+  "dependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "@veya/core": "workspace:*",
+    "@veya/source-svg": "workspace:*",
+    "effect": "^4.0.0-beta.70"
+  },
+  "exports": {
+    ".": {
+      "import": "./src/index.ts"
+    }
+  }
+}

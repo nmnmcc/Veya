@@ -1,27 +1,22 @@
-import { Context, Data, Effect, Stream } from "effect";
+import { Effect, Stream } from "effect";
 import { Effectable } from "@veya/core";
-import type { Bitmap, FrameCount, Size } from "@veya/core";
+import type { Size } from "@veya/core";
 import type { VideoClip } from "@veya/core";
 import { VideoFrame } from "./VideoFrame";
 import { VideoProbe } from "./VideoProbe";
+import { VideoSource } from "./VideoSource";
 
 export namespace Video {
-  export type MediaSource<E = never, R = never> = VideoProbe.MediaSource<E, R>;
+  export type MediaSource<E = never, R = never> = VideoSource.MediaSource<E, R>;
 
-  export type Playback = "clip" | "loop" | "freeze";
+  export type Service = InstanceType<typeof VideoSource>;
 
-  export class VideoSourceError extends Data.TaggedError("VideoSourceError")<{
-    readonly reason?: unknown;
-  }> {}
+  export type Playback = VideoSource.Playback;
 
-  export interface DecodeOptions {
-    readonly size?: Size;
-    readonly framerate?: number;
-    readonly offset?: VideoFrame.Index;
-    readonly frames?: FrameCount;
-    readonly playback?: Playback;
-    readonly speed?: number;
-  }
+  export const VideoSourceError = VideoSource.VideoSourceError;
+  export type VideoSourceError = VideoSource.VideoSourceError;
+
+  export type DecodeOptions = VideoSource.DecodeOptions;
 
   export interface Options<E = never, R = never> {
     readonly size?: Effectable<Size, E, R>;
@@ -34,7 +29,7 @@ export namespace Video {
 
   export interface Video<SourceE = never, SourceR = never, E = never, R = never> extends VideoClip.VideoClip<
     SourceE | E | VideoSourceError | VideoProbe.VideoProbeError | VideoFrame.VideoFrameError,
-    SourceR | R | Service | VideoProbe.Service
+    SourceR | R | Service | VideoProbe
   > {
     readonly source: Effectable<MediaSource<SourceE, SourceR>, E, R>;
     readonly size?: Effectable<Size, E, R>;
@@ -45,42 +40,31 @@ export namespace Video {
     readonly speed?: Effectable<number, E, R>;
   }
 
-  export interface VideoSource {
-    readonly decode: <SourceE = never, SourceR = never>(
-      source: MediaSource<SourceE, SourceR>,
-      options: DecodeOptions,
-    ) => Stream.Stream<Bitmap, SourceE | VideoSourceError, SourceR>;
-  }
-
-  export class Service extends Context.Service<Service, VideoSource>()("@veya/source-video/Video/Service") {}
-
-  export const make = <SourceE = never, SourceR = never, E = never, R = never>(
+  export const make = Effect.fn("Video.make")(function* <SourceE = never, SourceR = never, E = never, R = never>(
     source: Effectable<MediaSource<SourceE, SourceR>, E, R>,
     options: Effectable<Options<E, R>, E, R> = {},
-  ): Video<SourceE, SourceR, E, R> => {
-    const immediateOptions = Effect.isEffect(options) ? undefined : options;
+  ): Effect.fn.Return<Video<SourceE, SourceR, E, R>, E, R> {
+    const resolvedSource = yield* Effectable.resolve(source);
+    const resolvedOptions = yield* Effectable.resolve(options);
 
     return {
-      source,
-      size: immediateOptions?.size,
-      framerate: immediateOptions?.framerate,
-      offset: immediateOptions?.offset,
-      duration: immediateOptions?.duration,
-      playback: immediateOptions?.playback,
-      speed: immediateOptions?.speed,
+      source: resolvedSource,
+      size: resolvedOptions.size,
+      framerate: resolvedOptions.framerate,
+      offset: resolvedOptions.offset,
+      duration: resolvedOptions.duration,
+      playback: resolvedOptions.playback,
+      speed: resolvedOptions.speed,
       render: Stream.unwrap(
-        Service.use(({ decode }) =>
-          Effect.gen(function* () {
-            const resolvedSource = yield* Effectable.resolve(source);
-            const resolvedOptions = yield* Effectable.resolve(options);
-            const decodeOptions = yield* resolveDecodeOptions(resolvedSource, resolvedOptions);
+        Effect.gen(function* () {
+          const { decode } = yield* VideoSource;
+          const decodeOptions = yield* resolveDecodeOptions(resolvedSource, resolvedOptions);
 
-            return decode(resolvedSource, decodeOptions);
-          }),
-        ),
+          return decode(resolvedSource, decodeOptions);
+        }),
       ),
     };
-  };
+  });
 
   const resolveDecodeOptions = <SourceE, SourceR, E, R>(
     source: MediaSource<SourceE, SourceR>,
@@ -88,7 +72,7 @@ export namespace Video {
   ): Effect.Effect<
     DecodeOptions,
     SourceE | E | VideoProbe.VideoProbeError | VideoFrame.VideoFrameError,
-    SourceR | R | VideoProbe.Service
+    SourceR | R | VideoProbe
   > => {
     return Effect.gen(function* () {
       const size = options.size === undefined ? undefined : yield* Effectable.resolve(options.size);

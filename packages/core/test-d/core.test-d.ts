@@ -3,14 +3,20 @@ import { expectAssignable, expectError, expectNotAssignable, expectType } from "
 import {
   AudioClip,
   AudioTrack,
+  ChannelCountSchema,
   Composite,
   CompositeAudioContext,
   CompositeVideoContext,
   Compositor,
   Effectable,
   Encoder,
+  FrameCountSchema,
   Gap,
+  PositionSchema,
+  SampleCountSchema,
+  SamplerateSchema,
   Silence,
+  SizeSchema,
   VideoClip,
   VideoTrack,
 } from "@veya/core";
@@ -64,6 +70,25 @@ interface DurationContext {
 interface FileContext {
   readonly fileContext: "file";
 }
+
+expectAssignable<typeof FrameCountSchema>(FrameCountSchema);
+expectAssignable<typeof SizeSchema>(SizeSchema);
+expectAssignable<typeof PositionSchema>(PositionSchema);
+expectAssignable<typeof SampleCountSchema>(SampleCountSchema);
+expectAssignable<typeof SamplerateSchema>(SamplerateSchema);
+expectAssignable<typeof ChannelCountSchema>(ChannelCountSchema);
+expectAssignable<typeof Effectable.resolve>(Effectable.resolve);
+expectAssignable<typeof VideoClip.make>(VideoClip.make);
+expectAssignable<typeof AudioClip.make>(AudioClip.make);
+expectAssignable<typeof CompositeVideoContext>(CompositeVideoContext);
+expectAssignable<typeof CompositeAudioContext>(CompositeAudioContext);
+expectAssignable<typeof Gap.make>(Gap.make);
+expectAssignable<typeof Silence.make>(Silence.make);
+expectAssignable<typeof VideoTrack.make>(VideoTrack.make);
+expectAssignable<typeof AudioTrack.make>(AudioTrack.make);
+expectAssignable<typeof Composite.make>(Composite.make);
+expectAssignable<typeof Compositor>(Compositor);
+expectAssignable<typeof Encoder>(Encoder);
 
 expectAssignable<FrameCount>(1);
 expectAssignable<SampleCount>(1024);

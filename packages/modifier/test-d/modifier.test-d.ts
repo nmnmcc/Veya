@@ -66,6 +66,19 @@ declare const audioClip: AudioClip.AudioClip<"audio-clip-error", AudioClipContex
 declare const videoOptions: Effect.Effect<VideoModifier.ContextOptions, "video-options-error", VideoOptionsContext>;
 declare const audioOptions: Effect.Effect<AudioModifier.ContextOptions, "audio-options-error", AudioOptionsContext>;
 
+expectAssignable<typeof VideoModifier.make>(VideoModifier.make);
+expectAssignable<typeof VideoModifier.makeStateful>(VideoModifier.makeStateful);
+expectAssignable<typeof VideoModifier.makeStatefulEffect>(VideoModifier.makeStatefulEffect);
+expectAssignable<typeof VideoModifier.apply>(VideoModifier.apply);
+expectAssignable<typeof VideoModifier.applyStateful>(VideoModifier.applyStateful);
+expectAssignable<typeof VideoModifier.chain>(VideoModifier.chain);
+expectAssignable<typeof AudioModifier.make>(AudioModifier.make);
+expectAssignable<typeof AudioModifier.makeStateful>(AudioModifier.makeStateful);
+expectAssignable<typeof AudioModifier.makeStatefulEffect>(AudioModifier.makeStatefulEffect);
+expectAssignable<typeof AudioModifier.apply>(AudioModifier.apply);
+expectAssignable<typeof AudioModifier.applyStateful>(AudioModifier.applyStateful);
+expectAssignable<typeof AudioModifier.chain>(AudioModifier.chain);
+
 expectAssignable<VideoModifier.FrameContext>({ index: 0, size: [320, 180], framerate: 24 });
 expectError<VideoModifier.FrameContext>({ size: [320, 180] });
 expectAssignable<VideoModifier.ContextOptions>({ size: [320, 180], framerate: 24 });

@@ -785,6 +785,7 @@ __metadata:
   resolution: "@veya/core@workspace:packages/core"
   dependencies:
     effect: "npm:^4.0.0-beta.70"
+    tsd: "npm:^0.33.0"
   languageName: unknown
   linkType: soft
 
@@ -794,6 +795,7 @@ __metadata:
   dependencies:
     "@veya/core": "workspace:*"
     effect: "npm:^4.0.0-beta.70"
+    tsd: "npm:^0.33.0"
   languageName: unknown
   linkType: soft
 
@@ -803,6 +805,7 @@ __metadata:
   dependencies:
     "@veya/core": "workspace:*"
     effect: "npm:^4.0.0-beta.70"
+    tsd: "npm:^0.33.0"
   languageName: unknown
   linkType: soft
 
@@ -812,6 +815,7 @@ __metadata:
   dependencies:
     "@veya/core": "workspace:*"
     effect: "npm:^4.0.0-beta.70"
+    tsd: "npm:^0.33.0"
   languageName: unknown
   linkType: soft
 
@@ -821,6 +825,7 @@ __metadata:
   dependencies:
     "@veya/core": "workspace:*"
     effect: "npm:^4.0.0-beta.70"
+    tsd: "npm:^0.33.0"
   languageName: unknown
   linkType: soft
 
@@ -832,6 +837,7 @@ __metadata:
     "@veya/core": "workspace:*"
     "@veya/source-svg": "workspace:*"
     effect: "npm:^4.0.0-beta.70"
+    tsd: "npm:^0.33.0"
   languageName: unknown
   linkType: soft
 
@@ -841,6 +847,7 @@ __metadata:
   dependencies:
     "@veya/core": "workspace:*"
     effect: "npm:^4.0.0-beta.70"
+    tsd: "npm:^0.33.0"
   languageName: unknown
   linkType: soft
 
@@ -850,6 +857,7 @@ __metadata:
   dependencies:
     "@veya/core": "workspace:*"
     effect: "npm:^4.0.0-beta.70"
+    tsd: "npm:^0.33.0"
   languageName: unknown
   linkType: soft
 

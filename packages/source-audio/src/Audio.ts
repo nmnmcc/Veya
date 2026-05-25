@@ -37,8 +37,7 @@ export namespace Audio {
     source: Effectable<MediaSource<SourceE, SourceR>, E, R>,
     options: Effectable<Options<E, R>, E, R> = {},
   ): Effect.fn.Return<Audio<SourceE, SourceR, E, R>, E, R> {
-    const resolvedSource = yield* Effectable.resolve(source);
-    const resolvedOptions = yield* Effectable.resolve(options);
+    const [resolvedSource, resolvedOptions] = yield* Effectable.all([source, options] as const);
 
     return {
       source: resolvedSource,
@@ -59,14 +58,12 @@ export namespace Audio {
   });
 
   const resolveDecodeOptions = <E, R>(options: Options<E, R>): Effect.Effect<DecodeOptions, E, R> => {
-    return Effect.gen(function* () {
-      const samplerate = options.samplerate === undefined ? undefined : yield* Effectable.resolve(options.samplerate);
-      const channels = options.channels === undefined ? undefined : yield* Effectable.resolve(options.channels);
-      const offset = options.offset === undefined ? undefined : yield* Effectable.resolve(options.offset);
-      const samples = options.duration === undefined ? undefined : yield* Effectable.resolve(options.duration);
-      const speed = options.speed === undefined ? undefined : yield* Effectable.resolve(options.speed);
-
-      return { samplerate, channels, offset, samples, speed };
+    return Effectable.all({
+      samplerate: options.samplerate,
+      channels: options.channels,
+      offset: options.offset,
+      samples: options.duration,
+      speed: options.speed,
     });
   };
 }

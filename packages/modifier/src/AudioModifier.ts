@@ -131,7 +131,7 @@ export namespace AudioModifier {
   };
 
   const resolveContext = <E, R>(options: Options<E, R>): Effect.Effect<ContextOptions, E, R> => {
-    return options.context === undefined ? Effect.succeed({}) : Effectable.resolve(options.context);
+    return Effect.map(Effectable.all({ context: options.context ?? {} }), ({ context }) => context);
   };
 
   const getSampleCountAll = (chunks: readonly AudioChunk[]): number => {

@@ -109,6 +109,6 @@ export namespace VideoModifier {
   export const passthrough: VideoModifier = make((frame) => Effect.succeed(frame));
 
   const resolveContext = <E, R>(options: Options<E, R>): Effect.Effect<ContextOptions, E, R> => {
-    return options.context === undefined ? Effect.succeed({}) : Effectable.resolve(options.context);
+    return Effect.map(Effectable.all({ context: options.context ?? {} }), ({ context }) => context);
   };
 }

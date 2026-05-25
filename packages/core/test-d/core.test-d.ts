@@ -1,4 +1,4 @@
-import { Effect, Stream } from "effect";
+import { Effect, Result, Stream } from "effect";
 import { expectAssignable, expectError, expectNotAssignable, expectType } from "tsd";
 import {
   AudioClip,
@@ -107,8 +107,22 @@ expectNotAssignable<RGBA>([255, 128, 0]);
 expectError<AudioBuffer>({ samplerate: 48000 });
 
 declare const effectableInput: Effect.Effect<"ready", "input-error", InputContext>;
+declare const effectableCount: Effect.Effect<42, "duration-error", DurationContext>;
 expectType<Effect.Effect<"ready", never, never>>(Effectable.resolve("ready" as const));
 expectType<Effect.Effect<"ready", "input-error", InputContext>>(Effectable.resolve(effectableInput));
+expectAssignable<typeof Effectable.all>(Effectable.all);
+expectType<Effect.Effect<["ready", 42], "duration-error", DurationContext>>(
+  Effectable.all(["ready" as const, effectableCount] as const),
+);
+expectType<Effect.Effect<{ status: "ready"; count: 42 }, "duration-error", DurationContext>>(
+  Effectable.all({ status: "ready" as const, count: effectableCount }),
+);
+expectType<Effect.Effect<void, "input-error", InputContext>>(
+  Effectable.all([effectableInput] as const, { discard: true }),
+);
+expectType<Effect.Effect<[Result.Result<"ready", "input-error">], never, InputContext>>(
+  Effectable.all([effectableInput] as const, { mode: "result" }),
+);
 expectAssignable<Effectable<"ready", "input-error", InputContext>>(effectableInput);
 expectAssignable<Effectable<"ready">>("ready");
 
@@ -219,12 +233,15 @@ expectAssignable<Effect.Effect<AudioBuffer, Compositor.CompositorError>>(
 expectAssignable<Encoder.Options>({ container: "json" });
 expectAssignable<Encoder.VideoOptions>({ codec: "mock-rgba", bitrate: 1_000_000 });
 expectAssignable<Encoder.AudioOptions>({ codec: "mock-f32", bitrate: 128_000 });
+expectAssignable<Encoder.EncoderError>(new Encoder.EncoderError({ reason: "encode failed" }));
 expectError<Encoder.Options>({ filename: "missing-container.json" });
 
 declare const encoderService: Encoder.Encoder;
-declare const encoderComposite: Composite.Composite<"video-error", VideoRuntime>;
+declare const encoderComposite: Composite.Composite<"video-error", VideoRuntime, "audio-error", AudioRuntime>;
 const encoded = encoderService.encode(encoderComposite, { container: "json", filename: "out.json" });
-expectAssignable<Encoder.EncodedFile<"video-error" | Encoder.EncoderError, VideoRuntime>>(encoded);
+expectAssignable<
+  Encoder.EncodedFile<"video-error" | "audio-error" | Encoder.EncoderError, VideoRuntime | AudioRuntime>
+>(encoded);
 expectAssignable<Stream.Stream<Uint8Array, "file-error", FileContext>>(
   {} as Encoder.EncodedFile<"file-error", FileContext>["data"],
 );

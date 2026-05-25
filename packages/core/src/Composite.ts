@@ -102,9 +102,12 @@ export namespace Composite {
   ): Effect.Effect<ResolvedVideoOptions<Tracks>, E, R> => {
     return Effect.gen(function* () {
       const { video } = yield* Effectable.resolve(options);
-      const size = yield* Effectable.resolve(video.size);
-      const framerate = yield* Effectable.resolve(video.framerate);
-      const tracks = yield* Effectable.resolve(video.tracks);
+
+      const { size, framerate } = yield* Effectable.all({
+        size: video.size,
+        framerate: video.framerate,
+      });
+      const tracks = yield* Effectable.resolve<Tracks, E, R>(video.tracks);
 
       return { size, framerate, tracks };
     });
@@ -115,9 +118,12 @@ export namespace Composite {
   ): Effect.Effect<ResolvedAudioOptions<Tracks>, E, R> => {
     return Effect.gen(function* () {
       const { audio } = yield* Effectable.resolve(options);
-      const samplerate = yield* Effectable.resolve(audio.samplerate);
-      const channels = yield* Effectable.resolve(audio.channels);
-      const tracks = yield* Effectable.resolve(audio.tracks);
+
+      const { samplerate, channels } = yield* Effectable.all({
+        samplerate: audio.samplerate,
+        channels: audio.channels,
+      });
+      const tracks = yield* Effectable.resolve<Tracks, E, R>(audio.tracks);
 
       return { samplerate, channels, tracks };
     });

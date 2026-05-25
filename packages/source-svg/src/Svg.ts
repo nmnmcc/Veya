@@ -33,8 +33,7 @@ export namespace Svg {
     source: Effectable<MediaSource<SourceE, SourceR>, E, R>,
     options: Effectable<Options<E, R>, E, R> = {},
   ): Effect.fn.Return<Svg<SourceE, SourceR, E, R>, E, R> {
-    const resolvedSource = yield* Effectable.resolve(source);
-    const resolvedOptions = yield* Effectable.resolve(options);
+    const [resolvedSource, resolvedOptions] = yield* Effectable.all([source, options] as const);
 
     return {
       source: resolvedSource,
@@ -53,11 +52,9 @@ export namespace Svg {
   });
 
   const resolveDecodeOptions = <E, R>(options: Options<E, R>): Effect.Effect<DecodeOptions, E, R> => {
-    return Effect.gen(function* () {
-      const fitTo = options.fitTo === undefined ? undefined : yield* Effectable.resolve(options.fitTo);
-      const background = options.background === undefined ? undefined : yield* Effectable.resolve(options.background);
-
-      return { fitTo, background };
+    return Effectable.all({
+      fitTo: options.fitTo,
+      background: options.background,
     });
   };
 }

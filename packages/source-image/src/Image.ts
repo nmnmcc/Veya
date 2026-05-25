@@ -29,8 +29,7 @@ export namespace Image {
     source: Effectable<MediaSource<SourceE, SourceR>, E, R>,
     options: Effectable<Options<E, R>, E, R> = {},
   ): Effect.fn.Return<Image<SourceE, SourceR, E, R>, E, R> {
-    const resolvedSource = yield* Effectable.resolve(source);
-    const resolvedOptions = yield* Effectable.resolve(options);
+    const [resolvedSource, resolvedOptions] = yield* Effectable.all([source, options] as const);
 
     return {
       source: resolvedSource,
@@ -48,10 +47,8 @@ export namespace Image {
   });
 
   const resolveDecodeOptions = <E, R>(options: Options<E, R>): Effect.Effect<DecodeOptions, E, R> => {
-    return Effect.gen(function* () {
-      const size = options.size === undefined ? undefined : yield* Effectable.resolve(options.size);
-
-      return { size };
+    return Effectable.all({
+      size: options.size,
     });
   };
 }

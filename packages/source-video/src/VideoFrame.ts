@@ -45,7 +45,7 @@ export namespace VideoFrame {
     }
 
     return Effect.gen(function* () {
-      const source = yield* Effectable.resolve(sourceInput);
+      const { source } = yield* Effectable.all({ source: sourceInput });
       const { probe } = yield* VideoProbe;
       const metadata = yield* probe(source);
 
@@ -58,7 +58,7 @@ export namespace VideoFrame {
     options: ResolveOptions<SourceE, SourceR, E, R>,
   ): Effect.Effect<Index, SourceE | E | VideoProbe.VideoProbeError | VideoFrameError, SourceR | R | VideoProbe> => {
     return Effect.gen(function* () {
-      const resolvedInput = yield* Effectable.resolve(input);
+      const { input: resolvedInput } = yield* Effectable.all({ input });
 
       return yield* resolveFrameNumber(resolvedInput, {
         ...options,
@@ -77,7 +77,7 @@ export namespace VideoFrame {
     SourceR | R | VideoProbe
   > => {
     return Effect.gen(function* () {
-      const resolvedInput = yield* Effectable.resolve(input);
+      const { input: resolvedInput } = yield* Effectable.all({ input });
 
       return yield* resolveFrameNumber(resolvedInput, {
         ...options,
@@ -97,9 +97,10 @@ export namespace VideoFrame {
     if (typeof input === "number") return validateFrameNumber(input, options.minimum);
 
     return Effect.gen(function* () {
-      const framerate = yield* resolveFramerate([input], options);
-      const rounding =
-        options.rounding === undefined ? options.defaultRounding : yield* Effectable.resolve(options.rounding);
+      const { framerate, rounding } = yield* Effectable.all({
+        framerate: resolveFramerate([input], options),
+        rounding: options.rounding ?? options.defaultRounding,
+      });
 
       if (framerate === undefined) {
         return yield* Effect.fail(new VideoFrameError({ reason: "framerate is required to resolve a time value" }));

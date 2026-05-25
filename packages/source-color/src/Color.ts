@@ -18,9 +18,11 @@ export namespace Color {
     duration: Effectable<FrameCount, E, R>,
     options: Effectable<Options<E, R>, E, R> = {},
   ): Effect.fn.Return<Color<E, R>, E, R> {
-    const resolvedColor = yield* Effectable.resolve(color);
-    const resolvedDuration = yield* Effectable.resolve(duration);
-    const resolvedOptions = yield* Effectable.resolve(options);
+    const [resolvedColor, resolvedDuration, resolvedOptions] = yield* Effectable.all([
+      color,
+      duration,
+      options,
+    ] as const);
 
     return {
       color: resolvedColor,
@@ -41,9 +43,9 @@ export namespace Color {
   });
 
   const resolveSize = <E, R>(options: Options<E, R>): Effect.Effect<Size, E, R | CompositeVideoContext> => {
-    if (options.size !== undefined) return Effectable.resolve(options.size);
+    const size = options.size ?? CompositeVideoContext.use(({ size }) => Effect.succeed(size));
 
-    return CompositeVideoContext.use(({ size }) => Effect.succeed(size));
+    return Effect.map(Effectable.all({ size }), ({ size }) => size);
   };
 
   const makeBitmap = ([width, height]: Size, color: RGBA): Bitmap => {

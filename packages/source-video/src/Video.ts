@@ -44,8 +44,7 @@ export namespace Video {
     source: Effectable<MediaSource<SourceE, SourceR>, E, R>,
     options: Effectable<Options<E, R>, E, R> = {},
   ): Effect.fn.Return<Video<SourceE, SourceR, E, R>, E, R> {
-    const resolvedSource = yield* Effectable.resolve(source);
-    const resolvedOptions = yield* Effectable.resolve(options);
+    const [resolvedSource, resolvedOptions] = yield* Effectable.all([source, options] as const);
 
     return {
       source: resolvedSource,
@@ -75,21 +74,29 @@ export namespace Video {
     SourceR | R | VideoProbe
   > => {
     return Effect.gen(function* () {
-      const size = options.size === undefined ? undefined : yield* Effectable.resolve(options.size);
-      const offsetInput = options.offset === undefined ? undefined : yield* Effectable.resolve(options.offset);
-      const durationInput = options.duration === undefined ? undefined : yield* Effectable.resolve(options.duration);
-      const explicitFramerate =
-        options.framerate === undefined ? undefined : yield* Effectable.resolve(options.framerate);
+      const {
+        size,
+        offset: offsetInput,
+        duration: durationInput,
+        framerate: explicitFramerate,
+        playback,
+        speed,
+      } = yield* Effectable.all({
+        size: options.size,
+        offset: options.offset,
+        duration: options.duration,
+        framerate: options.framerate,
+        playback: options.playback,
+        speed: options.speed,
+      });
       const framerate = yield* VideoFrame.resolveFramerate([offsetInput, durationInput], {
         source,
         framerate: explicitFramerate,
       });
-      const offset =
-        offsetInput === undefined ? undefined : yield* VideoFrame.resolveOffset(offsetInput, { framerate });
-      const frames =
-        durationInput === undefined ? undefined : yield* VideoFrame.resolveDuration(durationInput, { framerate });
-      const playback = options.playback === undefined ? undefined : yield* Effectable.resolve(options.playback);
-      const speed = options.speed === undefined ? undefined : yield* Effectable.resolve(options.speed);
+      const { offset, frames } = yield* Effectable.all({
+        offset: offsetInput === undefined ? undefined : VideoFrame.resolveOffset(offsetInput, { framerate }),
+        frames: durationInput === undefined ? undefined : VideoFrame.resolveDuration(durationInput, { framerate }),
+      });
 
       return {
         size,

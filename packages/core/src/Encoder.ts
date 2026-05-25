@@ -5,7 +5,9 @@ import type { Composite } from "./Composite";
 export class Encoder extends Context.Service<Encoder, Encoder.Encoder>()("@veya/core/Encoder") {}
 
 export namespace Encoder {
-  export class EncoderError extends Data.TaggedError("EncoderError")<{}> {}
+  export class EncoderError extends Data.TaggedError("EncoderError")<{
+    readonly reason?: unknown;
+  }> {}
 
   export interface VideoOptions {
     readonly codec?: string;
@@ -27,13 +29,16 @@ export namespace Encoder {
   export interface EncodedFile<E = never, R = never> {
     readonly filename?: string;
     readonly mimeType: string;
+    /**
+     * The encoded byte stream. Implementations may defer actual encoding until this stream is consumed.
+     */
     readonly data: Stream.Stream<Uint8Array, E, R>;
   }
 
   export interface Encoder {
-    readonly encode: <E = never, R = never>(
-      composite: Composite.Composite<E, R>,
+    readonly encode: <VideoE = never, VideoR = never, AudioE = VideoE, AudioR = VideoR>(
+      composite: Composite.Composite<VideoE, VideoR, AudioE, AudioR>,
       options: Options,
-    ) => EncodedFile<E | EncoderError, R>;
+    ) => EncodedFile<VideoE | AudioE | EncoderError, VideoR | AudioR>;
   }
 }

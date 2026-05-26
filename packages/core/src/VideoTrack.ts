@@ -5,11 +5,9 @@ import type { VideoClip } from "./VideoClip";
 export namespace VideoTrack {
   export interface VideoTrack<E = never, R = never> extends VideoClip.VideoClip<E, R> {}
 
-  export type Any = VideoTrack<any, any>;
-
-  export const make = <const Clips extends readonly VideoClip.Any[]>([head, ...tail]: Clips): VideoTrack<
-    Stream.Error<Clips[number]>,
-    Stream.Services<Clips[number]>
+  export const make = <E = never, R = never>([head, ...tail]: readonly VideoClip.VideoClip<E, R>[]): VideoTrack<
+    E,
+    R
   > => {
     if (!head) return Stream.empty;
 

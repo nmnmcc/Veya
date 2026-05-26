@@ -1,7 +1,6 @@
 import { Color } from "@veya/color";
-import { Composite, VideoTrack } from "@veya/core";
+import { VideoComposite, VideoTrack } from "@veya/core";
 
-export default Composite.make({
-  video: [VideoTrack.make([Color.make([1, 1, 1, 0], 60)])],
-  audio: [],
-});
+const color = Color.make([1, 1, 1, 0], 60);
+
+export default VideoComposite.make([VideoTrack.make([color, Color.make([1, 1, 1, 0], 60)])]);

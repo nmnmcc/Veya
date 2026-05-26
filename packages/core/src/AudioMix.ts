@@ -8,14 +8,9 @@ import type { AudioTrack } from "./AudioTrack";
 export namespace AudioMix {
   export interface AudioMix<E = never, R = never> extends AudioClip.AudioClip<E, R> {}
 
-  export type Any = AudioMix<any, any>;
-
-  export const make = <const Tracks extends readonly AudioTrack.Any[]>(
-    tracks: Tracks,
-  ): AudioMix<
-    Stream.Error<Tracks[number]> | AudioMixer.AudioCompositorError,
-    Stream.Services<Tracks[number]> | AudioContext | AudioMixer
-  > => {
+  export const make = <E = never, R = never>(
+    tracks: readonly AudioTrack.AudioTrack<E, R>[],
+  ): AudioMix<E | AudioMixer.AudioCompositorError, R | AudioContext | AudioMixer> => {
     return pipe(
       tracks,
       ([head, ...tail]) => {

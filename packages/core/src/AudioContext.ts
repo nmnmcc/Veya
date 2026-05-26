@@ -1,11 +1,11 @@
 import { Context } from "effect";
 
-export class AudioContext extends Context.Service<AudioContext, AudioContext.CompositeAudioContext>()(
-  "@veya/core/CompositeAudioContext",
+export class AudioContext extends Context.Service<AudioContext, AudioContext.AudioContext>()(
+  "@veya/core/AudioContext",
 ) {}
 
 export namespace AudioContext {
-  export interface CompositeAudioContext {
+  export interface AudioContext {
     readonly samplerate: number;
     readonly channels: number;
   }

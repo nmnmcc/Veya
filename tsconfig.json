@@ -8,7 +8,7 @@
     { "path": "./packages/svg-resvg" },
     { "path": "./packages/color" },
     { "path": "./packages/audio" },
-    { "path": "./packages/encoder-mediabunny" },
+    { "path": "./packages/mediabunny" },
     { "path": "./samples" }
   ]
 }

@@ -8,14 +8,9 @@ import type { VideoTrack } from "./VideoTrack";
 export namespace VideoComposite {
   export interface VideoComposite<E = never, R = never> extends VideoClip.VideoClip<E, R> {}
 
-  export type Any = VideoComposite<any, any>;
-
-  export const make = <const Tracks extends readonly VideoTrack.Any[]>(
-    tracks: Tracks,
-  ): VideoComposite<
-    Stream.Error<Tracks[number]> | VideoCompositor.VideoCompositorError,
-    Stream.Services<Tracks[number]> | VideoContext | VideoCompositor
-  > => {
+  export const make = <E = never, R = never>(
+    tracks: readonly VideoTrack.VideoTrack<E, R>[],
+  ): VideoComposite<E | VideoCompositor.VideoCompositorError, R | VideoContext | VideoCompositor> => {
     return pipe(
       tracks,
       ([head, ...tail]) => {

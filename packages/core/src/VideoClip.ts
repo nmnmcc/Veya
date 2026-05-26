@@ -6,6 +6,4 @@ export namespace VideoClip {
   export type Bitmap = readonly (readonly RGBA[])[];
 
   export interface VideoClip<E = never, R = never> extends Stream.Stream<Bitmap, E, R> {}
-
-  export type Any = VideoClip<any, any>;
 }

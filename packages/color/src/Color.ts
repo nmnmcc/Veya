@@ -1,6 +1,6 @@
 import { Effect, pipe, Stream } from "effect";
 
-import { VideoContext } from "@veya/core";
+import { VideoCompositeContext } from "@veya/core";
 import type { Size, VideoClip } from "@veya/core";
 
 export namespace Color {
@@ -8,16 +8,16 @@ export namespace Color {
     readonly size?: Effect.Effect<Size, E, R>;
   };
 
-  export interface Color<E = never, R = never> extends VideoClip.VideoClip<E, R | VideoContext> {}
+  export interface Color<E = never, R = never> extends VideoClip.VideoClip<E, R | VideoCompositeContext> {}
 
   export const make = <OE = never, OR = never>(
     color: VideoClip.RGBA,
     duration: number,
     options: Options<OE, OR> = {},
-  ): Color<OE, OR> => {
-    return Stream.unwrap(
+  ): Color<OE, OR> =>
+    Stream.unwrap(
       Effect.gen(function* () {
-        const size = yield* options.size ?? VideoContext.useSync(({ size }) => size);
+        const size = yield* options.size ?? VideoCompositeContext.useSync(({ size }) => size);
         const frame = makeBitmap(size, color);
 
         return pipe(
@@ -26,7 +26,6 @@ export namespace Color {
         );
       }),
     );
-  };
 
   const makeBitmap = ([width, height]: Size, color: VideoClip.RGBA): VideoClip.Bitmap => {
     return globalThis.Array.from({ length: height }, () => globalThis.Array.from({ length: width }, () => [...color]));

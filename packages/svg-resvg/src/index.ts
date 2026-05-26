@@ -1,1 +1,2 @@
-export * from "./ResvgSvg";
+export * from "./ResvgDecoder";
+export * from "./ResvgProber";

@@ -1,16 +1,18 @@
 import { Context, Data } from "effect";
 import type { Stream } from "effect";
 
-import type { Bitmap, Size } from "@veya/core";
+import type { Size, VideoClip } from "@veya/core";
 
-export class VideoSource extends Context.Service<VideoSource, VideoSource.Service>()("@veya/video/VideoSource") {}
+export class VideoDecoder extends Context.Service<VideoDecoder, VideoDecoder.VideoDecoder>()(
+  "@veya/video/VideoDecoder",
+) {}
 
-export namespace VideoSource {
+export namespace VideoDecoder {
   export type MediaSource<E = never, R = never> = Uint8Array | Stream.Stream<Uint8Array, E, R>;
 
   export type Playback = "clip" | "loop" | "freeze";
 
-  export class VideoSourceError extends Data.TaggedError("VideoSourceError")<{
+  export class VideoDecoderError extends Data.TaggedError("VideoDecoderError")<{
     readonly reason?: unknown;
   }> {}
 
@@ -23,10 +25,10 @@ export namespace VideoSource {
     readonly speed?: number;
   };
 
-  export interface Service {
+  export interface VideoDecoder {
     readonly decode: <SourceE = never, SourceR = never>(
       source: MediaSource<SourceE, SourceR>,
       options: Options,
-    ) => Stream.Stream<Bitmap, SourceE | VideoSourceError, SourceR>;
+    ) => Stream.Stream<VideoClip.Bitmap, SourceE | VideoDecoderError, SourceR>;
   }
 }

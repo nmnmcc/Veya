@@ -1,9 +1,12 @@
 import { Stream } from "effect";
 
-import type { AudioChunk } from "./media";
-
 export namespace AudioClip {
-  export interface AudioClip<E = never, R = never> extends Stream.Stream<AudioChunk, E, R> {}
+  export interface Buffer {
+    readonly samplerate: number;
+    readonly channels: readonly Float32Array[];
+  }
+
+  export interface AudioClip<E = never, R = never> extends Stream.Stream<Buffer, E, R> {}
 
   export type Any = AudioClip<any, any>;
 }

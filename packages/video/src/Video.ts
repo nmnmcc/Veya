@@ -3,9 +3,9 @@ import { Effect, pipe, Stream } from "effect";
 import type { Size } from "@veya/core";
 import type { VideoClip } from "@veya/core";
 
+import { VideoDecoder } from "./VideoDecoder";
 import { VideoMetadata } from "./VideoMetadata";
-import { VideoProbe } from "./VideoProbe";
-import { VideoSource } from "./VideoSource";
+import { VideoProber } from "./VideoProber";
 
 export namespace Video {
   export type Options<E = never, R = never> = {
@@ -13,23 +13,23 @@ export namespace Video {
     readonly framerate?: Effect.Effect<number, E, R>;
     readonly offset?: Effect.Effect<number, E, R>;
     readonly duration?: Effect.Effect<number, E, R>;
-    readonly playback?: Effect.Effect<VideoSource.Playback, E, R>;
+    readonly playback?: Effect.Effect<VideoDecoder.Playback, E, R>;
     readonly speed?: Effect.Effect<number, E, R>;
   };
 
   export interface Video<E = never, R = never> extends VideoClip.VideoClip<
-    E | VideoSource.VideoSourceError | VideoProbe.VideoProbeError,
-    R | VideoSource | VideoProbe
+    E | VideoDecoder.VideoDecoderError | VideoProber.VideoProberError,
+    R | VideoDecoder | VideoProber
   > {}
 
   export const make = <SE = never, SR = never, OE = never, OR = never>(
-    source: VideoSource.MediaSource<SE, SR>,
+    source: VideoDecoder.MediaSource<SE, SR>,
     options: Options<OE, OR> = {},
   ): Video<SE | OE, SR | Exclude<OR, VideoMetadata>> => {
     return Stream.unwrap(
       Effect.gen(function* () {
-        const { probe } = yield* VideoProbe;
-        const { decode } = yield* VideoSource;
+        const { probe } = yield* VideoProber;
+        const { decode } = yield* VideoDecoder;
 
         return decode(
           source,

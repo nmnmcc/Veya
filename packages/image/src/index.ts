@@ -1,3 +1,3 @@
-export * from "./ImageProbe";
-export * from "./ImageSource";
+export * from "./ImageProber";
+export * from "./ImageDecoder";
 export * from "./Image";

@@ -1,3 +1,3 @@
-export * from "./SvgProbe";
-export * from "./SvgSource";
+export * from "./SvgProber";
+export * from "./SvgDecoder";
 export * from "./Svg";

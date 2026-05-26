@@ -2,7 +2,7 @@ import { Effect, Stream } from "effect";
 
 import type { Size, VideoClip } from "@veya/core";
 
-import { ImageSource } from "./ImageSource";
+import { ImageDecoder } from "./ImageDecoder";
 
 export namespace Image {
   export type Options<E = never, R = never> = {
@@ -10,17 +10,17 @@ export namespace Image {
   };
 
   export interface Image<E = never, R = never> extends VideoClip.VideoClip<
-    E | ImageSource.ImageSourceError,
-    R | ImageSource
+    E | ImageDecoder.ImageDecoderError,
+    R | ImageDecoder
   > {}
 
   export const make = <SE = never, SR = never, OE = never, OR = never>(
-    source: ImageSource.MediaSource<SE, SR>,
+    source: ImageDecoder.MediaSource<SE, SR>,
     options: Options<OE, OR> = {},
   ): Image<SE | OE, SR | OR> => {
     return Stream.unwrap(
       Effect.gen(function* () {
-        const { decode } = yield* ImageSource;
+        const { decode } = yield* ImageDecoder;
         const bitmap = yield* decode(source, yield* Effect.all(options, { concurrency: "unbounded" }));
 
         return Stream.make(bitmap);

@@ -2,7 +2,6 @@
   "files": [],
   "references": [
     { "path": "./packages/core" },
-    { "path": "./packages/encoder" },
     { "path": "./packages/video" },
     { "path": "./packages/image" },
     { "path": "./packages/svg" },

@@ -1,15 +1,15 @@
 import { Effect, pipe, Stream } from "effect";
 
-import { CompositeVideoContext } from "./CompositeVideoContext";
-import type { Bitmap, FrameCount, Size } from "./media";
+import type { Size } from "./Size";
 import type { VideoClip } from "./VideoClip";
+import { VideoContext } from "./VideoContext";
 
 export namespace Gap {
-  export interface Gap<E = never, R = never> extends VideoClip.VideoClip<E, R | CompositeVideoContext> {}
+  export interface Gap<E = never, R = never> extends VideoClip.VideoClip<E, R | VideoContext> {}
 
-  export const make = <E = never, R = never>(duration: Effect.Effect<FrameCount, E, R>): Gap<E, R> =>
+  export const make = <E = never, R = never>(duration: Effect.Effect<number, E, R>): Gap<E, R> =>
     Stream.unwrap(
-      CompositeVideoContext.use(({ size }) =>
+      VideoContext.use(({ size }) =>
         Effect.map(duration, (duration) =>
           pipe(
             Stream.range(0, duration - 1),
@@ -19,7 +19,7 @@ export namespace Gap {
       ),
     );
 
-  const makeZeroBitmap = ([width, height]: Size): Bitmap => {
+  const makeZeroBitmap = ([width, height]: Size): VideoClip.Bitmap => {
     return globalThis.Array.from({ length: height }, () =>
       globalThis.Array.from({ length: width }, () => [0, 0, 0, 0]),
     );

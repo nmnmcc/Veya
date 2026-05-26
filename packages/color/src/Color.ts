@@ -1,41 +1,34 @@
 import { Effect, pipe, Stream } from "effect";
 
-import { CompositeVideoContext } from "@veya/core";
-import type { Bitmap, FrameCount, RGBA, Size, VideoClip } from "@veya/core";
+import { VideoContext } from "@veya/core";
+import type { Size, VideoClip } from "@veya/core";
 
 export namespace Color {
   export type Options<E = never, R = never> = {
     readonly size?: Effect.Effect<Size, E, R>;
   };
 
-  export interface Color<E = never, R = never> extends VideoClip.VideoClip<E, R | CompositeVideoContext> {}
+  export interface Color<E = never, R = never> extends VideoClip.VideoClip<E, R | VideoContext> {}
 
-  export const make = <CE = never, CR = never, DE = never, DR = never, OE = never, OR = never>(
-    color: Effect.Effect<RGBA, CE, CR>,
-    duration: Effect.Effect<FrameCount, DE, DR>,
+  export const make = <OE = never, OR = never>(
+    color: VideoClip.RGBA,
+    duration: number,
     options: Options<OE, OR> = {},
-  ): Color<CE | DE | OE, CR | DR | OR> => {
+  ): Color<OE, OR> => {
     return Stream.unwrap(
       Effect.gen(function* () {
-        const resolved = yield* Effect.all(
-          {
-            color,
-            duration,
-            size: options.size ?? CompositeVideoContext.use(({ size }) => Effect.succeed(size)),
-          },
-          { concurrency: "unbounded" },
-        );
-        const frame = makeBitmap(resolved.size, resolved.color);
+        const size = yield* options.size ?? VideoContext.useSync(({ size }) => size);
+        const frame = makeBitmap(size, color);
 
         return pipe(
-          Stream.range(0, resolved.duration - 1),
+          Stream.range(0, duration - 1),
           Stream.map(() => frame),
         );
       }),
     );
   };
 
-  const makeBitmap = ([width, height]: Size, color: RGBA): Bitmap => {
+  const makeBitmap = ([width, height]: Size, color: VideoClip.RGBA): VideoClip.Bitmap => {
     return globalThis.Array.from({ length: height }, () => globalThis.Array.from({ length: width }, () => [...color]));
   };
 }

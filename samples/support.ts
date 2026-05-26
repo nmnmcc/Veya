@@ -1,5 +1,6 @@
 import { Duration, Effect, Layer, Stream, pipe } from "effect";
-import { Compositor, CompositeAudioContext, CompositeVideoContext, Encoder } from "@veya/core";
+import { Encoder } from "@veya/encoder";
+import { Compositor, CompositeAudioContext, CompositeVideoContext } from "@veya/core";
 import type {
   AudioBuffer,
   Bitmap,

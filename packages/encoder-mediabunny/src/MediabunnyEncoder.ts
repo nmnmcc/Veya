@@ -1,5 +1,5 @@
 import { Effect, Layer, Schema, Stream } from "effect";
-import { Encoder } from "@veya/core";
+import { Encoder } from "@veya/encoder";
 import type { AudioBuffer, Bitmap, Composite, Size } from "@veya/core";
 import {
   AdtsOutputFormat,

@@ -1,5 +1,6 @@
 import { Data, Effect, Stream } from "effect";
-import { AudioTrack, Composite, Encoder, Silence, VideoTrack } from "@veya/core";
+import { Encoder } from "@veya/encoder";
+import { AudioTrack, Composite, Silence, VideoTrack } from "@veya/core";
 import type { RGBA } from "@veya/core";
 import { Color } from "@veya/color";
 import { Svg } from "@veya/svg";

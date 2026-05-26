@@ -1,8 +1,8 @@
 import { Context, Data } from "effect";
 import type { Stream } from "effect";
-import type { Composite } from "./Composite";
+import type { Composite } from "@veya/core";
 
-export class Encoder extends Context.Service<Encoder, Encoder.Encoder>()("@veya/core/Encoder") {}
+export class Encoder extends Context.Service<Encoder, Encoder.Encoder>()("@veya/encoder/Encoder") {}
 
 export namespace Encoder {
   export class EncoderError extends Data.TaggedError("EncoderError")<{

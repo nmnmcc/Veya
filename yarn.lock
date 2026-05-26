@@ -735,8 +735,18 @@ __metadata:
   resolution: "@veya/encoder-mediabunny@workspace:packages/encoder-mediabunny"
   dependencies:
     "@veya/core": "workspace:*"
+    "@veya/encoder": "workspace:*"
     effect: "npm:^4.0.0-beta.70"
     mediabunny: "npm:1.45.3"
+  languageName: unknown
+  linkType: soft
+
+"@veya/encoder@workspace:*, @veya/encoder@workspace:packages/encoder":
+  version: 0.0.0-use.local
+  resolution: "@veya/encoder@workspace:packages/encoder"
+  dependencies:
+    "@veya/core": "workspace:*"
+    effect: "npm:^4.0.0-beta.70"
   languageName: unknown
   linkType: soft
 

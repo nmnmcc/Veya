@@ -6,7 +6,6 @@ export * from "./CompositeVideoContext";
 export * from "./Gap";
 export * from "./Compositor";
 export * from "./Composite";
-export * from "./Encoder";
 export * from "./VideoTrack";
 export * from "./Silence";
 export * from "./AudioTrack";

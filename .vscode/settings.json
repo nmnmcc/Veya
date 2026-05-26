@@ -7,5 +7,5 @@
   "search.exclude": {
     ".ref/**": true
   },
-  "cSpell.words": ["Effectable", "Rasterizable", "samplerate"]
+  "cSpell.words": ["Effectable", "millis", "Rasterizable", "samplerate"]
 }

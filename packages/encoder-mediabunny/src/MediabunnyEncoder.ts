@@ -1,5 +1,5 @@
-import { Effect, Layer, Stream } from "effect";
-import { Effectable, Encoder } from "@veya/core";
+import { Effect, Layer, Schema, Stream } from "effect";
+import { Encoder } from "@veya/core";
 import type { AudioBuffer, Bitmap, Composite, Size } from "@veya/core";
 import {
   AdtsOutputFormat,
@@ -61,23 +61,24 @@ export namespace MediabunnyEncoder {
     readonly audio?: AudioOptions;
   }
 
-  export const make = (options: Options = {}): Encoder.Encoder => ({
-    encode: <VideoE = never, VideoR = never, AudioE = VideoE, AudioR = VideoR>(
-      composite: Composite.Composite<VideoE, VideoR, AudioE, AudioR>,
-      encodeOptions: Encoder.Options,
-    ): Encoder.EncodedFile<VideoE | AudioE | Encoder.EncoderError, VideoR | AudioR> => {
-      const formatFactory = getFormatFactory(encodeOptions.container, options);
-      const mimeType = getMimeType(formatFactory);
+  export const make = (options: Options = {}): Encoder.Encoder =>
+    Encoder.of({
+      encode: <VideoE = never, VideoR = never, AudioE = VideoE, AudioR = VideoR>(
+        composite: Composite.Composite<VideoE, VideoR, AudioE, AudioR>,
+        encodeOptions: Encoder.Options,
+      ): Encoder.EncodedFile<VideoE | AudioE | Encoder.EncoderError, VideoR | AudioR> => {
+        const formatFactory = getFormatFactory(encodeOptions.container, options);
+        const mimeType = getMimeType(formatFactory);
 
-      return {
-        filename: encodeOptions.filename,
-        mimeType,
-        data: Stream.unwrap(
-          Effect.map(encodeToBytes(composite, encodeOptions, options, formatFactory), (bytes) => Stream.make(bytes)),
-        ),
-      };
-    },
-  });
+        return {
+          filename: encodeOptions.filename,
+          mimeType,
+          data: Stream.unwrap(
+            Effect.map(encodeToBytes(composite, encodeOptions, options, formatFactory), (bytes) => Stream.make(bytes)),
+          ),
+        };
+      },
+    });
 
   export const layer = (options: Options = {}) => Layer.succeed(Encoder, make(options));
 
@@ -108,16 +109,16 @@ export namespace MediabunnyEncoder {
       yield* tryPromise(() => output.start());
 
       if (videoSource !== undefined) {
-        const { size, framerate } = yield* Effectable.all({
+        const { size, framerate } = yield* Effect.all({
           size: composite.video.size,
           framerate: composite.video.framerate,
         });
-        yield* writeVideo(composite.video.render, videoSource, size, framerate);
+        yield* writeVideo(composite.video, videoSource, size, framerate);
         videoSource.close();
       }
 
       if (audioSource !== undefined) {
-        yield* writeAudio(composite.audio.render, audioSource);
+        yield* writeAudio(composite.audio, audioSource);
         audioSource.close();
       }
 
@@ -238,9 +239,13 @@ export namespace MediabunnyEncoder {
     preferred: Codec | undefined,
     supported: readonly Codec[],
   ): Codec | undefined => {
-    if (requested !== undefined) return supported.includes(requested as Codec) ? (requested as Codec) : undefined;
-    if (configured !== undefined) return supported.includes(configured) ? configured : undefined;
-    if (preferred !== undefined && supported.includes(preferred)) return preferred;
+    const isSupported = Schema.is(Schema.Literals(supported));
+    const getSupported = (codec: string | undefined): Codec | undefined =>
+      codec !== undefined && isSupported(codec) ? codec : undefined;
+
+    if (requested !== undefined) return getSupported(requested);
+    if (configured !== undefined) return getSupported(configured);
+    if (preferred !== undefined) return getSupported(preferred);
 
     return supported[0];
   };

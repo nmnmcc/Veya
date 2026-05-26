@@ -1,32 +1,34 @@
-import { Array, Effect, Stream, pipe } from "effect";
-import { Effectable } from "./Effectable";
+import { Array, Stream, pipe } from "effect";
 import type { Bitmap } from "./media";
 import type { VideoClip } from "./VideoClip";
 
 export namespace VideoTrack {
   export interface VideoTrack<E = never, R = never> extends VideoClip.VideoClip<E, R> {}
 
-  export const make = <
-    Clips extends readonly VideoClip.VideoClip<ClipE, ClipR>[],
-    ClipE = never,
-    ClipR = never,
-    E = never,
-    R = never,
-  >(
-    clips: Effectable<Clips, E, R>,
-  ): VideoTrack<ClipE | E, ClipR | R> => {
-    return {
-      render: Stream.unwrap(Effect.map(Effectable.resolve(clips), renderClips)),
-    };
+  export type Any = VideoTrack<any, any>;
+
+  type ClipError<Clips extends readonly VideoClip.Any[]> =
+    Clips[number] extends Stream.Stream<any, infer E, any> ? E : never;
+
+  type ClipContext<Clips extends readonly VideoClip.Any[]> =
+    Clips[number] extends Stream.Stream<any, any, infer R> ? R : never;
+
+  export const make = <const Clips extends readonly VideoClip.Any[]>(
+    clips: Clips,
+  ): VideoTrack<ClipError<Clips>, ClipContext<Clips>> => {
+    return render(clips);
   };
 
-  const renderClips = <E, R>(clips: readonly VideoClip.VideoClip<E, R>[]): Stream.Stream<Bitmap, E, R> => {
-    if (Array.isReadonlyArrayEmpty(clips)) return Stream.empty;
+  const render = <Clips extends readonly VideoClip.Any[]>([head, ...tail]: Clips): Stream.Stream<
+    Bitmap,
+    ClipError<Clips>,
+    ClipContext<Clips>
+  > => {
+    if (!head) return Stream.empty;
 
     return pipe(
-      clips,
-      Array.map((c) => c.render),
-      Array.reduce(Stream.empty as Stream.Stream<Bitmap, E, R>, (a, c) => Stream.concat(a, c)),
+      Array.map(tail, (c) => c),
+      Array.reduce(head, (a, c) => Stream.concat(a, c)),
     );
   };
 }

@@ -1,27 +1,27 @@
 import { Data, Effect, Stream } from "effect";
 import { AudioTrack, Composite, Encoder, Silence, VideoTrack } from "@veya/core";
 import type { RGBA } from "@veya/core";
-import { Color } from "@veya/source-color";
-import { Svg } from "@veya/source-svg";
+import { Color } from "@veya/color";
+import { Svg } from "@veya/svg";
 import { decodeUtf8, runSample, sampleChannels, sampleFramerate, sampleSamplerate, sampleSize } from "./support";
 
 class SampleInputError extends Data.TaggedError("SampleInputError")<{
   readonly reason: string;
 }> {}
 
-const parseHexColor = Effect.fn("parseHexColor")(function* (hex: string): Effect.fn.Return<RGBA, SampleInputError> {
+const parseHexColor = (hex: string): Effect.Effect<RGBA, SampleInputError> => {
   const match = /^#?([\da-f]{2})([\da-f]{2})([\da-f]{2})$/i.exec(hex);
   if (match === null) {
-    return yield* Effect.fail(new SampleInputError({ reason: `expected #rrggbb, got ${hex}` }));
+    return Effect.fail(new SampleInputError({ reason: `expected #rrggbb, got ${hex}` }));
   }
 
-  return [
+  return Effect.succeed([
     Number.parseInt(match[1] ?? "00", 16),
     Number.parseInt(match[2] ?? "00", 16),
     Number.parseInt(match[3] ?? "00", 16),
     255,
-  ];
-});
+  ]);
+};
 
 const titleCard = `
 <svg width="160" height="90" viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg">
@@ -32,11 +32,11 @@ const titleCard = `
 `;
 
 export const program = Effect.gen(function* () {
-  const svg = yield* Svg.make(titleCard, {
-    fitTo: { mode: "width", value: 8 },
-    background: "#101820",
+  const svg = Svg.make(titleCard, {
+    fitTo: Effect.succeed({ mode: "width", value: 8 } as const),
+    background: Effect.succeed("#101820"),
   });
-  const accent = yield* Color.make(yield* parseHexColor("#50c878"), 3, { size: sampleSize });
+  const accent = Color.make(parseHexColor("#50c878"), Effect.succeed(3), { size: Effect.succeed(sampleSize) });
   const invalidColor = yield* Effect.match(parseHexColor("blue"), {
     onFailure: (error) => `rejected: ${error.reason}`,
     onSuccess: () => "accepted",
@@ -44,14 +44,14 @@ export const program = Effect.gen(function* () {
 
   const composite = Composite.make({
     video: {
-      framerate: sampleFramerate,
-      size: sampleSize,
+      framerate: Effect.succeed(sampleFramerate),
+      size: Effect.succeed(sampleSize),
       tracks: [VideoTrack.make([svg, accent])],
     },
     audio: {
-      samplerate: sampleSamplerate,
-      channels: sampleChannels,
-      tracks: [AudioTrack.make([Silence.make(sampleSamplerate / 8)])],
+      samplerate: Effect.succeed(sampleSamplerate),
+      channels: Effect.succeed(sampleChannels),
+      tracks: [AudioTrack.make([Silence.make(Effect.succeed(sampleSamplerate / 8))])],
     },
   });
 

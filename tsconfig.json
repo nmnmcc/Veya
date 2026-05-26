@@ -3,12 +3,12 @@
   "references": [
     { "path": "./packages/core" },
     { "path": "./packages/modifier" },
-    { "path": "./packages/source-video" },
-    { "path": "./packages/source-image" },
-    { "path": "./packages/source-svg" },
-    { "path": "./packages/source-svg-resvg" },
-    { "path": "./packages/source-color" },
-    { "path": "./packages/source-audio" },
+    { "path": "./packages/video" },
+    { "path": "./packages/image" },
+    { "path": "./packages/svg" },
+    { "path": "./packages/svg-resvg" },
+    { "path": "./packages/color" },
+    { "path": "./packages/audio" },
     { "path": "./packages/encoder-mediabunny" },
     { "path": "./samples" }
   ]

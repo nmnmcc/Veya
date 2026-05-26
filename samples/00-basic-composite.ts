@@ -1,28 +1,30 @@
 import { Effect, Stream } from "effect";
 import { AudioTrack, Composite, Silence, VideoTrack } from "@veya/core";
-import { Color } from "@veya/source-color";
+import { Color } from "@veya/color";
 import { runSample, sampleChannels, sampleFramerate, sampleSamplerate, sampleSize } from "./support";
 
 export const program = Effect.gen(function* () {
-  const slate = yield* Color.make([24, 32, 44, 255], 6, { size: sampleSize });
+  const slate = Color.make(Effect.succeed([24, 32, 44, 255] as const), Effect.succeed(6), {
+    size: Effect.succeed(sampleSize),
+  });
 
   const composite = Composite.make({
     video: {
-      framerate: sampleFramerate,
-      size: sampleSize,
+      framerate: Effect.succeed(sampleFramerate),
+      size: Effect.succeed(sampleSize),
       tracks: [VideoTrack.make([slate])],
     },
     audio: {
-      samplerate: sampleSamplerate,
-      channels: sampleChannels,
-      tracks: [AudioTrack.make([Silence.make(sampleSamplerate / 4)])],
+      samplerate: Effect.succeed(sampleSamplerate),
+      channels: Effect.succeed(sampleChannels),
+      tracks: [AudioTrack.make([Silence.make(Effect.succeed(sampleSamplerate / 4))])],
     },
   });
 
   return {
     sample: "basic-composite",
-    videoFrames: yield* Stream.runCount(composite.video.render),
-    audioChunks: yield* Stream.runCount(composite.audio.render),
+    videoFrames: yield* Stream.runCount(composite.video),
+    audioChunks: yield* Stream.runCount(composite.audio),
   };
 });
 

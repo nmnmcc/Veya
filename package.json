@@ -12,14 +12,12 @@
     "build:watch": "tsdown --watch",
     "format": "prettier --write .",
     "smoke": "tsx samples/00-basic-composite.ts && tsx samples/01-basic-sequence.ts && tsx samples/02-combinators.ts && tsx samples/03-anchors-and-timing.ts && tsx samples/04-guards-and-inputs.ts",
-    "typecheck": "yarn typecheck:types && tsc -b --noEmit",
-    "typecheck:types": "tsdown --no-exports --logLevel error && yarn workspaces foreach -Apt run typecheck:types"
+    "typecheck": "tsc -b --noEmit"
   },
   "devDependencies": {
     "@effect/language-service": "latest",
     "@types/node": "24",
     "prettier": "^3.8.3",
-    "tsd": "^0.33.0",
     "tsdown": "^0.22.0",
     "tsx": "^4.22.3",
     "typescript": "^6.0.3"

@@ -1,7 +1,7 @@
 import { Effect, Stream, pipe } from "effect";
-import { AudioClip } from "@veya/core";
+import type { AudioClip } from "@veya/core";
 import { AudioModifier, VideoModifier } from "@veya/modifier";
-import { Color } from "@veya/source-color";
+import { Color } from "@veya/color";
 import { makeTone, mapBitmap, runSample, sampleSize } from "./support";
 
 const warmFade = VideoModifier.chain(
@@ -30,17 +30,20 @@ const halfGain = AudioModifier.make((chunk) =>
 );
 
 export const program = Effect.gen(function* () {
-  const base = yield* Color.make([36, 78, 132, 255], 5, { size: sampleSize });
-  const video = pipe(base, VideoModifier.apply(warmFade, { context: { size: sampleSize, framerate: 12 } }));
-  const frames = yield* Stream.runCollect(video.render);
+  const base = Color.make(Effect.succeed([36, 78, 132, 255] as const), Effect.succeed(5), {
+    size: Effect.succeed(sampleSize),
+  });
+  const video = pipe(
+    base,
+    VideoModifier.apply(warmFade, { context: Effect.succeed({ size: sampleSize, framerate: 12 }) }),
+  );
+  const frames = yield* Stream.runCollect(video);
 
-  const tone: AudioClip.AudioClip = {
-    render: Stream.make(makeTone(1200, 48000, 2, 440)),
-  };
+  const tone: AudioClip.AudioClip = Stream.make(makeTone(1200, 48000, 2, 440));
   const quieterTone = AudioModifier.apply(halfGain, {
-    context: { samplerate: 48000, channels: 2 },
+    context: Effect.succeed({ samplerate: 48000, channels: 2 }),
   })(tone);
-  const chunks = yield* Stream.runCollect(quieterTone.render);
+  const chunks = yield* Stream.runCollect(quieterTone);
 
   return {
     sample: "combinators",

@@ -9,9 +9,9 @@ import type {
   Samplerate as SamplerateType,
   Size as SizeType,
 } from "@veya/core";
-import { AudioProbe, AudioSource } from "@veya/source-audio";
-import { ResvgSvg } from "@veya/source-svg-resvg";
-import { VideoProbe, VideoSource } from "@veya/source-video";
+import { AudioProbe, AudioSource } from "@veya/audio";
+import { ResvgSvg } from "@veya/svg-resvg";
+import { VideoProbe, VideoSource } from "@veya/video";
 
 export const sampleSize: SizeType = [8, 6];
 export const sampleFramerate = 24;
@@ -34,8 +34,8 @@ export const sampleRuntimeLayer = Layer.mergeAll(
       mimeType: options.container === "json" ? "application/json" : `video/${options.container}`,
       data: Stream.unwrap(
         Effect.gen(function* () {
-          const videoFrames = yield* Stream.runCount(composite.video.render);
-          const audioChunks = yield* Stream.runCount(composite.audio.render);
+          const videoFrames = yield* Stream.runCount(composite.video);
+          const audioChunks = yield* Stream.runCount(composite.audio);
           const bytes = new TextEncoder().encode(
             JSON.stringify(
               {

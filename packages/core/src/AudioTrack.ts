@@ -1,6 +1,7 @@
-import { Array, Stream, pipe } from "effect";
-import type { AudioChunk } from "./media";
+import { Array, pipe, Stream } from "effect";
+
 import type { AudioClip } from "./AudioClip";
+import type { AudioChunk } from "./media";
 
 export namespace AudioTrack {
   export interface AudioTrack<E = never, R = never> extends AudioClip.AudioClip<E, R> {}

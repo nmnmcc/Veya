@@ -1,9 +1,11 @@
 import { Buffer } from "node:buffer";
-import { Effect, Layer, Stream } from "effect";
-import type { Bitmap, Size as SizeType } from "@veya/core";
-import { SvgProbe, SvgSource } from "@veya/svg";
+
 import { Resvg } from "@resvg/resvg-js";
 import type { ResvgRenderOptions } from "@resvg/resvg-js";
+import { Effect, Layer, Stream } from "effect";
+
+import type { Bitmap, Size as SizeType } from "@veya/core";
+import { SvgProbe, SvgSource } from "@veya/svg";
 
 export namespace ResvgSvg {
   export interface Options {

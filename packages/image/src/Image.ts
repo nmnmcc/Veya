@@ -1,5 +1,7 @@
 import { Effect, Stream } from "effect";
+
 import type { Size, VideoClip } from "@veya/core";
+
 import { ImageSource } from "./ImageSource";
 
 export namespace Image {

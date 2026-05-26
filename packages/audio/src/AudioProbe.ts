@@ -1,5 +1,6 @@
 import { Context, Data, Duration } from "effect";
 import type { Effect, Stream } from "effect";
+
 import type { ChannelCount, SampleCount, Samplerate } from "@veya/core";
 
 export class AudioProbe extends Context.Service<

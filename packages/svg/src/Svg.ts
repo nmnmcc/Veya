@@ -1,5 +1,7 @@
 import { Effect, Stream } from "effect";
+
 import type { VideoClip } from "@veya/core";
+
 import { SvgSource } from "./SvgSource";
 
 export namespace Svg {

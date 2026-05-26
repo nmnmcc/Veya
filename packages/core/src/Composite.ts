@@ -1,10 +1,11 @@
-import { Array, Effect, Stream, pipe } from "effect";
-import type { AudioBuffer, Bitmap, ChannelCount, Samplerate, Size } from "./media";
+import { Array, Effect, pipe, Stream } from "effect";
+
 import type { AudioClip } from "./AudioClip";
+import type { AudioTrack } from "./AudioTrack";
 import { CompositeAudioContext } from "./CompositeAudioContext";
 import { CompositeVideoContext } from "./CompositeVideoContext";
-import type { AudioTrack } from "./AudioTrack";
 import { Compositor } from "./Compositor";
+import type { AudioBuffer, Bitmap, ChannelCount, Samplerate, Size } from "./media";
 import type { VideoClip } from "./VideoClip";
 import type { VideoTrack } from "./VideoTrack";
 

@@ -1,4 +1,5 @@
 import { Stream } from "effect";
+
 import type { Bitmap } from "./media";
 
 export namespace VideoClip {

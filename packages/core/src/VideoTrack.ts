@@ -1,4 +1,5 @@
-import { Array, Stream, pipe } from "effect";
+import { Array, pipe, Stream } from "effect";
+
 import type { Bitmap } from "./media";
 import type { VideoClip } from "./VideoClip";
 

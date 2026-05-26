@@ -1,5 +1,6 @@
 import { Context, Data } from "effect";
 import type { Stream } from "effect";
+
 import type { Composite } from "@veya/core";
 
 export class Encoder extends Context.Service<Encoder, Encoder.Encoder>()("@veya/encoder/Encoder") {}

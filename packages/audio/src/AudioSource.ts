@@ -1,5 +1,6 @@
 import { Context, Data } from "effect";
 import type { Stream } from "effect";
+
 import type { AudioChunk, ChannelCount, SampleCount, Samplerate } from "@veya/core";
 
 export class AudioSource extends Context.Service<AudioSource, AudioSource.Service>()("@veya/audio/AudioSource") {}

@@ -1,5 +1,6 @@
 import { Context, Data } from "effect";
 import type { Effect } from "effect";
+
 import type { AudioBuffer, Bitmap, ChannelCount, Samplerate, Size } from "./media";
 
 export class Compositor extends Context.Service<Compositor, Compositor.Compositor>()("@veya/core/Compositor") {}

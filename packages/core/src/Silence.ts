@@ -1,7 +1,8 @@
 import { Effect, Stream } from "effect";
+
+import type { AudioClip } from "./AudioClip";
 import { CompositeAudioContext } from "./CompositeAudioContext";
 import type { SampleCount } from "./media";
-import type { AudioClip } from "./AudioClip";
 
 export namespace Silence {
   export interface Silence<E = never, R = never> extends AudioClip.AudioClip<E, R | CompositeAudioContext> {}

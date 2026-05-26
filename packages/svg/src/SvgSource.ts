@@ -1,5 +1,6 @@
 import { Context, Data } from "effect";
 import type { Effect, Stream } from "effect";
+
 import type { Bitmap } from "@veya/core";
 
 export class SvgSource extends Context.Service<SvgSource, SvgSource.Service>()("@veya/svg/SvgSource") {}

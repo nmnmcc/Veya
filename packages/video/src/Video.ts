@@ -1,9 +1,11 @@
 import { Effect, pipe, Stream } from "effect";
+
 import type { Size } from "@veya/core";
 import type { VideoClip } from "@veya/core";
+
+import { VideoMetadata } from "./VideoMetadata";
 import { VideoProbe } from "./VideoProbe";
 import { VideoSource } from "./VideoSource";
-import { VideoMetadata } from "./VideoMetadata";
 
 export namespace Video {
   export type Options<E = never, R = never> = {

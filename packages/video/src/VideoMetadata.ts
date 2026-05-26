@@ -1,5 +1,6 @@
-import type { Size } from "@veya/core";
 import { Context, Duration } from "effect";
+
+import type { Size } from "@veya/core";
 
 export class VideoMetadata extends Context.Service<VideoMetadata, VideoMetadata.VideoMetadata>()(
   "@veya/video/VideoMetadata",

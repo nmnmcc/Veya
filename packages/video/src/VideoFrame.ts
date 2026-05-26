@@ -1,4 +1,5 @@
 import { Data, Duration, Effect } from "effect";
+
 import { VideoMetadata } from "./VideoMetadata";
 
 export namespace VideoFrame {

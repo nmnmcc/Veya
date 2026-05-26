@@ -1,5 +1,7 @@
 import { Effect, Stream } from "effect";
+
 import type { AudioClip, ChannelCount, SampleCount, Samplerate } from "@veya/core";
+
 import { AudioSource } from "./AudioSource";
 
 export namespace Audio {

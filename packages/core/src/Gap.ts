@@ -1,4 +1,5 @@
-import { Effect, Stream, pipe } from "effect";
+import { Effect, pipe, Stream } from "effect";
+
 import { CompositeVideoContext } from "./CompositeVideoContext";
 import type { Bitmap, FrameCount, Size } from "./media";
 import type { VideoClip } from "./VideoClip";

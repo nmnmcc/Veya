@@ -1,5 +1,6 @@
 import { Context, Data } from "effect";
 import type { Stream } from "effect";
+
 import type { Bitmap, Size } from "@veya/core";
 
 export class VideoSource extends Context.Service<VideoSource, VideoSource.Service>()("@veya/video/VideoSource") {}

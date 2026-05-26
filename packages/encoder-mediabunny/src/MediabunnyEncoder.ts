@@ -1,6 +1,4 @@
 import { Effect, Layer, Schema, Stream } from "effect";
-import { Encoder } from "@veya/encoder";
-import type { AudioBuffer, Bitmap, Composite, Size } from "@veya/core";
 import {
   AdtsOutputFormat,
   AudioSample,
@@ -28,6 +26,9 @@ import type {
   VideoCodec,
   VideoEncodingConfig,
 } from "mediabunny";
+
+import type { AudioBuffer, Bitmap, Composite, Size } from "@veya/core";
+import { Encoder } from "@veya/encoder";
 
 export namespace MediabunnyEncoder {
   export type FormatFactory = () => OutputFormat;

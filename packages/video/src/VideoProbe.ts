@@ -1,7 +1,8 @@
 import { Context, Data } from "effect";
 import type { Effect } from "effect";
-import type { VideoSource } from "./VideoSource";
+
 import type { VideoMetadata } from "./VideoMetadata";
+import type { VideoSource } from "./VideoSource";
 
 export class VideoProbe extends Context.Service<
   VideoProbe,

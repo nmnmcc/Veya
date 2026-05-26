@@ -1,3 +1,9 @@
 {
-  "printWidth": 120
+  "printWidth": 120,
+  "plugins": ["@trivago/prettier-plugin-sort-imports"],
+  "importOrder": ["<BUILTIN_MODULES>", "<THIRD_PARTY_MODULES>", "^@veya/(.*)$", "^[./]"],
+  "importOrderCaseInsensitive": true,
+  "importOrderSeparation": true,
+  "importOrderSortSpecifiers": true,
+  "importOrderSideEffects": false
 }

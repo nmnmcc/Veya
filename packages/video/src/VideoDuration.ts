@@ -5,7 +5,7 @@ import { VideoMetadata } from "./VideoMetadata";
 export namespace VideoDuration {
   export type Rounding = "floor" | "ceil" | "round";
 
-  export const fromDuration = (
+  export const make = (
     input: Duration.Input,
     rounding: Rounding = "round",
   ): Effect.Effect<number, VideoDurationFramerateError, VideoMetadata> =>

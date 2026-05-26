@@ -1,5 +1,5 @@
 {
-  "name": "@veya/encoder-mediabunny",
+  "name": "@veya/mediabunny",
   "type": "module",
   "types": "./dist/index.d.mts",
   "dependencies": {

@@ -853,22 +853,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@veya/encoder-mediabunny@workspace:packages/mediabunny":
-  version: 0.0.0-use.local
-  resolution: "@veya/encoder-mediabunny@workspace:packages/mediabunny"
-  dependencies:
-    "@veya/core": "workspace:*"
-    effect: "npm:^4.0.0-beta.70"
-    mediabunny: "npm:1.45.3"
-  languageName: unknown
-  linkType: soft
-
 "@veya/image@workspace:packages/image":
   version: 0.0.0-use.local
   resolution: "@veya/image@workspace:packages/image"
   dependencies:
     "@veya/core": "workspace:*"
     effect: "npm:^4.0.0-beta.70"
+  languageName: unknown
+  linkType: soft
+
+"@veya/mediabunny@workspace:packages/mediabunny":
+  version: 0.0.0-use.local
+  resolution: "@veya/mediabunny@workspace:packages/mediabunny"
+  dependencies:
+    "@veya/core": "workspace:*"
+    effect: "npm:^4.0.0-beta.70"
+    mediabunny: "npm:1.45.3"
   languageName: unknown
   linkType: soft
 

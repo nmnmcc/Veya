@@ -15,8 +15,6 @@ export namespace AudioDecoder {
   }> {}
 
   export type Options = {
-    readonly samplerate?: number;
-    readonly channels?: number;
     readonly offset?: number;
     readonly duration?: number;
     readonly speed?: number;
@@ -28,6 +26,6 @@ export namespace AudioDecoder {
     readonly decode: <SourceE = never, SourceR = never>(
       source: MediaSource<SourceE, SourceR>,
       options: Options,
-    ) => Stream.Stream<AudioClip.Buffer, SourceE | AudioDecoderError, SourceR>;
+    ) => AudioClip.AudioClip<SourceE | AudioDecoderError, SourceR>;
   }
 }

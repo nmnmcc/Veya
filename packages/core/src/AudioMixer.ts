@@ -15,8 +15,8 @@ export namespace AudioMixer {
 
   export interface AudioCompositor {
     readonly mix: (
-      buffers: readonly AudioClip.Buffer[],
+      channels: readonly AudioClip.Channel[][],
       options: AudioMixOptions,
-    ) => Effect.Effect<AudioClip.Buffer, AudioCompositorError>;
+    ) => Effect.Effect<AudioClip.Channel[], AudioCompositorError>;
   }
 }

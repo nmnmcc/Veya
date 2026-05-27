@@ -18,7 +18,6 @@ export namespace VideoDecoder {
 
   export type Options = {
     readonly size?: Size;
-    readonly framerate?: number;
     readonly offset?: number;
     readonly duration?: number;
     readonly playback?: Playback;

@@ -9,11 +9,12 @@ export namespace Silence {
 
   export const make = <E = never, R = never>(samples: Effectable<number, E, R>): Silence<E, R> =>
     Stream.fromEffect(
-      AudioContext.use(({ channels, samplerate }) =>
-        Effect.map(Effectable.wrap(samples), (samples) => ({
-          samplerate,
-          channels: globalThis.Array.from({ length: channels }, () => new Float32Array(samples)),
-        })),
+      AudioContext.use(({ channels }) =>
+        Effect.map(Effectable.wrap(samples), (samples) =>
+          globalThis.Array.from({ length: channels }, () =>
+            Stream.range(0, samples - 1).pipe(Stream.map(() => 0)),
+          ),
+        ),
       ),
     );
 }

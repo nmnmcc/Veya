@@ -18,14 +18,14 @@ export namespace AudioMix {
 
         return Array.reduce(
           tail,
-          Stream.map(head, (buffer) => [buffer]),
-          (a, c) => Stream.zipWith(a, c, (buffers, buffer) => Array.append(buffers, buffer)),
+          Stream.map(head, (channels) => [channels]),
+          (a, c) => Stream.zipWith(a, c, (channelGroups, channels) => Array.append(channelGroups, channels)),
         );
       },
-      Stream.mapEffect((buffers) =>
+      Stream.mapEffect((channelGroups) =>
         AudioContext.pipe(
           Effect.flatMap(({ samplerate, channels }) =>
-            AudioMixer.use(({ mix }) => mix(buffers, { samplerate, channels })),
+            AudioMixer.use(({ mix }) => mix(channelGroups, { samplerate, channels })),
           ),
         ),
       ),

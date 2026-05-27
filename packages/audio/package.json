@@ -1,0 +1,19 @@
+{
+  "name": "@veya/audio",
+  "type": "module",
+  "types": "./dist/index.d.mts",
+  "dependencies": {
+    "@veya/core": "workspace:*",
+    "effect": "^4.0.0-beta.70"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./package.json": "./package.json"
+    }
+  }
+}

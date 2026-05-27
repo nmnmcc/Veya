@@ -1,3 +1,17 @@
-<!-- shields.io badge used because pkg.pr.new/badge returns HTTP 404 status despite valid SVG content, causing GitHub's image proxy to fail -->
+# Veya
 
-[![pkg.pr.new](https://img.shields.io/badge/pkg.pr.new-Effect--TS%2Feffect--smol-black)](https://pkg.pr.new/~/Effect-TS/effect-smol)
+Veya is a programmable video creation library for TypeScript.
+
+## Packages
+
+| Package              | Purpose                                                                              |
+| -------------------- | ------------------------------------------------------------------------------------ |
+| `@veya/core`         | Core media types, contexts, gaps/silence, tracks, video composites, and audio mixes. |
+| `@veya/color`        | Solid-color video clips.                                                             |
+| `@veya/canvas`       | Canvas-drawn video clips.                                                            |
+| `@veya/video`        | Video probe/decode service contracts, metadata helpers, duration helpers, and clips. |
+| `@veya/video-filter` | Common video filters organized into core, color, convolution, and scale modules.     |
+| `@veya/audio`        | Audio probe/decode service contracts and clips.                                      |
+| `@veya/image`        | Image probe/decode service contract and still-image clips.                           |
+| `@veya/svg`          | SVG probe/decode service contracts and SVG clips.                                    |
+| `@veya/svg-resvg`    | Resvg-backed SVG probe/decode service implementations.                               |

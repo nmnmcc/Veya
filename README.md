@@ -8,6 +8,7 @@ Veya is a programmable video creation library for TypeScript.
 | ----------------- | ------------------------------------------------------------------------------------ |
 | `@veya/core`      | Core media types, contexts, gaps/silence, tracks, video composites, and audio mixes. |
 | `@veya/color`     | Solid-color video clips.                                                             |
+| `@veya/canvas`    | Canvas-drawn video clips.                                                            |
 | `@veya/video`     | Video probe/decode service contracts, metadata helpers, duration helpers, and clips. |
 | `@veya/audio`     | Audio probe/decode service contracts and clips.                                      |
 | `@veya/image`     | Image probe/decode service contract and still-image clips.                           |

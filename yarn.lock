@@ -836,6 +836,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@veya/canvas@workspace:packages/canvas":
+  version: 0.0.0-use.local
+  resolution: "@veya/canvas@workspace:packages/canvas"
+  dependencies:
+    "@veya/core": "workspace:*"
+    effect: "npm:^4.0.0-beta.70"
+  languageName: unknown
+  linkType: soft
+
 "@veya/color@workspace:packages/color":
   version: 0.0.0-use.local
   resolution: "@veya/color@workspace:packages/color"

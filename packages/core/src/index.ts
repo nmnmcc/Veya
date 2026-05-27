@@ -11,3 +11,4 @@ export * from "./VideoCompositor";
 export * from "./VideoTrack";
 export * from "./Silence";
 export * from "./AudioTrack";
+export * from "./Effectable";

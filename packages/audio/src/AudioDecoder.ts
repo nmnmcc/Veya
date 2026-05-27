@@ -14,18 +14,20 @@ export namespace AudioDecoder {
     readonly reason?: unknown;
   }> {}
 
-  export interface DecodeOptions {
+  export type Options = {
     readonly samplerate?: number;
     readonly channels?: number;
     readonly offset?: number;
     readonly duration?: number;
     readonly speed?: number;
-  }
+  };
+
+  export type DecodeOptions = Options;
 
   export interface AudioDecoder {
     readonly decode: <SourceE = never, SourceR = never>(
       source: MediaSource<SourceE, SourceR>,
-      options: DecodeOptions,
+      options: Options,
     ) => Stream.Stream<AudioClip.Buffer, SourceE | AudioDecoderError, SourceR>;
   }
 }

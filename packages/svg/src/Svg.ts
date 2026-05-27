@@ -1,18 +1,20 @@
 import { Effect, Stream } from "effect";
 
-import type { VideoClip } from "@veya/core";
+import { Effectable, type Size, type VideoClip } from "@veya/core";
 
 import { SvgDecoder } from "./SvgDecoder";
+import { SvgProber } from "./SvgProber";
 
 export namespace Svg {
   export type Options<E = never, R = never> = {
-    readonly fitTo?: Effect.Effect<SvgDecoder.FitTo, E, R>;
-    readonly background?: Effect.Effect<string, E, R>;
+    readonly size?: Effectable<Size, E, R>;
+    readonly fitTo?: Effectable<SvgDecoder.FitTo, E, R>;
+    readonly background?: Effectable<string, E, R>;
   };
 
   export interface Svg<E = never, R = never> extends VideoClip.VideoClip<
-    E | SvgDecoder.SvgDecoderError,
-    R | SvgDecoder
+    E | SvgDecoder.SvgDecoderError | SvgProber.SvgProberError,
+    R | SvgDecoder | SvgProber
   > {}
 
   export const make = <OE = never, OR = never>(
@@ -22,7 +24,12 @@ export namespace Svg {
     return Stream.unwrap(
       Effect.gen(function* () {
         const { decode } = yield* SvgDecoder;
-        const bitmap = yield* decode(source, yield* Effect.all(options, { concurrency: "unbounded" }));
+        const { probe } = yield* SvgProber;
+        const metadata = yield* probe(source);
+        const bitmap = yield* decode(
+          source,
+          yield* Effect.all(Effectable.map({ ...metadata, ...options }), { concurrency: "unbounded" }),
+        );
 
         return Stream.make(bitmap);
       }),

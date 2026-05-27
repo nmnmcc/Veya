@@ -18,7 +18,7 @@ export namespace ResvgDecoder {
         try: () => {
           const resvg = new Resvg(source, renderOptions);
           const rendered = resvg.render();
-          const size: Size = [rendered.width, rendered.height];
+          const size = [rendered.width, rendered.height] as const;
 
           return pixelsToBitmap(rendered.pixels, size);
         },
@@ -32,10 +32,15 @@ export namespace ResvgDecoder {
   const makeRenderOptions = (
     defaults: ResvgRenderOptions | undefined,
     options: SvgDecoder.DecodeOptions,
-  ): ResvgRenderOptions => ({
-    ...defaults,
-    ...options,
-  });
+  ): ResvgRenderOptions => {
+    const { size, ...renderOptions } = options;
+
+    return {
+      ...defaults,
+      ...(size ? { fitTo: { mode: "width" as const, value: size[0] } } : {}),
+      ...renderOptions,
+    };
+  };
 
   const pixelsToBitmap = (pixels: Uint8Array, [width, height]: Size): VideoClip.Bitmap => {
     const expectedBytes = width * height * 4;

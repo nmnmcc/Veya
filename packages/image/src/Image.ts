@@ -1,17 +1,18 @@
 import { Effect, Stream } from "effect";
 
-import type { Size, VideoClip } from "@veya/core";
+import { Effectable, type Size, type VideoClip } from "@veya/core";
 
 import { ImageDecoder } from "./ImageDecoder";
+import { ImageProber } from "./ImageProber";
 
 export namespace Image {
   export type Options<E = never, R = never> = {
-    readonly size?: Effect.Effect<Size, E, R>;
+    readonly size?: Effectable<Size, E, R>;
   };
 
   export interface Image<E = never, R = never> extends VideoClip.VideoClip<
-    E | ImageDecoder.ImageDecoderError,
-    R | ImageDecoder
+    E | ImageDecoder.ImageDecoderError | ImageProber.ImageProberError,
+    R | ImageDecoder | ImageProber
   > {}
 
   export const make = <SE = never, SR = never, OE = never, OR = never>(
@@ -21,7 +22,12 @@ export namespace Image {
     return Stream.unwrap(
       Effect.gen(function* () {
         const { decode } = yield* ImageDecoder;
-        const bitmap = yield* decode(source, yield* Effect.all(options, { concurrency: "unbounded" }));
+        const { probe } = yield* ImageProber;
+        const metadata = yield* probe(source);
+        const bitmap = yield* decode(
+          source,
+          yield* Effect.all(Effectable.map({ ...metadata, ...options }), { concurrency: "unbounded" }),
+        );
 
         return Stream.make(bitmap);
       }),

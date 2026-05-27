@@ -1,11 +1,11 @@
 import { Effect, pipe, Stream } from "effect";
 
 import { VideoContext } from "@veya/core";
-import type { Size, VideoClip } from "@veya/core";
+import { Effectable, type Size, type VideoClip } from "@veya/core";
 
 export namespace Color {
   export type Options<E = never, R = never> = {
-    readonly size?: Effect.Effect<Size, E, R>;
+    readonly size?: Effectable<Size, E, R>;
   };
 
   export interface Color<E = never, R = never> extends VideoClip.VideoClip<E, R | VideoContext> {}
@@ -17,7 +17,14 @@ export namespace Color {
   ): Color<OE, OR> =>
     Stream.unwrap(
       Effect.gen(function* () {
-        const size = yield* options.size ?? VideoContext.useSync(({ size }) => size);
+        const context = yield* VideoContext;
+        const { size } = yield* Effect.all(
+          Effectable.map({
+            ...context,
+            ...options,
+          }),
+          { concurrency: "unbounded" },
+        );
         const frame = makeBitmap(size, color);
 
         return pipe(

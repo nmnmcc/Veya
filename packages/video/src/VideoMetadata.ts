@@ -1,4 +1,4 @@
-import { Context, Duration } from "effect";
+import { Context } from "effect";
 
 import type { Size } from "@veya/core";
 
@@ -11,6 +11,6 @@ export namespace VideoMetadata {
     readonly size?: Size;
     readonly framerate?: number;
     readonly frames?: number;
-    readonly duration?: Duration.Duration;
+    readonly duration?: number;
   }
 }

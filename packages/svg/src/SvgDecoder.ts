@@ -2,6 +2,7 @@ import { Context, Data } from "effect";
 import type { Effect } from "effect";
 
 import type { VideoClip } from "@veya/core";
+import type { Size } from "@veya/core";
 
 export class SvgDecoder extends Context.Service<SvgDecoder, SvgDecoder.SvgDecoder>()("@veya/svg/SvgDecoder") {}
 
@@ -19,6 +20,7 @@ export namespace SvgDecoder {
   }> {}
 
   export interface DecodeOptions {
+    readonly size?: Size;
     readonly fitTo?: FitTo;
     readonly background?: string;
   }

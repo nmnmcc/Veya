@@ -34,8 +34,7 @@ export namespace ResvgDecoder {
     options: SvgDecoder.DecodeOptions,
   ): ResvgRenderOptions => ({
     ...defaults,
-    ...(options.fitTo === undefined ? {} : { fitTo: options.fitTo }),
-    ...(options.background === undefined ? {} : { background: options.background }),
+    ...options,
   });
 
   const pixelsToBitmap = (pixels: Uint8Array, [width, height]: Size): VideoClip.Bitmap => {

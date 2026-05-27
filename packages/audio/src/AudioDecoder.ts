@@ -18,7 +18,7 @@ export namespace AudioDecoder {
     readonly samplerate?: number;
     readonly channels?: number;
     readonly offset?: number;
-    readonly samples?: number;
+    readonly duration?: number;
     readonly speed?: number;
   }
 

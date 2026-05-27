@@ -25,12 +25,8 @@ export namespace Audio {
     return Stream.unwrap(
       Effect.gen(function* () {
         const { decode } = yield* AudioDecoder;
-        const { duration, ...decodeOptions } = yield* Effect.all(options, { concurrency: "unbounded" });
 
-        return decode(source, {
-          ...decodeOptions,
-          samples: duration,
-        });
+        return decode(source, yield* Effect.all(options, { concurrency: "unbounded" }));
       }),
     );
   };

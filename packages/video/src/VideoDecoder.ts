@@ -20,7 +20,7 @@ export namespace VideoDecoder {
     readonly size?: Size;
     readonly framerate?: number;
     readonly offset?: number;
-    readonly frames?: number;
+    readonly duration?: number;
     readonly playback?: Playback;
     readonly speed?: number;
   };

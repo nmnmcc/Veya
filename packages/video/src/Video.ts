@@ -34,15 +34,8 @@ export namespace Video {
         return decode(
           source,
           yield* pipe(
-            Effect.gen(function* () {
-              const { duration, ...decodeOptions } = yield* Effect.all(options, { concurrency: "unbounded" });
-
-              return {
-                ...decodeOptions,
-                frames: duration,
-              };
-            }),
-            Effect.provideService(VideoMetadata, yield* probe(source)),
+            Effect.all(options, { concurrency: "unbounded" }),
+            Effect.provideServiceEffect(VideoMetadata, probe(source)),
           ),
         );
       }),

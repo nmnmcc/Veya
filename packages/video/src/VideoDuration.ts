@@ -1,9 +1,10 @@
-import { Data, Duration, Effect } from "effect";
+import { Data, Duration, Effect, Schema } from "effect";
 
 import { VideoMetadata } from "./VideoMetadata";
 
 export namespace VideoDuration {
-  export type Rounding = "floor" | "ceil" | "round";
+  export const Rounding = Schema.Literals(["floor", "ceil", "round"]);
+  export type Rounding = typeof Rounding.Type;
 
   export const make = (
     input: Duration.Input,
@@ -17,7 +18,7 @@ export namespace VideoDuration {
         return yield* new VideoDurationFramerateError();
       }
 
-      return Math[rounding](duration * framerate);
+      return Math[Schema.decodeSync(Rounding)(rounding)](duration * framerate);
     });
 
   export class VideoDurationFramerateError extends Data.TaggedError("VideoDurationFramerateError") {}

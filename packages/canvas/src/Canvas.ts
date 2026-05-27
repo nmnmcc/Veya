@@ -1,6 +1,6 @@
 import { Effect, pipe, Stream } from "effect";
 
-import { Effectable, type Size, type VideoClip, VideoContext } from "@veya/core";
+import { Effectable, type Size, type VideoClip, VideoColorSpace, VideoContext } from "@veya/core";
 
 import { CanvasRenderer } from "./CanvasRenderer";
 
@@ -12,6 +12,7 @@ export namespace Canvas {
   export type Options<E = never, R = never> = {
     readonly size?: Effectable<Size, E, R> | undefined;
     readonly framerate?: Effectable<number, E, R> | undefined;
+    readonly colorSpace?: Effectable<VideoColorSpace.VideoColorSpace, E, R> | undefined;
   };
 
   export interface Canvas<E = never, R = never> extends VideoClip.VideoClip<
@@ -27,11 +28,18 @@ export namespace Canvas {
     Stream.unwrap(
       Effect.gen(function* () {
         const context = yield* VideoContext;
-        const { size, framerate } = yield* Effect.all(
-          Effectable.mapOptions<Pick<VideoContext.VideoContext, "size" | "framerate">, OE, OR>(
+        const { colorSpace, size, framerate } = yield* Effect.all(
+          Effectable.mapOptions<
+            Pick<VideoContext.VideoContext, "size" | "framerate"> & {
+              readonly colorSpace: VideoColorSpace.VideoColorSpace;
+            },
+            OE,
+            OR
+          >(
             {
               size: context.size,
               framerate: context.framerate,
+              colorSpace: context.colorSpace ?? VideoColorSpace.Default,
             },
             options,
           ),
@@ -41,13 +49,14 @@ export namespace Canvas {
         return pipe(
           Stream.range(0, duration - 1),
           Stream.mapEffect((index) =>
-            CanvasRenderer.use(({ renderFrame }) =>
+            CanvasRenderer.use(({ render: renderFrame }) =>
               renderFrame(draw, {
                 index,
                 time: index / framerate,
                 duration,
                 size,
                 framerate,
+                colorSpace,
               }),
             ),
           ),

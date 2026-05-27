@@ -1,8 +1,8 @@
 import { P3, P3_Linear, sRGB, sRGB_Linear, to } from "colorjs.io/fn";
 import type { RGBColorSpace } from "colorjs.io/fn";
-import { Context, Layer } from "effect";
+import { Context, Layer, Schema } from "effect";
 
-import { type VideoClip, VideoColorSpace } from "@veya/core";
+import { VideoClip, VideoColorSpace } from "@veya/core";
 
 export class VideoColorSpaceConverter extends Context.Service<
   VideoColorSpaceConverter,
@@ -44,13 +44,14 @@ export namespace VideoColorSpaceConverter {
       const converted = to(
         {
           space: ColorSpaceMap[source],
-          coords: [red, green, blue],
-          alpha,
+          coords: [red / 255, green / 255, blue / 255],
         },
         ColorSpaceMap[target],
       );
 
-      return [...converted.coords, converted.alpha] as VideoClip.RGBA;
+      const coords = Schema.decodeUnknownSync(VideoClip.RGB)(converted.coords);
+
+      return [coords[0] * 255, coords[1] * 255, coords[2] * 255, alpha] satisfies VideoClip.RGBA;
     };
 
     return globalThis.Array.from({ length: bitmap.length }, (_, y) => {

@@ -7,6 +7,7 @@
     { "path": "./packages/svg" },
     { "path": "./packages/svg-resvg" },
     { "path": "./packages/color" },
+    { "path": "./packages/video-filter" },
     { "path": "./packages/canvas" },
     { "path": "./packages/audio" },
     { "path": "./packages/mediabunny" },

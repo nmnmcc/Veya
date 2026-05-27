@@ -901,6 +901,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@veya/video-filter@workspace:packages/video-filter":
+  version: 0.0.0-use.local
+  resolution: "@veya/video-filter@workspace:packages/video-filter"
+  dependencies:
+    "@veya/core": "workspace:*"
+    effect: "npm:^4.0.0-beta.70"
+  languageName: unknown
+  linkType: soft
+
 "@veya/video@workspace:packages/video":
   version: 0.0.0-use.local
   resolution: "@veya/video@workspace:packages/video"

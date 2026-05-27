@@ -1,7 +1,7 @@
 import { Context, Data } from "effect";
 import type { Stream } from "effect";
 
-import type { Size, VideoClip } from "@veya/core";
+import type { Size, VideoClip, VideoColorSpace } from "@veya/core";
 
 export class VideoDecoder extends Context.Service<VideoDecoder, VideoDecoder.VideoDecoder>()(
   "@veya/video/VideoDecoder",
@@ -17,11 +17,12 @@ export namespace VideoDecoder {
   }> {}
 
   export type Options = {
-    readonly size?: Size;
-    readonly offset?: number;
-    readonly duration?: number;
-    readonly playback?: Playback;
-    readonly speed?: number;
+    readonly size?: Size | undefined;
+    readonly offset?: number | undefined;
+    readonly duration?: number | undefined;
+    readonly playback?: Playback | undefined;
+    readonly speed?: number | undefined;
+    readonly colorSpace?: VideoColorSpace.VideoColorSpace | undefined;
   };
 
   export interface VideoDecoder {

@@ -7,7 +7,7 @@ import { ImageProber } from "./ImageProber";
 
 export namespace Image {
   export type Options<E = never, R = never> = {
-    readonly size?: Effectable<Size, E, R>;
+    readonly size?: Effectable<Size, E, R> | undefined;
   };
 
   export interface Image<E = never, R = never> extends VideoClip.VideoClip<
@@ -24,10 +24,11 @@ export namespace Image {
         const { decode } = yield* ImageDecoder;
         const { probe } = yield* ImageProber;
         const metadata = yield* probe(source);
-        const bitmap = yield* decode(
-          source,
-          yield* Effect.all(Effectable.map({ ...metadata, ...options }), { concurrency: "unbounded" }),
+        const decodeOptions = yield* Effect.all(
+          Effectable.mapOptions<ImageDecoder.DecodeOptions, OE, OR>({ size: metadata.size }, options),
+          { concurrency: "unbounded" },
         );
+        const bitmap = yield* decode(source, decodeOptions);
 
         return Stream.make(bitmap);
       }),

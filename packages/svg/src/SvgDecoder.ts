@@ -20,9 +20,9 @@ export namespace SvgDecoder {
   }> {}
 
   export interface DecodeOptions {
-    readonly size?: Size;
-    readonly fitTo?: FitTo;
-    readonly background?: string;
+    readonly size?: Size | undefined;
+    readonly fitTo?: FitTo | undefined;
+    readonly background?: string | undefined;
   }
 
   export interface SvgDecoder {

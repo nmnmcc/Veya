@@ -5,7 +5,7 @@ import { Effectable, type Size, type VideoClip } from "@veya/core";
 
 export namespace Color {
   export type Options<E = never, R = never> = {
-    readonly size?: Effectable<Size, E, R>;
+    readonly size?: Effectable<Size, E, R> | undefined;
   };
 
   export interface Color<E = never, R = never> extends VideoClip.VideoClip<E, R | VideoContext> {}
@@ -19,10 +19,7 @@ export namespace Color {
       Effect.gen(function* () {
         const context = yield* VideoContext;
         const { size } = yield* Effect.all(
-          Effectable.map({
-            ...context,
-            ...options,
-          }),
+          Effectable.mapOptions<Pick<VideoContext.VideoContext, "size">, OE, OR>({ size: context.size }, options),
           { concurrency: "unbounded" },
         );
         const frame = makeBitmap(size, color);

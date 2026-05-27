@@ -7,7 +7,7 @@ import { SvgDecoder } from "@veya/svg";
 
 export namespace ResvgDecoder {
   export interface Options {
-    readonly render?: ResvgRenderOptions;
+    readonly render?: ResvgRenderOptions | undefined;
   }
 
   export const make = (options: Options = {}): SvgDecoder.SvgDecoder => ({
@@ -33,12 +33,13 @@ export namespace ResvgDecoder {
     defaults: ResvgRenderOptions | undefined,
     options: SvgDecoder.DecodeOptions,
   ): ResvgRenderOptions => {
-    const { size, ...renderOptions } = options;
+    const { background, fitTo, size } = options;
 
     return {
       ...defaults,
       ...(size ? { fitTo: { mode: "width" as const, value: size[0] } } : {}),
-      ...renderOptions,
+      ...(fitTo === undefined ? {} : { fitTo }),
+      ...(background === undefined ? {} : { background }),
     };
   };
 

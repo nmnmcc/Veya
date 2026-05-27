@@ -15,9 +15,9 @@ export namespace AudioDecoder {
   }> {}
 
   export type Options = {
-    readonly offset?: number;
-    readonly duration?: number;
-    readonly speed?: number;
+    readonly offset?: number | undefined;
+    readonly duration?: number | undefined;
+    readonly speed?: number | undefined;
   };
 
   export type DecodeOptions = Options;

@@ -1,5 +1,6 @@
 export * from "./Size";
 export * from "./VideoClip";
+export * from "./VideoColorSpace";
 export * from "./AudioClip";
 export * from "./AudioMixer";
 export * from "./AudioMix";

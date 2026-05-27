@@ -4,10 +4,10 @@ import { VideoFilter } from "./VideoFilter";
 
 export namespace VideoColorFilter {
   export interface ThresholdOptions {
-    readonly level?: number;
-    readonly low?: VideoClip.RGBA;
-    readonly high?: VideoClip.RGBA;
-    readonly preserveAlpha?: boolean;
+    readonly level?: number | undefined;
+    readonly low?: VideoClip.RGBA | undefined;
+    readonly high?: VideoClip.RGBA | undefined;
+    readonly preserveAlpha?: boolean | undefined;
   }
 
   export const grayscale = (amount = 1): VideoFilter.Filter => {

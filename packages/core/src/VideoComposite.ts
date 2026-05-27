@@ -1,6 +1,7 @@
 import { Array, Effect, pipe, Stream } from "effect";
 
 import type { VideoClip } from "./VideoClip";
+import { VideoColorSpace } from "./VideoColorSpace";
 import { VideoCompositor } from "./VideoCompositor";
 import { VideoContext } from "./VideoContext";
 import type { VideoTrack } from "./VideoTrack";
@@ -24,7 +25,14 @@ export namespace VideoComposite {
       },
       Stream.mapEffect((frames) =>
         VideoContext.pipe(
-          Effect.flatMap(({ size }) => VideoCompositor.use(({ composite }) => composite(frames, { size }))),
+          Effect.flatMap(({ colorSpace, size }) =>
+            VideoCompositor.use(({ composite }) =>
+              composite(frames, {
+                colorSpace: colorSpace ?? VideoColorSpace.Default,
+                size,
+              }),
+            ),
+          ),
         ),
       ),
     );

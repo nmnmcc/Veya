@@ -10,12 +10,12 @@ export namespace VideoScaleFilter {
   export type ScaleFactor = number | readonly [scaleX: number, scaleY: number];
 
   export interface ResizeOptions {
-    readonly algorithm?: Algorithm;
+    readonly algorithm?: Algorithm | undefined;
   }
 
   export interface FitOptions extends ResizeOptions {
-    readonly mode?: FitMode;
-    readonly background?: VideoClip.RGBA;
+    readonly mode?: FitMode | undefined;
+    readonly background?: VideoClip.RGBA | undefined;
   }
 
   export type FixedFitOptions = Omit<FitOptions, "mode">;

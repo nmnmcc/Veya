@@ -10,8 +10,8 @@ export namespace Canvas {
   export type Draw<E = never, R = never> = CanvasRenderer.Draw<E, R>;
 
   export type Options<E = never, R = never> = {
-    readonly size?: Effectable<Size, E, R>;
-    readonly framerate?: Effectable<number, E, R>;
+    readonly size?: Effectable<Size, E, R> | undefined;
+    readonly framerate?: Effectable<number, E, R> | undefined;
   };
 
   export interface Canvas<E = never, R = never> extends VideoClip.VideoClip<
@@ -28,10 +28,13 @@ export namespace Canvas {
       Effect.gen(function* () {
         const context = yield* VideoContext;
         const { size, framerate } = yield* Effect.all(
-          Effectable.map({
-            ...context,
-            ...options,
-          }),
+          Effectable.mapOptions<Pick<VideoContext.VideoContext, "size" | "framerate">, OE, OR>(
+            {
+              size: context.size,
+              framerate: context.framerate,
+            },
+            options,
+          ),
           { concurrency: "unbounded" },
         );
 

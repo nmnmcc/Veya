@@ -7,9 +7,9 @@ import { SvgProber } from "./SvgProber";
 
 export namespace Svg {
   export type Options<E = never, R = never> = {
-    readonly size?: Effectable<Size, E, R>;
-    readonly fitTo?: Effectable<SvgDecoder.FitTo, E, R>;
-    readonly background?: Effectable<string, E, R>;
+    readonly size?: Effectable<Size, E, R> | undefined;
+    readonly fitTo?: Effectable<SvgDecoder.FitTo, E, R> | undefined;
+    readonly background?: Effectable<string, E, R> | undefined;
   };
 
   export interface Svg<E = never, R = never> extends VideoClip.VideoClip<
@@ -26,10 +26,18 @@ export namespace Svg {
         const { decode } = yield* SvgDecoder;
         const { probe } = yield* SvgProber;
         const metadata = yield* probe(source);
-        const bitmap = yield* decode(
-          source,
-          yield* Effect.all(Effectable.map({ ...metadata, ...options }), { concurrency: "unbounded" }),
+        const decodeOptions = yield* Effect.all(
+          Effectable.mapOptions<SvgDecoder.DecodeOptions, OE, OR>(
+            {
+              size: metadata.size,
+              fitTo: undefined,
+              background: undefined,
+            },
+            options,
+          ),
+          { concurrency: "unbounded" },
         );
+        const bitmap = yield* decode(source, decodeOptions);
 
         return Stream.make(bitmap);
       }),

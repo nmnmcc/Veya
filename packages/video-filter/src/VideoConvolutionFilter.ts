@@ -2,9 +2,9 @@ import { VideoFilter } from "./VideoFilter";
 
 export namespace VideoConvolutionFilter {
   export interface ConvolveOptions {
-    readonly factor?: number;
-    readonly bias?: number;
-    readonly preserveAlpha?: boolean;
+    readonly factor?: number | undefined;
+    readonly bias?: number | undefined;
+    readonly preserveAlpha?: boolean | undefined;
   }
 
   export const blur = (radius = 1): VideoFilter.Filter => {

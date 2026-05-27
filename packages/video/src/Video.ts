@@ -1,7 +1,8 @@
 import { Effect, pipe, Stream } from "effect";
 
-import { Effectable, type Size, type VideoClip, VideoContext } from "@veya/core";
+import { Effectable, type Size, type VideoClip, VideoColorSpace, VideoContext } from "@veya/core";
 
+import { VideoColorSpaceConverter } from "./VideoColorSpaceConverter";
 import { VideoDecoder } from "./VideoDecoder";
 import { VideoMetadata } from "./VideoMetadata";
 import { VideoProber } from "./VideoProber";
@@ -9,16 +10,17 @@ import { VideoResampler } from "./VideoResampler";
 
 export namespace Video {
   export type Options<E = never, R = never> = {
-    readonly size?: Effectable<Size, E, R>;
-    readonly offset?: Effectable<number, E, R>;
-    readonly duration?: Effectable<number, E, R>;
-    readonly playback?: Effectable<VideoDecoder.Playback, E, R>;
-    readonly speed?: Effectable<number, E, R>;
+    readonly size?: Effectable<Size, E, R> | undefined;
+    readonly offset?: Effectable<number, E, R> | undefined;
+    readonly duration?: Effectable<number, E, R> | undefined;
+    readonly playback?: Effectable<VideoDecoder.Playback, E, R> | undefined;
+    readonly speed?: Effectable<number, E, R> | undefined;
+    readonly colorSpace?: Effectable<VideoColorSpace.VideoColorSpace, E, R> | undefined;
   };
 
   export interface Video<E = never, R = never> extends VideoClip.VideoClip<
     E | VideoDecoder.VideoDecoderError | VideoProber.VideoProberError | VideoResampler.VideoResamplerError,
-    R | VideoContext | VideoDecoder | VideoProber | VideoResampler
+    R | VideoContext | VideoDecoder | VideoColorSpaceConverter | VideoProber | VideoResampler
   > {}
 
   export const make = <SE = never, SR = never, OE = never, OR = never>(
@@ -29,14 +31,27 @@ export namespace Video {
       Effect.gen(function* () {
         const { probe } = yield* VideoProber;
         const { decode } = yield* VideoDecoder;
-        const { framerate } = yield* VideoContext;
+        const { convert } = yield* VideoColorSpaceConverter;
+        const { colorSpace, framerate } = yield* VideoContext;
         const metadata = yield* probe(source);
 
-        const decoded = decode(
-          source,
+        const decodeOptions = withMetadataColorSpace(
           yield* pipe(
             Effect.all(Effectable.map(options), { concurrency: "unbounded" }),
             Effect.provideService(VideoMetadata, metadata),
+          ),
+          metadata,
+        );
+
+        const decoded = pipe(
+          decode(source, decodeOptions),
+          Stream.map((bitmap) =>
+            convert(bitmap, {
+              ...{
+                source: decodeOptions.colorSpace,
+                target: colorSpace,
+              },
+            }),
           ),
         );
 
@@ -54,5 +69,19 @@ export namespace Video {
         });
       }),
     );
+  };
+
+  const withMetadataColorSpace = (
+    options: VideoDecoder.Options,
+    metadata: VideoMetadata.VideoMetadata,
+  ): VideoDecoder.Options => {
+    if (options.colorSpace || !metadata.colorSpace) {
+      return options;
+    }
+
+    return {
+      ...options,
+      colorSpace: metadata.colorSpace,
+    };
   };
 }

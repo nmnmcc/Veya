@@ -15,7 +15,7 @@ export namespace ImageDecoder {
   }> {}
 
   export interface DecodeOptions {
-    readonly size?: Size;
+    readonly size?: Size | undefined;
   }
 
   export interface ImageDecoder {

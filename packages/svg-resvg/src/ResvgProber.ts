@@ -7,7 +7,7 @@ import { SvgProber } from "@veya/svg";
 
 export namespace ResvgProber {
   export interface Options {
-    readonly render?: ResvgRenderOptions;
+    readonly render?: ResvgRenderOptions | undefined;
   }
 
   export const make = (options: Options = {}): SvgProber.SvgProber => ({

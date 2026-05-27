@@ -9,9 +9,9 @@ import { AudioResampler } from "./AudioResampler";
 
 export namespace Audio {
   export type Options<E = never, R = never> = {
-    readonly offset?: Effectable<number, E, R>;
-    readonly duration?: Effectable<number, E, R>;
-    readonly speed?: Effectable<number, E, R>;
+    readonly offset?: Effectable<number, E, R> | undefined;
+    readonly duration?: Effectable<number, E, R> | undefined;
+    readonly speed?: Effectable<number, E, R> | undefined;
   };
 
   export interface Audio<E = never, R = never> extends AudioClip.AudioClip<

@@ -21,4 +21,11 @@ export namespace Effectable {
   ): {
     [K in keyof A]: ToEffect<A[K]>;
   } => Record.map(input, wrap) as never;
+
+  export const mapOptions = <A extends Record<string, any>, E = never, R = never>(
+    defaults: A,
+    options: { readonly [K in keyof A]?: Effectable<A[K], E, R> | undefined },
+  ): {
+    [K in keyof A]-?: Effect.Effect<A[K], E, R>;
+  } => Record.map(defaults, (value, key) => wrap(options[key as keyof A] ?? value)) as never;
 }

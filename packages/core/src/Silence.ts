@@ -2,19 +2,33 @@ import { Effect, Stream } from "effect";
 
 import type { AudioClip } from "./AudioClip";
 import { AudioContext } from "./AudioContext";
+import type { AudioTick } from "./AudioTick";
 import { Effectable } from "./Effectable";
 
 export namespace Silence {
-  export interface Silence<E = never, R = never> extends AudioClip.AudioClip<E, R | AudioContext> {}
+  /** Silent audio samples that occupy time between clips. */
+  export interface Silence<E = never, R = never> extends AudioClip.AudioClip<
+    AudioTick,
+    never,
+    never,
+    E,
+    R | AudioContext
+  > {}
 
-  export const make = <E = never, R = never>(samples: Effectable<number, E, R>): Silence<E, R> =>
-    Stream.fromEffect(
-      AudioContext.use(({ channels }) =>
-        Effect.map(Effectable.wrap(samples), (samples) =>
-          globalThis.Array.from({ length: channels }, () =>
-            Stream.range(0, samples - 1).pipe(Stream.map(() => 0)),
+  /** Creates silence for the requested number of samples. */
+  export const make =
+    <E = never, R = never>(samples: Effectable<number, E, R>): Silence<E, R> =>
+    (stream) =>
+      Stream.fromEffect(
+        AudioContext.use(({ channels }) =>
+          Effect.map(Effectable.wrap(samples), (samples) =>
+            globalThis.Array.from({ length: channels }, () =>
+              stream.pipe(
+                Stream.take(samples),
+                Stream.map(() => 0),
+              ),
+            ),
           ),
         ),
-      ),
-    );
+      );
 }

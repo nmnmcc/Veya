@@ -11,7 +11,7 @@
     "build": "tsdown",
     "build:watch": "tsdown --watch",
     "format": "prettier --write .",
-    "smoke": "tsx samples/00-basic-composite.ts && tsx samples/01-basic-sequence.ts && tsx samples/02-combinators.ts && tsx samples/03-anchors-and-timing.ts && tsx samples/04-guards-and-inputs.ts",
+    "smoke": "tsx samples/01.ts",
     "typecheck": "tsc -b --noEmit"
   },
   "devDependencies": {

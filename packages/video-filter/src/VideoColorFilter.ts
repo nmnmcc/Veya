@@ -3,13 +3,19 @@ import type { VideoClip } from "@veya/core";
 import { VideoFilter } from "./VideoFilter";
 
 export namespace VideoColorFilter {
+  /** Options for converting pixels into two colors by luminance. */
   export interface ThresholdOptions {
+    /** Luminance cutoff in the 0-255 range. Defaults to 128. */
     readonly level?: number | undefined;
+    /** Color used below the cutoff. Defaults to opaque black. */
     readonly low?: VideoClip.RGBA | undefined;
+    /** Color used at or above the cutoff. Defaults to opaque white. */
     readonly high?: VideoClip.RGBA | undefined;
+    /** Whether to keep each source pixel's alpha channel. Defaults to true. */
     readonly preserveAlpha?: boolean | undefined;
   }
 
+  /** Desaturates pixels. Use `0` for no effect and `1` for full grayscale. */
   export const grayscale = (amount = 1): VideoFilter.Filter => {
     const mixAmount = VideoFilter.clampUnit(amount);
 
@@ -25,6 +31,7 @@ export namespace VideoColorFilter {
     });
   };
 
+  /** Applies a sepia tone. Use `0` for no effect and `1` for full sepia. */
   export const sepia = (amount = 1): VideoFilter.Filter => {
     const mixAmount = VideoFilter.clampUnit(amount);
 
@@ -42,6 +49,7 @@ export namespace VideoColorFilter {
     });
   };
 
+  /** Inverts colors. Use `0` for no effect and `1` for full inversion. */
   export const invert = (amount = 1): VideoFilter.Filter => {
     const mixAmount = VideoFilter.clampUnit(amount);
 
@@ -55,6 +63,7 @@ export namespace VideoColorFilter {
     );
   };
 
+  /** Multiplies RGB channels to make the frame darker or brighter. */
   export const brightness = (amount = 1): VideoFilter.Filter => {
     const multiplier = VideoFilter.finiteOr(amount, 1);
 
@@ -63,6 +72,7 @@ export namespace VideoColorFilter {
     );
   };
 
+  /** Adjusts contrast around the midpoint of each RGB channel. */
   export const contrast = (amount = 1): VideoFilter.Filter => {
     const multiplier = VideoFilter.finiteOr(amount, 1);
 
@@ -76,6 +86,7 @@ export namespace VideoColorFilter {
     );
   };
 
+  /** Adjusts color saturation. Use `0` for grayscale and `1` to keep the source saturation. */
   export const saturate = (amount = 1): VideoFilter.Filter => {
     const multiplier = VideoFilter.finiteOr(amount, 1);
 
@@ -91,6 +102,7 @@ export namespace VideoColorFilter {
     });
   };
 
+  /** Rotates pixel hue by the requested number of degrees. */
   export const hueRotate = (degrees: number): VideoFilter.Filter => {
     const normalizedDegrees = VideoFilter.finiteOr(degrees, 0);
 
@@ -101,17 +113,19 @@ export namespace VideoColorFilter {
     });
   };
 
+  /** Multiplies each pixel's alpha channel. */
   export const opacity = (amount = 1): VideoFilter.Filter => {
     const multiplier = VideoFilter.finiteOr(amount, 1);
 
     return VideoFilter.mapPixels(([red, green, blue, alpha]) => VideoFilter.rgba(red, green, blue, alpha * multiplier));
   };
 
+  /** Converts pixels to low or high colors based on luminance. */
   export const threshold = (options: number | ThresholdOptions = {}): VideoFilter.Filter => {
     const normalized = typeof options === "number" ? { level: options } : options;
     const level = VideoFilter.clampChannel(normalized.level ?? 128);
-    const low = VideoFilter.normalizePixel(normalized.low ?? [0, 0, 0, 255]);
-    const high = VideoFilter.normalizePixel(normalized.high ?? [255, 255, 255, 255]);
+    const low = VideoFilter.normalizePixel(normalized.low ?? [0, 0, 0, 1]);
+    const high = VideoFilter.normalizePixel(normalized.high ?? [255, 255, 255, 1]);
     const preserveAlpha = normalized.preserveAlpha ?? true;
 
     return VideoFilter.mapPixels(([red, green, blue, alpha]) => {
@@ -121,6 +135,7 @@ export namespace VideoColorFilter {
     });
   };
 
+  /** Applies gamma correction. Values above 1 brighten midtones; values below 1 darken them. */
   export const gamma = (amount = 1): VideoFilter.Filter => {
     const correction = Math.max(0.01, VideoFilter.finiteOr(amount, 1));
     const exponent = 1 / correction;
@@ -135,9 +150,10 @@ export namespace VideoColorFilter {
     );
   };
 
+  /** Blends each pixel toward a target color. */
   export const tint = (color: VideoClip.RGBA, amount = 1): VideoFilter.Filter => {
     const target = VideoFilter.normalizePixel(color);
-    const mixAmount = VideoFilter.clampUnit(amount * (target[3] / 255));
+    const mixAmount = VideoFilter.clampUnit(amount * target[3]);
 
     return VideoFilter.mapPixels(([red, green, blue, alpha]) =>
       VideoFilter.rgba(

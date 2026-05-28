@@ -1,16 +1,30 @@
 import { Array, Stream } from "effect";
 
 import type { AudioClip } from "./AudioClip";
+import type { AudioTick } from "./AudioTick";
 
 export namespace AudioTrack {
-  export interface AudioTrack<E = never, R = never> extends AudioClip.AudioClip<E, R> {}
+  /** An audio track made by playing audio clips one after another. */
+  export type AudioTrack<IE = never, IR = never, OE = never, OR = never> = AudioClip.AudioClip<
+    AudioTick,
+    IE,
+    IR,
+    OE,
+    OR
+  >;
 
-  export const make = <E = never, R = never>([head, ...tail]: readonly AudioClip.AudioClip<E, R>[]): AudioTrack<
-    E,
-    R
-  > => {
-    if (!head) return Stream.empty;
+  /** Concatenates clips into a single audio track. */
+  export const make =
+    <IE = never, IR = never, OE = never, OR = never>([head, ...tail]: readonly AudioClip.AudioClip<
+      AudioTick,
+      IE,
+      IR,
+      OE,
+      OR
+    >[]): AudioTrack<IE, IR, OE, OR> =>
+    (stream) => {
+      if (!head) return Stream.empty;
 
-    return Array.reduce(tail, head, (a, c) => Stream.concat(a, c));
-  };
+      return Array.reduce(tail, head(stream), (track, clip) => Stream.concat(track, clip(stream)));
+    };
 }

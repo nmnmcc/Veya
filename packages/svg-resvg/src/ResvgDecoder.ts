@@ -6,10 +6,13 @@ import type { Size, VideoClip } from "@veya/core";
 import { SvgDecoder } from "@veya/svg";
 
 export namespace ResvgDecoder {
+  /** Options for the Resvg-backed SVG decoder service. */
   export interface Options {
+    /** Default render options passed to Resvg before per-decode options are applied. */
     readonly render?: ResvgRenderOptions | undefined;
   }
 
+  /** Creates a Resvg-backed `SvgDecoder` service implementation. */
   export const make = (options: Options = {}): SvgDecoder.SvgDecoder => ({
     decode: (source, decodeOptions) => {
       const renderOptions = makeRenderOptions(options.render, decodeOptions);
@@ -34,6 +37,7 @@ export namespace ResvgDecoder {
     },
   });
 
+  /** Layer that provides a Resvg-backed `SvgDecoder`. */
   export const layer = (options: Options = {}) => Layer.succeed(SvgDecoder, make(options));
 
   const makeRenderOptions = (
@@ -73,7 +77,7 @@ export namespace ResvgDecoder {
             pixels[offset] ?? 0,
             pixels[offset + 1] ?? 0,
             pixels[offset + 2] ?? 0,
-            pixels[offset + 3] ?? 0,
+            (pixels[offset + 3] ?? 0) / 255,
           ] as const;
           offset += 4;
 

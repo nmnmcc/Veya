@@ -1,4 +1,6 @@
-export * from "./Size";
+export * from "./Base";
+export * from "./AudioTick";
+export * from "./VideoTick";
 export * from "./VideoClip";
 export * from "./VideoColorSpace";
 export * from "./AudioClip";

@@ -5,6 +5,7 @@ import { VideoClip, VideoCompositor } from "@veya/core";
 import { CanvasRenderingContext, type CanvasRenderingContext2D } from "./CanvasRenderingContext";
 
 export namespace CanvasCompositor {
+  /** Creates a canvas-backed video compositor service implementation. */
   export const make = (): VideoCompositor.VideoCompositor => ({
     composite: (layers, options) =>
       Effect.gen(function* () {
@@ -20,6 +21,7 @@ export namespace CanvasCompositor {
       }).pipe(Effect.mapError(toCompositeError), Effect.provide(CanvasRenderingContext.layer)),
   });
 
+  /** Layer that provides the default canvas-backed `VideoCompositor`. */
   export const layer = Layer.succeed(VideoCompositor, make());
 
   const compositeLayers = (

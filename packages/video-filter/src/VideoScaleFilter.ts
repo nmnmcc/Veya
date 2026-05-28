@@ -3,23 +3,33 @@ import type { Size, VideoClip } from "@veya/core";
 import { VideoFilter } from "./VideoFilter";
 
 export namespace VideoScaleFilter {
+  /** Pixel sampling algorithm used while resizing frames. */
   export type Algorithm = "nearest" | "bilinear";
 
+  /** Strategy for fitting a source frame into a target size. */
   export type FitMode = "contain" | "cover" | "fill";
 
+  /** Uniform scale factor or separate horizontal and vertical scale factors. */
   export type ScaleFactor = number | readonly [scaleX: number, scaleY: number];
 
+  /** Options for resizing frames. */
   export interface ResizeOptions {
+    /** Sampling algorithm. Defaults to `bilinear`. */
     readonly algorithm?: Algorithm | undefined;
   }
 
+  /** Options for fitting frames into a fixed size. */
   export interface FitOptions extends ResizeOptions {
+    /** Fit strategy. Defaults to `contain`. */
     readonly mode?: FitMode | undefined;
+    /** Background color used when `contain` leaves empty space. Defaults to transparent. */
     readonly background?: VideoClip.RGBA | undefined;
   }
 
+  /** Fit options for helpers whose mode is already fixed. */
   export type FixedFitOptions = Omit<FitOptions, "mode">;
 
+  /** Resizes every frame to an exact target size. */
   export const resize = (size: Size, options: ResizeOptions = {}): VideoFilter.Filter => {
     const target = normalizeSize(size);
     const algorithm = options.algorithm ?? "bilinear";
@@ -27,8 +37,10 @@ export namespace VideoScaleFilter {
     return (bitmap) => resizeBitmap(bitmap, target, algorithm);
   };
 
+  /** Alias for `resize`. */
   export const fill = resize;
 
+  /** Scales every frame by a uniform or per-axis factor. */
   export const scale = (factor: ScaleFactor, options: ResizeOptions = {}): VideoFilter.Filter => {
     const [scaleX, scaleY] = normalizeScaleFactor(factor);
     const algorithm = options.algorithm ?? "bilinear";
@@ -41,6 +53,7 @@ export namespace VideoScaleFilter {
     };
   };
 
+  /** Fits every frame into a target size using `contain`, `cover`, or `fill`. */
   export const fit = (size: Size, options: FitOptions = {}): VideoFilter.Filter => {
     const target = normalizeSize(size);
     const mode = options.mode ?? "contain";
@@ -76,10 +89,12 @@ export namespace VideoScaleFilter {
     };
   };
 
+  /** Fits the full source frame inside the target size and pads empty space. */
   export const contain = (size: Size, options: FixedFitOptions = {}): VideoFilter.Filter => {
     return fit(size, { ...options, mode: "contain" });
   };
 
+  /** Fills the target size and crops any overflow from the center. */
   export const cover = (size: Size, options: FixedFitOptions = {}): VideoFilter.Filter => {
     return fit(size, { ...options, mode: "cover" });
   };

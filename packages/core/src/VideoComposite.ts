@@ -4,37 +4,48 @@ import type { VideoClip } from "./VideoClip";
 import { VideoColorSpace } from "./VideoColorSpace";
 import { VideoCompositor } from "./VideoCompositor";
 import { VideoContext } from "./VideoContext";
+import type { VideoTick } from "./VideoTick";
 import type { VideoTrack } from "./VideoTrack";
 
 export namespace VideoComposite {
-  export interface VideoComposite<E = never, R = never> extends VideoClip.VideoClip<E, R> {}
+  /** A composited video clip made from one or more video tracks. */
+  export interface VideoComposite<IE = never, IR = never, OE = never, OR = never> extends VideoClip.VideoClip<
+    VideoTick,
+    IE,
+    IR,
+    OE,
+    OR
+  > {}
 
-  export const make = <E = never, R = never>(
-    tracks: readonly VideoTrack.VideoTrack<E, R>[],
-  ): VideoComposite<E | VideoCompositor.Error, R | VideoContext | VideoCompositor> => {
-    return pipe(
-      tracks,
-      ([head, ...tail]) => {
-        if (!head) return Stream.empty;
+  /** Composites tracks into frames using the active `VideoCompositor` service. */
+  export const make =
+    <IE = never, IR = never, OE = never, OR = never>(
+      tracks: readonly VideoTrack.VideoTrack<IE, IR, OE, OR>[],
+    ): VideoComposite<IE, IR, OE | VideoCompositor.Error, OR | VideoContext | VideoCompositor> =>
+    (stream) => {
+      return pipe(
+        tracks,
+        ([head, ...tail]) => {
+          if (!head) return Stream.empty;
 
-        return Array.reduce(
-          tail,
-          Stream.map(head, (frame) => [frame]),
-          (a, c) => Stream.zipWith(a, c, (frames, frame) => Array.append(frames, frame)),
-        );
-      },
-      Stream.mapEffect((frames) =>
-        VideoContext.pipe(
-          Effect.flatMap(({ colorSpace, size }) =>
-            VideoCompositor.use(({ composite }) =>
-              composite(frames, {
-                colorSpace: colorSpace ?? VideoColorSpace.Default,
-                size,
-              }),
+          return Array.reduce(
+            tail,
+            Stream.map(head(stream), (frame) => [frame]),
+            (frames, track) => Stream.zipWith(frames, track(stream), (frames, frame) => Array.append(frames, frame)),
+          );
+        },
+        Stream.mapEffect((frames) =>
+          VideoContext.pipe(
+            Effect.flatMap(({ colorSpace, size }) =>
+              VideoCompositor.use(({ composite }) =>
+                composite(frames, {
+                  colorSpace: colorSpace ?? VideoColorSpace.Default,
+                  size,
+                }),
+              ),
             ),
           ),
         ),
-      ),
-    );
-  };
+      );
+    };
 }

@@ -1,12 +1,17 @@
 import { VideoFilter } from "./VideoFilter";
 
 export namespace VideoConvolutionFilter {
+  /** Options shared by custom convolution filters. */
   export interface ConvolveOptions {
+    /** Multiplier applied to the weighted channel sum. Defaults to the inverse kernel sum. */
     readonly factor?: number | undefined;
+    /** Value added to each channel after applying `factor`. Defaults to 0. */
     readonly bias?: number | undefined;
+    /** Whether to keep the source alpha channel instead of convolving alpha. Defaults to true. */
     readonly preserveAlpha?: boolean | undefined;
   }
 
+  /** Blurs frames with a square box blur kernel. */
   export const blur = (radius = 1): VideoFilter.Filter => {
     const normalizedRadius = Math.max(0, Math.round(VideoFilter.finiteOr(radius, 1)));
 
@@ -23,6 +28,7 @@ export namespace VideoConvolutionFilter {
     });
   };
 
+  /** Sharpens edges by increasing local contrast. */
   export const sharpen = (amount = 1): VideoFilter.Filter => {
     const intensity = Math.max(0, VideoFilter.finiteOr(amount, 1));
 
@@ -40,6 +46,7 @@ export namespace VideoConvolutionFilter {
     );
   };
 
+  /** Creates a raised relief effect. */
   export const emboss = (amount = 1): VideoFilter.Filter => {
     const intensity = Math.max(0, VideoFilter.finiteOr(amount, 1));
 
@@ -57,6 +64,7 @@ export namespace VideoConvolutionFilter {
     );
   };
 
+  /** Highlights edges and suppresses flat areas. */
   export const edgeDetect = (amount = 1): VideoFilter.Filter => {
     const intensity = Math.max(0, VideoFilter.finiteOr(amount, 1));
 
@@ -74,6 +82,7 @@ export namespace VideoConvolutionFilter {
     );
   };
 
+  /** Applies a custom convolution kernel to each frame. */
   export const convolve = (
     kernel: readonly (readonly number[])[],
     options: ConvolveOptions = {},

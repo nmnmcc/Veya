@@ -1,7 +1,12 @@
 import { Stream } from "effect";
 
+import type { Clip } from "./Base";
+
 export namespace AudioClip {
+  /** A single audio channel as a stream of sample values. */
   export type Channel = Stream.Stream<number>;
 
-  export interface AudioClip<E = never, R = never> extends Stream.Stream<Channel[], E, R> {}
+  export type AudioClip<I, IE = never, IR = never, OE = never, OR = never> = Clip<I, Channel[], IE, IR, OE, OR>;
+
+  export type Encodable<E = never, R = never> = Stream.Stream<Channel[], E, R>;
 }

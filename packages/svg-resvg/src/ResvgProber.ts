@@ -6,10 +6,13 @@ import type { Size } from "@veya/core";
 import { SvgProber } from "@veya/svg";
 
 export namespace ResvgProber {
+  /** Options for the Resvg-backed SVG prober service. */
   export interface Options {
+    /** Render options passed to Resvg while reading SVG dimensions. */
     readonly render?: ResvgRenderOptions | undefined;
   }
 
+  /** Creates a Resvg-backed `SvgProber` service implementation. */
   export const make = (options: Options = {}): SvgProber.SvgProber => ({
     probe: (source) =>
       Effect.try({
@@ -27,5 +30,6 @@ export namespace ResvgProber {
       }),
   });
 
+  /** Layer that provides a Resvg-backed `SvgProber`. */
   export const layer = (options: Options = {}) => Layer.succeed(SvgProber, make(options));
 }

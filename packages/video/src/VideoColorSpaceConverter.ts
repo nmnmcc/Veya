@@ -1,4 +1,4 @@
-import { P3, P3_Linear, sRGB, sRGB_Linear, to } from "colorjs.io/fn";
+import { P3, sRGB, to } from "colorjs.io/fn";
 import type { RGBColorSpace } from "colorjs.io/fn";
 import { Context, Layer, Schema } from "effect";
 
@@ -12,9 +12,7 @@ export class VideoColorSpaceConverter extends Context.Service<
 export namespace VideoColorSpaceConverter {
   export const ColorSpaceMap = {
     "display-p3": P3,
-    "display-p3-linear": P3_Linear,
     srgb: sRGB,
-    "srgb-linear": sRGB_Linear,
   } as const satisfies Record<VideoColorSpace.VideoColorSpace, RGBColorSpace>;
 
   export interface Options {

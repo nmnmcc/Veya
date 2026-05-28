@@ -22,10 +22,13 @@ export namespace Effectable {
     [K in keyof A]: ToEffect<A[K]>;
   } => Record.map(input, wrap) as never;
 
-  export const mapOptions = <A extends Record<string, any>, E = never, R = never>(
-    defaults: A,
-    options: { readonly [K in keyof A]?: Effectable<A[K], E, R> | undefined },
+  export const options = <
+    O extends Record<string, Effectable<any, any, any>>,
+    D extends { [K in keyof O]: Effect.Success<ToEffect<O[K]>> },
+  >(
+    defaults: D,
+    options: O,
   ): {
-    [K in keyof A]-?: Effect.Effect<A[K], E, R>;
-  } => Record.map(defaults, (value, key) => wrap(options[key as keyof A] ?? value)) as never;
+    [K in keyof (D & O)]-?: ToEffect<(D & O)[K]>;
+  } => Record.map(defaults, (value, key) => wrap(options[key as keyof O] ?? value)) as never;
 }

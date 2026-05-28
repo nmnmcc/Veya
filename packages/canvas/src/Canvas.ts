@@ -1,13 +1,14 @@
-import { Effect, pipe, Stream } from "effect";
+import { Effect, pipe, Ref, Stream } from "effect";
 
 import { Effectable, type Size, type VideoClip, VideoColorSpace, VideoContext } from "@veya/core";
 
-import { CanvasRenderer } from "./CanvasRenderer";
+import { CanvasRenderingContext } from "./CanvasRenderingContext";
 
 export namespace Canvas {
-  export type Frame = CanvasRenderer.Frame;
-
-  export type Draw<E = never, R = never> = CanvasRenderer.Draw<E, R>;
+  export interface Canvas<E = never, R = never> extends VideoClip.VideoClip<
+    E | CanvasRenderingContext.Error,
+    R | VideoContext | CanvasRenderingContext
+  > {}
 
   export type Options<E = never, R = never> = {
     readonly size?: Effectable<Size, E, R> | undefined;
@@ -15,51 +16,49 @@ export namespace Canvas {
     readonly colorSpace?: Effectable<VideoColorSpace.VideoColorSpace, E, R> | undefined;
   };
 
-  export interface Canvas<E = never, R = never> extends VideoClip.VideoClip<
-    E | CanvasRenderer.CanvasRendererError,
-    R | VideoContext | CanvasRenderer
-  > {}
+  export type Draw<S, E, R> = (
+    index: number,
+    state: S,
+    options: Options,
+  ) => Effect.Effect<S, E, R | CanvasRenderingContext>;
 
-  export const make = <DE = never, DR = never, OE = never, OR = never>(
-    draw: Draw<DE, DR>,
+  export const make = <S, IE = never, IR = never, DE = never, DR = never, OE = never, OR = never>(
+    init: Effect.Effect<S, IE, IR>,
+    draw: Draw<S, DE, DR>,
     duration: number,
     options: Options<OE, OR> = {},
-  ): Canvas<DE | OE, DR | OR> =>
+  ): Canvas<IE | DE | OE, IR | DR | OR> =>
     Stream.unwrap(
       Effect.gen(function* () {
-        const context = yield* VideoContext;
-        const { colorSpace, size, framerate } = yield* Effect.all(
-          Effectable.mapOptions<
-            Pick<VideoContext.VideoContext, "size" | "framerate"> & {
-              readonly colorSpace: VideoColorSpace.VideoColorSpace;
-            },
-            OE,
-            OR
-          >(
+        const video = yield* VideoContext;
+        const { make, snapshot } = yield* CanvasRenderingContext;
+        const _options = yield* Effect.all(
+          Effectable.options(
             {
-              size: context.size,
-              framerate: context.framerate,
-              colorSpace: context.colorSpace ?? VideoColorSpace.Default,
+              size: video.size,
+              framerate: video.framerate,
+              colorSpace: video.colorSpace ?? VideoColorSpace.Default,
             },
             options,
           ),
           { concurrency: "unbounded" },
         );
 
+        const context = yield* make(_options.size, _options);
+
+        const state = yield* Ref.make(yield* init);
         return pipe(
           Stream.range(0, duration - 1),
           Stream.mapEffect((index) =>
-            CanvasRenderer.use(({ render: renderFrame }) =>
-              renderFrame(draw, {
-                index,
-                time: index / framerate,
-                duration,
-                size,
-                framerate,
-                colorSpace,
-              }),
-            ),
+            Effect.gen(function* () {
+              const s = yield* Ref.get(state);
+              const r = yield* draw(index, s, _options);
+              yield* Ref.set(state, r);
+
+              return snapshot(context, _options.size);
+            }),
           ),
+          Stream.provideService(CanvasRenderingContext.Context2D, context),
         );
       }),
     );

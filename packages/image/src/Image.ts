@@ -24,10 +24,9 @@ export namespace Image {
         const { decode } = yield* ImageDecoder;
         const { probe } = yield* ImageProber;
         const metadata = yield* probe(source);
-        const decodeOptions = yield* Effect.all(
-          Effectable.mapOptions<ImageDecoder.DecodeOptions, OE, OR>({ size: metadata.size }, options),
-          { concurrency: "unbounded" },
-        );
+        const decodeOptions = yield* Effect.all(Effectable.options({ size: metadata.size }, options), {
+          concurrency: "unbounded",
+        });
         const bitmap = yield* decode(source, decodeOptions);
 
         return Stream.make(bitmap);

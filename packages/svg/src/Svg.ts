@@ -27,11 +27,9 @@ export namespace Svg {
         const { probe } = yield* SvgProber;
         const metadata = yield* probe(source);
         const decodeOptions = yield* Effect.all(
-          Effectable.mapOptions<SvgDecoder.DecodeOptions, OE, OR>(
+          Effectable.options(
             {
               size: metadata.size,
-              fitTo: undefined,
-              background: undefined,
             },
             options,
           ),

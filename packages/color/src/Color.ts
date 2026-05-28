@@ -18,10 +18,9 @@ export namespace Color {
     Stream.unwrap(
       Effect.gen(function* () {
         const context = yield* VideoContext;
-        const { size } = yield* Effect.all(
-          Effectable.mapOptions<Pick<VideoContext.VideoContext, "size">, OE, OR>({ size: context.size }, options),
-          { concurrency: "unbounded" },
-        );
+        const { size } = yield* Effect.all(Effectable.options({ size: context.size }, options), {
+          concurrency: "unbounded",
+        });
         const frame = makeBitmap(size, color);
 
         return pipe(

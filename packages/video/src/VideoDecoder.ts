@@ -12,9 +12,13 @@ export namespace VideoDecoder {
 
   export type Playback = "clip" | "loop" | "freeze";
 
-  export class VideoDecoderError extends Data.TaggedError("VideoDecoderError")<{
-    readonly reason?: unknown;
+  export class Error extends Data.TaggedError("Error")<{
+    readonly cause?: unknown;
+    readonly reason: Error.DecodeFailed;
   }> {}
+  export namespace Error {
+    export class DecodeFailed extends Data.TaggedError("DecodeFailed")<{}> {}
+  }
 
   export type Options = {
     readonly size?: Size | undefined;
@@ -29,6 +33,6 @@ export namespace VideoDecoder {
     readonly decode: <SourceE = never, SourceR = never>(
       source: MediaSource<SourceE, SourceR>,
       options: Options,
-    ) => Stream.Stream<VideoClip.Bitmap, SourceE | VideoDecoderError, SourceR>;
+    ) => Stream.Stream<VideoClip.Bitmap, SourceE | Error, SourceR>;
   }
 }

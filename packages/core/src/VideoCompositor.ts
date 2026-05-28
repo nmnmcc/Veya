@@ -10,7 +10,13 @@ export class VideoCompositor extends Context.Service<VideoCompositor, VideoCompo
 ) {}
 
 export namespace VideoCompositor {
-  export class VideoCompositorError extends Data.TaggedError("VideoCompositorError")<{}> {}
+  export class Error extends Data.TaggedError("Error")<{
+    readonly cause?: unknown;
+    readonly reason: Error.CompositeFailed;
+  }> {}
+  export namespace Error {
+    export class CompositeFailed extends Data.TaggedError("CompositeFailed")<{}> {}
+  }
 
   export interface VideoCompositeOptions {
     readonly size: Size;
@@ -21,6 +27,6 @@ export namespace VideoCompositor {
     readonly composite: (
       layers: readonly VideoClip.Bitmap[],
       options: VideoCompositeOptions,
-    ) => Effect.Effect<VideoClip.Bitmap, VideoCompositorError>;
+    ) => Effect.Effect<VideoClip.Bitmap, Error>;
   }
 }

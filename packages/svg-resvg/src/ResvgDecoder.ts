@@ -14,15 +14,22 @@ export namespace ResvgDecoder {
     decode: (source, decodeOptions) => {
       const renderOptions = makeRenderOptions(options.render, decodeOptions);
 
-      return Effect.try({
-        try: () => {
-          const resvg = new Resvg(source, renderOptions);
-          const rendered = resvg.render();
-          const size = [rendered.width, rendered.height] as const;
+      return Effect.gen(function* () {
+        const rendered = yield* Effect.try({
+          try: () => {
+            const resvg = new Resvg(source, renderOptions);
 
-          return pixelsToBitmap(rendered.pixels, size);
-        },
-        catch: (reason) => new SvgDecoder.SvgDecoderError({ reason }),
+            return resvg.render();
+          },
+          catch: (cause) =>
+            new SvgDecoder.Error({
+              cause,
+              reason: new SvgDecoder.Error.DecodeFailed(),
+            }),
+        });
+        const size = [rendered.width, rendered.height] as const;
+
+        return yield* pixelsToBitmap(rendered.pixels, size);
       });
     },
   });
@@ -43,26 +50,35 @@ export namespace ResvgDecoder {
     };
   };
 
-  const pixelsToBitmap = (pixels: Uint8Array, [width, height]: Size): VideoClip.Bitmap => {
-    const expectedBytes = width * height * 4;
-    if (pixels.length < expectedBytes) {
-      throw new Error(`resvg returned ${pixels.length} RGBA bytes for a ${width}x${height} image`);
-    }
+  const pixelsToBitmap = (
+    pixels: Uint8Array,
+    [width, height]: Size,
+  ): Effect.Effect<VideoClip.Bitmap, SvgDecoder.Error> =>
+    Effect.gen(function* () {
+      const expectedBytes = width * height * 4;
+      if (pixels.length < expectedBytes) {
+        return yield* new SvgDecoder.Error({
+          reason: new SvgDecoder.Error.InvalidPixelBuffer({
+            actualBytes: pixels.length,
+            expectedBytes,
+          }),
+        });
+      }
 
-    let offset = 0;
+      let offset = 0;
 
-    return globalThis.Array.from({ length: height }, () =>
-      globalThis.Array.from({ length: width }, () => {
-        const pixel = [
-          pixels[offset] ?? 0,
-          pixels[offset + 1] ?? 0,
-          pixels[offset + 2] ?? 0,
-          pixels[offset + 3] ?? 0,
-        ] as const;
-        offset += 4;
+      return globalThis.Array.from({ length: height }, () =>
+        globalThis.Array.from({ length: width }, () => {
+          const pixel = [
+            pixels[offset] ?? 0,
+            pixels[offset + 1] ?? 0,
+            pixels[offset + 2] ?? 0,
+            pixels[offset + 3] ?? 0,
+          ] as const;
+          offset += 4;
 
-        return pixel;
-      }),
-    );
-  };
+          return pixel;
+        }),
+      );
+    });
 }

@@ -15,9 +15,17 @@ export namespace SvgDecoder {
     | { readonly mode: "height"; readonly value: number }
     | { readonly mode: "zoom"; readonly value: number };
 
-  export class SvgDecoderError extends Data.TaggedError("SvgDecoderError")<{
-    readonly reason?: unknown;
+  export class Error extends Data.TaggedError("Error")<{
+    readonly cause?: unknown;
+    readonly reason: Error.DecodeFailed | Error.InvalidPixelBuffer;
   }> {}
+  export namespace Error {
+    export class DecodeFailed extends Data.TaggedError("DecodeFailed")<{}> {}
+    export class InvalidPixelBuffer extends Data.TaggedError("InvalidPixelBuffer")<{
+      readonly actualBytes: number;
+      readonly expectedBytes: number;
+    }> {}
+  }
 
   export interface DecodeOptions {
     readonly size?: Size | undefined;
@@ -26,6 +34,6 @@ export namespace SvgDecoder {
   }
 
   export interface SvgDecoder {
-    readonly decode: (source: MediaSource, options: DecodeOptions) => Effect.Effect<VideoClip.Bitmap, SvgDecoderError>;
+    readonly decode: (source: MediaSource, options: DecodeOptions) => Effect.Effect<VideoClip.Bitmap, Error>;
   }
 }

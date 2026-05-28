@@ -8,9 +8,13 @@ export class AudioResampler extends Context.Service<AudioResampler, AudioResampl
 ) {}
 
 export namespace AudioResampler {
-  export class AudioResamplerError extends Data.TaggedError("AudioResamplerError")<{
-    readonly reason?: unknown;
+  export class Error extends Data.TaggedError("Error")<{
+    readonly cause?: unknown;
+    readonly reason: Error.ResampleFailed;
   }> {}
+  export namespace Error {
+    export class ResampleFailed extends Data.TaggedError("ResampleFailed")<{}> {}
+  }
 
   export interface Options {
     readonly source: number;
@@ -18,9 +22,6 @@ export namespace AudioResampler {
   }
 
   export interface AudioResampler {
-    readonly resample: (
-      channels: AudioClip.Channel[],
-      options: Options,
-    ) => Effect.Effect<AudioClip.Channel[], AudioResamplerError>;
+    readonly resample: (channels: AudioClip.Channel[], options: Options) => Effect.Effect<AudioClip.Channel[], Error>;
   }
 }

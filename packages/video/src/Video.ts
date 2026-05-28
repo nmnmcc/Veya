@@ -19,7 +19,7 @@ export namespace Video {
   };
 
   export interface Video<E = never, R = never> extends VideoClip.VideoClip<
-    E | VideoDecoder.VideoDecoderError | VideoProber.VideoProberError | VideoResampler.VideoResamplerError,
+    E | VideoDecoder.Error | VideoProber.Error | VideoResampler.Error,
     R | VideoContext | VideoDecoder | VideoColorSpaceConverter | VideoProber | VideoResampler
   > {}
 

@@ -8,15 +8,19 @@ export class SvgProber extends Context.Service<SvgProber, SvgProber.SvgProber>()
 export namespace SvgProber {
   export type MediaSource = string;
 
-  export class SvgProberError extends Data.TaggedError("SvgProberError")<{
-    readonly reason?: unknown;
+  export class Error extends Data.TaggedError("Error")<{
+    readonly cause?: unknown;
+    readonly reason: Error.ProbeFailed;
   }> {}
+  export namespace Error {
+    export class ProbeFailed extends Data.TaggedError("ProbeFailed")<{}> {}
+  }
 
   export interface Metadata {
     readonly size?: Size;
   }
 
   export interface SvgProber {
-    readonly probe: (source: SvgProber.MediaSource) => Effect.Effect<SvgProber.Metadata, SvgProber.SvgProberError>;
+    readonly probe: (source: SvgProber.MediaSource) => Effect.Effect<SvgProber.Metadata, Error>;
   }
 }

@@ -7,9 +7,13 @@ export class VideoResampler extends Context.Service<VideoResampler, VideoResampl
 ) {}
 
 export namespace VideoResampler {
-  export class VideoResamplerError extends Data.TaggedError("VideoResamplerError")<{
-    readonly reason?: unknown;
+  export class Error extends Data.TaggedError("Error")<{
+    readonly cause?: unknown;
+    readonly reason: Error.ResampleFailed;
   }> {}
+  export namespace Error {
+    export class ResampleFailed extends Data.TaggedError("ResampleFailed")<{}> {}
+  }
 
   export interface Options {
     readonly source: number;
@@ -20,6 +24,6 @@ export namespace VideoResampler {
     readonly resample: <E = never, R = never>(
       frames: VideoClip.VideoClip<E, R>,
       options: Options,
-    ) => VideoClip.VideoClip<E | VideoResamplerError, R>;
+    ) => VideoClip.VideoClip<E | Error, R>;
   }
 }

@@ -15,12 +15,9 @@ export namespace CanvasCompositor {
 
         return yield* Effect.try({
           try: () => renderingContext.snapshot(context, options.size),
-          catch: (cause) => cause,
+          catch: toCompositeError,
         });
-      }).pipe(
-        Effect.mapError(() => new VideoCompositor.VideoCompositorError()),
-        Effect.provide(CanvasRenderingContext.layer),
-      ),
+      }).pipe(Effect.mapError(toCompositeError), Effect.provide(CanvasRenderingContext.layer)),
   });
 
   export const layer = Layer.succeed(VideoCompositor, make());
@@ -30,7 +27,7 @@ export namespace CanvasCompositor {
     context: CanvasRenderingContext2D,
     layers: readonly VideoClip.Bitmap[],
     options: VideoCompositor.VideoCompositeOptions,
-  ): Effect.Effect<void, unknown | CanvasRenderingContext.Error> =>
+  ): Effect.Effect<void, CanvasRenderingContext.Error | VideoCompositor.Error> =>
     Effect.gen(function* () {
       const layerContext = yield* renderingContext.make(options.size, { colorSpace: options.colorSpace });
 
@@ -42,7 +39,15 @@ export namespace CanvasCompositor {
             context.drawImage(layerContext.canvas, 0, 0);
           }
         },
-        catch: (cause) => cause,
+        catch: toCompositeError,
       });
     });
+
+  const toCompositeError = (cause: unknown): VideoCompositor.Error =>
+    cause instanceof VideoCompositor.Error
+      ? cause
+      : new VideoCompositor.Error({
+          cause,
+          reason: new VideoCompositor.Error.CompositeFailed(),
+        });
 }

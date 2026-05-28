@@ -10,9 +10,13 @@ export class ImageDecoder extends Context.Service<ImageDecoder, ImageDecoder.Ima
 export namespace ImageDecoder {
   export type MediaSource<E = never, R = never> = Uint8Array | Stream.Stream<Uint8Array, E, R>;
 
-  export class ImageDecoderError extends Data.TaggedError("ImageDecoderError")<{
-    readonly reason?: unknown;
+  export class Error extends Data.TaggedError("Error")<{
+    readonly cause?: unknown;
+    readonly reason: Error.DecodeFailed;
   }> {}
+  export namespace Error {
+    export class DecodeFailed extends Data.TaggedError("DecodeFailed")<{}> {}
+  }
 
   export interface DecodeOptions {
     readonly size?: Size | undefined;
@@ -22,6 +26,6 @@ export namespace ImageDecoder {
     readonly decode: <SourceE = never, SourceR = never>(
       source: MediaSource<SourceE, SourceR>,
       options: DecodeOptions,
-    ) => Effect.Effect<VideoClip.Bitmap, SourceE | ImageDecoderError, SourceR>;
+    ) => Effect.Effect<VideoClip.Bitmap, SourceE | Error, SourceR>;
   }
 }

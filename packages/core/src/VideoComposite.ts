@@ -11,7 +11,7 @@ export namespace VideoComposite {
 
   export const make = <E = never, R = never>(
     tracks: readonly VideoTrack.VideoTrack<E, R>[],
-  ): VideoComposite<E | VideoCompositor.VideoCompositorError, R | VideoContext | VideoCompositor> => {
+  ): VideoComposite<E | VideoCompositor.Error, R | VideoContext | VideoCompositor> => {
     return pipe(
       tracks,
       ([head, ...tail]) => {

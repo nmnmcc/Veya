@@ -5,7 +5,7 @@
     "module": "esnext",
     "target": "esnext",
     "moduleResolution": "bundler",
-    "lib": ["esnext"],
+    "lib": ["esnext", "dom", "dom.iterable"],
     "types": ["node"],
 
     "noEmit": true,

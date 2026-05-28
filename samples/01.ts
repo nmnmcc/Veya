@@ -1,4 +1,4 @@
-import { Stream } from "effect";
+import { Effect, Stream } from "effect";
 
 import { Color } from "@veya/color";
 import { VideoComposite, VideoCompositor, VideoContext, VideoTrack } from "@veya/core";
@@ -11,6 +11,6 @@ export default VideoComposite.make([VideoTrack.make([color, Color.make([1, 1, 1,
     size: [1920, 1080],
   }),
   Stream.provideService(VideoCompositor, {
-    composite: (layers, options) => {},
+    composite: (layers) => Effect.succeed(layers[0] ?? []),
   }),
 );

@@ -10,7 +10,7 @@ export namespace AudioMix {
 
   export const make = <E = never, R = never>(
     tracks: readonly AudioTrack.AudioTrack<E, R>[],
-  ): AudioMix<E | AudioMixer.AudioCompositorError, R | AudioContext | AudioMixer> => {
+  ): AudioMix<E | AudioMixer.Error, R | AudioContext | AudioMixer> => {
     return pipe(
       tracks,
       ([head, ...tail]) => {

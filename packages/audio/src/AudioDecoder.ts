@@ -10,9 +10,13 @@ export class AudioDecoder extends Context.Service<AudioDecoder, AudioDecoder.Aud
 export namespace AudioDecoder {
   export type MediaSource<E = never, R = never> = Uint8Array | Stream.Stream<Uint8Array, E, R>;
 
-  export class AudioDecoderError extends Data.TaggedError("AudioDecoderError")<{
-    readonly reason?: unknown;
+  export class Error extends Data.TaggedError("Error")<{
+    readonly cause?: unknown;
+    readonly reason: Error.DecodeFailed;
   }> {}
+  export namespace Error {
+    export class DecodeFailed extends Data.TaggedError("DecodeFailed")<{}> {}
+  }
 
   export type Options = {
     readonly offset?: number | undefined;
@@ -26,6 +30,6 @@ export namespace AudioDecoder {
     readonly decode: <SourceE = never, SourceR = never>(
       source: MediaSource<SourceE, SourceR>,
       options: Options,
-    ) => AudioClip.AudioClip<SourceE | AudioDecoderError, SourceR>;
+    ) => AudioClip.AudioClip<SourceE | Error, SourceR>;
   }
 }

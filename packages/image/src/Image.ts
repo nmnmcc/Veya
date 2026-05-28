@@ -11,7 +11,7 @@ export namespace Image {
   };
 
   export interface Image<E = never, R = never> extends VideoClip.VideoClip<
-    E | ImageDecoder.ImageDecoderError | ImageProber.ImageProberError,
+    E | ImageDecoder.Error | ImageProber.Error,
     R | ImageDecoder | ImageProber
   > {}
 

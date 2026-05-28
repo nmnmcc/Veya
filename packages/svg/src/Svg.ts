@@ -13,7 +13,7 @@ export namespace Svg {
   };
 
   export interface Svg<E = never, R = never> extends VideoClip.VideoClip<
-    E | SvgDecoder.SvgDecoderError | SvgProber.SvgProberError,
+    E | SvgDecoder.Error | SvgProber.Error,
     R | SvgDecoder | SvgProber
   > {}
 

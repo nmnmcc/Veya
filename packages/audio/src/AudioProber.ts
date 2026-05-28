@@ -10,13 +10,17 @@ export namespace AudioProber {
   export type MediaSource<E = never, R = never> = AudioDecoder.MediaSource<E, R>;
   export type Metadata = AudioMetadata.AudioMetadata;
 
-  export class AudioProberError extends Data.TaggedError("AudioProberError")<{
-    readonly reason?: unknown;
+  export class Error extends Data.TaggedError("Error")<{
+    readonly cause?: unknown;
+    readonly reason: Error.ProbeFailed;
   }> {}
+  export namespace Error {
+    export class ProbeFailed extends Data.TaggedError("ProbeFailed")<{}> {}
+  }
 
   export interface AudioProber {
     readonly probe: <SourceE = never, SourceR = never>(
       source: MediaSource<SourceE, SourceR>,
-    ) => Effect.Effect<Metadata, SourceE | AudioProberError, SourceR>;
+    ) => Effect.Effect<Metadata, SourceE | Error, SourceR>;
   }
 }

@@ -19,7 +19,11 @@ export namespace ResvgProber {
 
           return { size };
         },
-        catch: (reason) => new SvgProber.SvgProberError({ reason }),
+        catch: (cause) =>
+          new SvgProber.Error({
+            cause,
+            reason: new SvgProber.Error.ProbeFailed(),
+          }),
       }),
   });
 

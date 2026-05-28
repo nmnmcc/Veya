@@ -6,7 +6,13 @@ import type { AudioClip } from "./AudioClip";
 export class AudioMixer extends Context.Service<AudioMixer, AudioMixer.AudioCompositor>()("@veya/core/AudioMixer") {}
 
 export namespace AudioMixer {
-  export class AudioCompositorError extends Data.TaggedError("AudioCompositorError")<{}> {}
+  export class Error extends Data.TaggedError("Error")<{
+    readonly cause?: unknown;
+    readonly reason: Error.MixFailed;
+  }> {}
+  export namespace Error {
+    export class MixFailed extends Data.TaggedError("MixFailed")<{}> {}
+  }
 
   export interface AudioMixOptions {
     readonly samplerate: number;
@@ -17,6 +23,6 @@ export namespace AudioMixer {
     readonly mix: (
       channels: readonly AudioClip.Channel[][],
       options: AudioMixOptions,
-    ) => Effect.Effect<AudioClip.Channel[], AudioCompositorError>;
+    ) => Effect.Effect<AudioClip.Channel[], Error>;
   }
 }

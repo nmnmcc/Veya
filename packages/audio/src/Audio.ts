@@ -15,7 +15,7 @@ export namespace Audio {
   };
 
   export interface Audio<E = never, R = never> extends AudioClip.AudioClip<
-    E | AudioDecoder.AudioDecoderError | AudioProber.AudioProberError | AudioResampler.AudioResamplerError,
+    E | AudioDecoder.Error | AudioProber.Error | AudioResampler.Error,
     R | AudioContext | AudioDecoder | AudioProber | AudioResampler
   > {}
 

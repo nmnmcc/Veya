@@ -1,6 +1,6 @@
-import { Effect } from "effect";
+import { Effect, Stream } from "effect";
 
-import { Canvas, CanvasRenderingContext } from "@veya/canvas";
+import { Canvas, type CanvasRenderingContext2D, CanvasRenderingContext } from "@veya/canvas";
 import { VideoClip, VideoContext, VideoTick } from "@veya/core";
 
 const durationSeconds = 7;
@@ -41,7 +41,7 @@ const countdown = Canvas.make(
 );
 
 const drawDigit = (
-  context: CanvasRenderingContext.CanvasRenderingContext2D,
+  context: CanvasRenderingContext2D,
   glyph: readonly string[],
   [width, height]: readonly [number, number],
 ) => {
@@ -80,7 +80,7 @@ const currentDigit = (frame: number): CountdownDigit => {
 };
 
 const encodable: VideoClip.Encodable<CanvasRenderingContext.Error, VideoContext> = countdown(VideoTick.frames()).pipe(
-  Effect.provideServiceStream(VideoContext, {
+  Stream.provideService(VideoContext, {
     framerate,
     size: [1080, 1920],
   }),

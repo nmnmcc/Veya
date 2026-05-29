@@ -836,7 +836,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@veya/canvas@workspace:packages/canvas":
+"@veya/canvas@workspace:*, @veya/canvas@workspace:packages/canvas":
   version: 0.0.0-use.local
   resolution: "@veya/canvas@workspace:packages/canvas"
   dependencies:
@@ -845,7 +845,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@veya/color@workspace:packages/color":
+"@veya/color@workspace:*, @veya/color@workspace:packages/color":
   version: 0.0.0-use.local
   resolution: "@veya/color@workspace:packages/color"
   dependencies:
@@ -878,6 +878,17 @@ __metadata:
     "@veya/core": "workspace:*"
     effect: "npm:^4.0.0-beta.70"
     mediabunny: "npm:1.45.3"
+  languageName: unknown
+  linkType: soft
+
+"@veya/samples@workspace:samples":
+  version: 0.0.0-use.local
+  resolution: "@veya/samples@workspace:samples"
+  dependencies:
+    "@veya/canvas": "workspace:*"
+    "@veya/color": "workspace:*"
+    "@veya/core": "workspace:*"
+    effect: "npm:^4.0.0-beta.70"
   languageName: unknown
   linkType: soft
 

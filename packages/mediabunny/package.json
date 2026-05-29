@@ -4,8 +4,8 @@
   "types": "./dist/index.d.mts",
   "dependencies": {
     "@veya/core": "workspace:*",
-    "effect": "^4.0.0-beta.70",
-    "mediabunny": "1.45.3"
+    "effect": "4.0.0-beta.73",
+    "mediabunny": "1.45.4"
   },
   "exports": {
     ".": "./src/index.ts",

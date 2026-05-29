@@ -2,7 +2,7 @@ import { Effect, Stream } from "effect";
 import { Mp4OutputFormat, QUALITY_HIGH, VideoSample, VideoSampleSource } from "mediabunny";
 import type { OutputFormat, VideoEncodingConfig, VideoTrackMetadata } from "mediabunny";
 
-import { type VideoClip, VideoContext } from "@veya/core";
+import { type VideoClip } from "@veya/core";
 
 import { MediabunnyEncoding } from "./MediabunnyEncoding";
 import { MediabunnyMultiplexer } from "./MediabunnyMultiplexer";
@@ -20,9 +20,9 @@ export namespace MediabunnyVideoEncoder {
   export const encode = <E = never, R = never>(
     encodable: VideoClip.Encodable<E, R>,
     options: Options = {},
-  ): Effect.Effect<MediabunnyEncoding.Result, E | MediabunnyEncoding.Error, R | VideoContext> =>
+  ): Effect.Effect<MediabunnyEncoding.Result, E | MediabunnyEncoding.Error, R> =>
     Effect.gen(function* () {
-      const { framerate, size } = yield* VideoContext;
+      const { framerate, size } = encodable.context;
       const format = options.format ?? new Mp4OutputFormat();
       const encoding = options.encoding ?? defaultEncoding;
       const source = new VideoSampleSource(encoding);

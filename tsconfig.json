@@ -11,6 +11,6 @@
     { "path": "./packages/canvas" },
     { "path": "./packages/audio" },
     { "path": "./packages/mediabunny" },
-    { "path": "./samples" }
+    { "path": "./samples/countdown" }
   ]
 }

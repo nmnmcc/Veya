@@ -6,7 +6,7 @@
     "@resvg/resvg-js": "^2.6.2",
     "@veya/core": "workspace:*",
     "@veya/svg": "workspace:*",
-    "effect": "^4.0.0-beta.70"
+    "effect": "4.0.0-beta.73"
   },
   "exports": {
     ".": "./src/index.ts",

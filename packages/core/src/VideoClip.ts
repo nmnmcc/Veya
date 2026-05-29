@@ -1,12 +1,20 @@
-import { Schema, Stream } from "effect";
+import { Effect, Schema, Stream } from "effect";
 
 import type { Clip, Size } from "./Base";
 import type { VideoColorSpace } from "./VideoColorSpace";
+import { VideoContext } from "./VideoContext";
 
 export namespace VideoClip {
   export type VideoClip<I, IE = never, IR = never, OE = never, OR = never> = Clip<I, Bitmap, IE, IR, OE, OR>;
 
-  export type Encodable<E = never, R = never> = Stream.Stream<Bitmap, E, R>;
+  export interface Encodable<E = never, R = never> extends Stream.Stream<Bitmap, E, R> {
+    readonly context: VideoContext.VideoContext;
+  }
+
+  /** Creates a video clip from a stream transformer. */
+  export const make = <I, IE = never, IR = never, OE = never, OR = never>(
+    clip: VideoClip<I, IE, IR, OE, OR>,
+  ): VideoClip<I, IE, IR, OE, OR> => clip;
 
   const R_G_B = Schema.Number.check(Schema.isBetween({ minimum: 0, maximum: 255 }));
   const A = Schema.Number.check(Schema.isBetween({ minimum: 0, maximum: 1 }));
@@ -71,4 +79,16 @@ export namespace VideoClip {
       return new ImageData(data, width, height, { colorSpace });
     };
   }
+
+  export const toEncodable = <I, IE = never, IR = never, OE = never, OR = never>(
+    tick: Stream.Stream<I, IE, IR>,
+    clip: VideoClip<I, IE, IR, OE, OR>,
+  ): Effect.Effect<Encodable<IE | OE, Exclude<IR | OR, VideoContext>>, never, VideoContext> =>
+    Effect.gen(function* () {
+      const context = yield* VideoContext;
+
+      return Object.assign(clip(tick).pipe(Stream.provideService(VideoContext, context)), {
+        context,
+      });
+    });
 }

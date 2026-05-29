@@ -3,9 +3,9 @@ import { Effect, Stream } from "effect";
 import { Canvas, type CanvasRenderingContext2D, CanvasRenderingContext } from "@veya/canvas";
 import { VideoContext, VideoTick } from "@veya/core";
 
-const durationSeconds = 7;
+const countdownDurationSeconds = 7;
 const framerate = 24;
-const frames = durationSeconds * framerate;
+const frames = countdownDurationSeconds * framerate;
 const backgroundColor = "#050816";
 const inactiveColor = "#1b2440";
 const activeColor = "#80ff72";
@@ -47,6 +47,7 @@ const drawDigit = (
 ) => {
   const rows = glyph.length;
   const columns = glyph[0]?.length ?? 0;
+  if (rows === 0 || columns === 0) return;
   const spacing = Math.max(8, Math.floor(Math.min(width, height) * 0.02));
   const cell = Math.max(
     1,
@@ -76,7 +77,7 @@ const drawDigit = (
 const currentDigit = (frame: number): CountdownDigit => {
   const elapsedSeconds = Math.floor(frame / framerate);
 
-  return Math.max(1, durationSeconds - elapsedSeconds) as CountdownDigit;
+  return Math.max(1, countdownDurationSeconds - elapsedSeconds) as CountdownDigit;
 };
 
 const encodable = countdown(VideoTick.frames()).pipe(

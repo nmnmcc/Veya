@@ -5,13 +5,15 @@
   "type": "module",
   "packageManager": "yarn@4.15.0",
   "workspaces": [
-    "./packages/*"
+    "./packages/*",
+    "./samples"
   ],
   "scripts": {
     "build": "tsdown",
     "build:watch": "tsdown --watch",
     "format": "prettier --write .",
-    "smoke": "tsx samples/01.ts",
+    "smoke": "yarn workspace @veya/samples smoke",
+    "smoke:countdown": "yarn workspace @veya/samples countdown",
     "typecheck": "tsc -b --noEmit"
   },
   "devDependencies": {

@@ -1,0 +1,15 @@
+{
+  "name": "@veya/samples",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "smoke": "tsx 01.ts",
+    "countdown": "tsx 02-countdown.ts"
+  },
+  "dependencies": {
+    "@veya/canvas": "workspace:*",
+    "@veya/color": "workspace:*",
+    "@veya/core": "workspace:*",
+    "effect": "^4.0.0-beta.70"
+  }
+}

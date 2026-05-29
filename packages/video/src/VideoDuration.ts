@@ -2,11 +2,9 @@ import { Data, Duration, Effect, Schema } from "effect";
 
 import { VideoMetadata } from "./VideoMetadata";
 
-/** Helpers for converting time-based inputs into video frame counts. */
 export namespace VideoDuration {
   /** Rounding strategy used when converting time into frame counts. */
   export const Rounding = Schema.Literals(["floor", "ceil", "round"]);
-  /** Rounding strategy used when converting time into frame counts. */
   export type Rounding = typeof Rounding.Type;
 
   /** Converts an Effect duration input into a source frame count using `VideoMetadata.framerate`. */
@@ -25,11 +23,8 @@ export namespace VideoDuration {
       return Math[Schema.decodeSync(Rounding)(rounding)](seconds * framerate);
     });
 
-  /** Error raised when a frame count cannot be computed. */
   export class Error extends Data.TaggedError("Error")<{
-    /** Original error or thrown value, when available. */
     readonly cause?: unknown;
-    /** Structured reason for the duration conversion failure. */
     readonly reason: Error.MissingFramerate;
   }> {}
   export namespace Error {

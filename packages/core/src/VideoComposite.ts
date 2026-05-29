@@ -8,7 +8,6 @@ import type { VideoTick } from "./VideoTick";
 import type { VideoTrack } from "./VideoTrack";
 
 export namespace VideoComposite {
-  /** A composited video clip made from one or more video tracks. */
   export interface VideoComposite<IE = never, IR = never, OE = never, OR = never> extends VideoClip.VideoClip<
     VideoTick,
     IE,
@@ -17,7 +16,6 @@ export namespace VideoComposite {
     OR
   > {}
 
-  /** Composites tracks into frames using the active `VideoCompositor` service. */
   export const make =
     <IE = never, IR = never, OE = never, OR = never>(
       tracks: readonly VideoTrack.VideoTrack<IE, IR, OE, OR>[],

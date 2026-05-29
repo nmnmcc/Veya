@@ -9,7 +9,14 @@ import { VideoProber } from "./VideoProber";
 import { VideoResampler } from "./VideoResampler";
 
 export namespace Video {
-  /** Options for decoding a video source into a clip. */
+  export interface Video<E = never, R = never> extends VideoClip.VideoClip<
+    VideoTick,
+    never,
+    never,
+    E | VideoDecoder.Error | VideoProber.Error | VideoResampler.Error,
+    R | VideoContext | VideoDecoder | VideoColorSpaceConverter | VideoProber | VideoResampler
+  > {}
+
   export type Options<E = never, R = never> = {
     /** Output frame size in pixels. Defaults to the decoded source size. */
     readonly size?: Effectable<Size, E, R> | undefined;
@@ -25,16 +32,6 @@ export namespace Video {
     readonly colorSpace?: Effectable<VideoColorSpace.VideoColorSpace, E, R> | undefined;
   };
 
-  /** A decoded video clip that matches the active video render context. */
-  export interface Video<E = never, R = never> extends VideoClip.VideoClip<
-    VideoTick,
-    never,
-    never,
-    E | VideoDecoder.Error | VideoProber.Error | VideoResampler.Error,
-    R | VideoContext | VideoDecoder | VideoColorSpaceConverter | VideoProber | VideoResampler
-  > {}
-
-  /** Creates a video clip from bytes or a byte stream. */
   export const make = <SE = never, SR = never, OE = never, OR = never>(
     source: VideoDecoder.MediaSource<SE, SR>,
     options: Options<OE, OR> = {},

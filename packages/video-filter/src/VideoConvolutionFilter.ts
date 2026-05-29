@@ -1,7 +1,6 @@
 import { VideoFilter } from "./VideoFilter";
 
 export namespace VideoConvolutionFilter {
-  /** Options shared by custom convolution filters. */
   export interface ConvolveOptions {
     /** Multiplier applied to the weighted channel sum. Defaults to the inverse kernel sum. */
     readonly factor?: number | undefined;

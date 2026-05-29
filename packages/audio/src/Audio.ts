@@ -8,17 +8,6 @@ import { AudioProber } from "./AudioProber";
 import { AudioResampler } from "./AudioResampler";
 
 export namespace Audio {
-  /** Options for decoding an audio source into a clip. */
-  export type Options<E = never, R = never> = {
-    /** Start time offset, in seconds. */
-    readonly offset?: Effectable<number, E, R> | undefined;
-    /** Clip duration, in seconds. */
-    readonly duration?: Effectable<number, E, R> | undefined;
-    /** Playback speed multiplier. */
-    readonly speed?: Effectable<number, E, R> | undefined;
-  };
-
-  /** A decoded audio clip that matches the active audio render context. */
   export interface Audio<E = never, R = never> extends AudioClip.AudioClip<
     AudioTick,
     never,
@@ -27,7 +16,15 @@ export namespace Audio {
     R | AudioContext | AudioDecoder | AudioProber | AudioResampler
   > {}
 
-  /** Creates an audio clip from bytes or a byte stream. */
+  export type Options<E = never, R = never> = {
+    /** Start offset in source samples. Use `AudioDuration.make` to convert time into samples. */
+    readonly offset?: Effectable<number, E, R> | undefined;
+    /** Clip duration in source samples. Use `AudioDuration.make` to convert time into samples. */
+    readonly duration?: Effectable<number, E, R> | undefined;
+    /** Playback speed multiplier. */
+    readonly speed?: Effectable<number, E, R> | undefined;
+  };
+
   export const make = <SE = never, SR = never, OE = never, OR = never>(
     source: AudioDecoder.MediaSource<SE, SR>,
     options: Options<OE, OR> = {},

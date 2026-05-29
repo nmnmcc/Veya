@@ -5,27 +5,18 @@ import type { OutputFormat } from "mediabunny";
 import { MediabunnyEncoding } from "./MediabunnyEncoding";
 
 export namespace MediabunnyMultiplexer {
-  /** In-memory Mediabunny output used to mux encoded samples into a container. */
   export interface Multiplexer {
-    /** Container/output format. */
     readonly format: OutputFormat;
-    /** Mediabunny output that owns tracks and writes container bytes. */
     readonly output: Output<OutputFormat, BufferTarget>;
-    /** In-memory target that receives the muxed bytes. */
     readonly target: BufferTarget;
   }
 
-  /** Options for multiplexing samples into a container. */
   export interface Options<E = never, R = never> {
-    /** Container/output format. */
     readonly format: OutputFormat;
-    /** Adds tracks and metadata before the output starts. */
     readonly setup?: ((multiplexer: Multiplexer) => void) | undefined;
-    /** Writes samples after the output starts and before it is finalized. */
     readonly write: (multiplexer: Multiplexer) => Effect.Effect<void, E, R>;
   }
 
-  /** Muxes samples into an in-memory media file and returns the encoded bytes. */
   export const multiplex = <E = never, R = never>({
     format,
     setup,

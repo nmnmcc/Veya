@@ -6,7 +6,6 @@ import type { AudioTick } from "./AudioTick";
 import { Effectable } from "./Effectable";
 
 export namespace Silence {
-  /** Silent audio samples that occupy time between clips. */
   export interface Silence<E = never, R = never> extends AudioClip.AudioClip<
     AudioTick,
     never,
@@ -15,7 +14,6 @@ export namespace Silence {
     R | AudioContext
   > {}
 
-  /** Creates silence for the requested number of samples. */
   export const make =
     <E = never, R = never>(samples: Effectable<number, E, R>): Silence<E, R> =>
     (stream) =>

@@ -4,7 +4,6 @@ import type { AudioClip } from "./AudioClip";
 import type { AudioTick } from "./AudioTick";
 
 export namespace AudioTrack {
-  /** An audio track made by playing audio clips one after another. */
   export type AudioTrack<IE = never, IR = never, OE = never, OR = never> = AudioClip.AudioClip<
     AudioTick,
     IE,
@@ -13,7 +12,6 @@ export namespace AudioTrack {
     OR
   >;
 
-  /** Concatenates clips into a single audio track. */
   export const make =
     <IE = never, IR = never, OE = never, OR = never>([head, ...tail]: readonly AudioClip.AudioClip<
       AudioTick,

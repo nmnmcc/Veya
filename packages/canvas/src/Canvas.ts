@@ -5,7 +5,6 @@ import { Effectable, type Size, type VideoClip, VideoColorSpace, VideoContext, t
 import { CanvasRenderingContext } from "./CanvasRenderingContext";
 
 export namespace Canvas {
-  /** A video clip rendered frame by frame with a canvas drawing callback. */
   export interface Canvas<E = never, R = never> extends VideoClip.VideoClip<
     VideoTick,
     never,
@@ -14,7 +13,6 @@ export namespace Canvas {
     R | VideoContext | CanvasRenderingContext
   > {}
 
-  /** Canvas clip output settings. */
   export type Options<E = never, R = never> = {
     /** Frame size in pixels. Defaults to the active `VideoContext` size. */
     readonly size?: Effectable<Size, E, R> | undefined;
@@ -24,7 +22,6 @@ export namespace Canvas {
     readonly colorSpace?: Effectable<VideoColorSpace.VideoColorSpace, E, R> | undefined;
   };
 
-  /** Canvas clip output settings after defaults and Effect values are resolved. */
   export interface ResolvedOptions {
     /** Frame size in pixels. */
     readonly size: Size;
@@ -34,7 +31,6 @@ export namespace Canvas {
     readonly colorSpace: VideoColorSpace.VideoColorSpace;
   }
 
-  /** Draw callback invoked once for each frame. */
   export type Draw<S, E, R> = (
     /** Zero-based frame index. */
     index: number,
@@ -44,7 +40,6 @@ export namespace Canvas {
     options: ResolvedOptions,
   ) => Effect.Effect<S, E, R | CanvasRenderingContext>;
 
-  /** Creates a canvas-rendered video clip for the requested number of frames. */
   export const make =
     <S, IE = never, IR = never, DE = never, DR = never, OE = never, OR = never>(
       init: Effect.Effect<S, IE, IR>,

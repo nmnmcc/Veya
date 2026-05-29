@@ -4,7 +4,6 @@ import type { VideoClip } from "./VideoClip";
 import type { VideoTick } from "./VideoTick";
 
 export namespace VideoTrack {
-  /** A video track made by playing video clips one after another. */
   export type VideoTrack<IE = never, IR = never, OE = never, OR = never> = VideoClip.VideoClip<
     VideoTick,
     IE,

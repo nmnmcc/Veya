@@ -6,7 +6,14 @@ import { SvgDecoder } from "./SvgDecoder";
 import { SvgProber } from "./SvgProber";
 
 export namespace Svg {
-  /** Options for creating a still-image clip from SVG markup. */
+  export interface Svg<E = never, R = never> extends VideoClip.VideoClip<
+    VideoTick,
+    never,
+    never,
+    E | SvgDecoder.Error | SvgProber.Error,
+    R | SvgDecoder | SvgProber
+  > {}
+
   export type Options<E = never, R = never> = {
     /** Output frame size in pixels. Defaults to the probed SVG size. */
     readonly size?: Effectable<Size, E, R> | undefined;
@@ -16,16 +23,6 @@ export namespace Svg {
     readonly background?: Effectable<string, E, R> | undefined;
   };
 
-  /** A one-frame video clip rendered from SVG markup. */
-  export interface Svg<E = never, R = never> extends VideoClip.VideoClip<
-    VideoTick,
-    never,
-    never,
-    E | SvgDecoder.Error | SvgProber.Error,
-    R | SvgDecoder | SvgProber
-  > {}
-
-  /** Creates a one-frame video clip from SVG markup. */
   export const make = <OE = never, OR = never>(
     source: SvgDecoder.MediaSource,
     options: Options<OE, OR> = {},

@@ -3,10 +3,16 @@ import { Stream } from "effect";
 import type { VideoClip, VideoTick } from "@veya/core";
 
 export namespace VideoFilter {
-  /** Function that transforms one bitmap frame into another. */
+  export interface VideoFilter<
+    I = VideoTick,
+    IE = never,
+    IR = never,
+    OE = never,
+    OR = never,
+  > extends VideoClip.VideoClip<I, IE, IR, OE, OR> {}
+
   export type Filter = (bitmap: VideoClip.Bitmap) => VideoClip.Bitmap;
 
-  /** Coordinates and frame dimensions for a pixel mapper callback. */
   export interface PixelContext {
     /** Zero-based horizontal pixel coordinate. */
     readonly x: number;
@@ -18,19 +24,8 @@ export namespace VideoFilter {
     readonly height: number;
   }
 
-  /** Function that transforms a single pixel. */
   export type PixelMapper = (pixel: VideoClip.RGBA, context: PixelContext) => VideoClip.RGBA;
 
-  /** A video clip with one or more bitmap filters applied to each frame. */
-  export interface VideoFilter<
-    I = VideoTick,
-    IE = never,
-    IR = never,
-    OE = never,
-    OR = never,
-  > extends VideoClip.VideoClip<I, IE, IR, OE, OR> {}
-
-  /** Applies filters to every frame in a video clip. */
   export const make =
     <I = VideoTick, IE = never, IR = never, OE = never, OR = never>(
       clip: VideoClip.VideoClip<I, IE, IR, OE, OR>,
@@ -39,22 +34,18 @@ export namespace VideoFilter {
     (stream) =>
       Stream.map(clip(stream), compose(filters));
 
-  /** Applies filters to a single bitmap frame. */
   export const apply = (bitmap: VideoClip.Bitmap, filters: readonly Filter[]): VideoClip.Bitmap => {
     return compose(filters)(bitmap);
   };
 
-  /** Composes filters so they run from first to last. */
   export const compose = (filters: readonly Filter[]): Filter => {
     return (bitmap) => filters.reduce((frame, filter) => filter(frame), bitmap);
   };
 
-  /** Returns a filter that leaves the frame unchanged. */
   export const identity = (): Filter => {
     return (bitmap) => bitmap;
   };
 
-  /** Creates a filter by mapping every pixel in a frame. */
   export const mapPixels = (mapper: PixelMapper): Filter => {
     return (bitmap) => {
       const { height, width } = getBitmapSize(bitmap);
@@ -69,7 +60,6 @@ export namespace VideoFilter {
     };
   };
 
-  /** Reads bitmap dimensions as `{ width, height }`. */
   export const getBitmapSize = (bitmap: VideoClip.Bitmap): { readonly height: number; readonly width: number } => {
     return {
       height: bitmap.length,
@@ -110,7 +100,6 @@ export namespace VideoFilter {
     return red * 0.2126 + green * 0.7152 + blue * 0.0722;
   };
 
-  /** Linearly interpolates between two numbers. */
   export const mix = (from: number, to: number, amount: number): number => {
     return from + (to - from) * amount;
   };
@@ -148,12 +137,10 @@ export namespace VideoFilter {
     return Math.round(clamp(finiteOr(value, min), min, max));
   };
 
-  /** Clamps a number between a minimum and maximum value. */
   export const clamp = (value: number, min: number, max: number): number => {
     return Math.min(max, Math.max(min, value));
   };
 
-  /** Returns a fallback when a value is `NaN` or infinite. */
   export const finiteOr = (value: number, fallback: number): number => {
     return Number.isFinite(value) ? value : fallback;
   };

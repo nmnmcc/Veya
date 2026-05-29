@@ -8,7 +8,6 @@ import { MediabunnyEncoding } from "./MediabunnyEncoding";
 import { MediabunnyMultiplexer } from "./MediabunnyMultiplexer";
 
 export namespace MediabunnyVideoEncoder {
-  /** Options for encoding a video stream with Mediabunny. */
   export interface Options {
     /** Video codec configuration passed to `VideoSampleSource`. */
     readonly encoding?: VideoEncodingConfig | undefined;
@@ -18,7 +17,6 @@ export namespace MediabunnyVideoEncoder {
     readonly track?: VideoTrackMetadata | undefined;
   }
 
-  /** Encodes a video stream into an in-memory media file. */
   export const encode = <E = never, R = never>(
     encodable: VideoClip.Encodable<E, R>,
     options: Options = {},

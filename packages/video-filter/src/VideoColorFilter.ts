@@ -3,7 +3,6 @@ import type { VideoClip } from "@veya/core";
 import { VideoFilter } from "./VideoFilter";
 
 export namespace VideoColorFilter {
-  /** Options for converting pixels into two colors by luminance. */
   export interface ThresholdOptions {
     /** Luminance cutoff in the 0-255 range. Defaults to 128. */
     readonly level?: number | undefined;

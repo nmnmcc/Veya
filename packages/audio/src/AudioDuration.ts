@@ -3,9 +3,8 @@ import { Data, Duration, Effect, Schema } from "effect";
 import { AudioMetadata } from "./AudioMetadata";
 
 export namespace AudioDuration {
-  /** Rounding strategy used when converting seconds to sample counts. */
+  /** Rounding strategy used when converting time into sample counts. */
   export const Rounding = Schema.Literals(["floor", "ceil", "round"]);
-  /** Rounding strategy used when converting seconds to sample counts. */
   export type Rounding = typeof Rounding.Type;
 
   /** Converts an Effect duration input into a number of samples using `AudioMetadata.samplerate`. */
@@ -24,11 +23,8 @@ export namespace AudioDuration {
       return Math[Schema.decodeSync(Rounding)(rounding)](duration * samplerate);
     });
 
-  /** Error raised when a sample count cannot be computed. */
   export class Error extends Data.TaggedError("Error")<{
-    /** Original error or thrown value, when available. */
     readonly cause?: unknown;
-    /** Structured reason for the duration conversion failure. */
     readonly reason: Error.MissingSamplerate;
   }> {}
   export namespace Error {

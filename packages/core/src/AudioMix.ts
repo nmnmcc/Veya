@@ -7,7 +7,6 @@ import type { AudioTick } from "./AudioTick";
 import type { AudioTrack } from "./AudioTrack";
 
 export namespace AudioMix {
-  /** A mixed audio clip made from one or more audio tracks. */
   export interface AudioMix<IE = never, IR = never, OE = never, OR = never> extends AudioClip.AudioClip<
     AudioTick,
     IE,
@@ -16,7 +15,6 @@ export namespace AudioMix {
     OR
   > {}
 
-  /** Mixes tracks into the channel layout described by `AudioContext`. */
   export const make =
     <IE = never, IR = never, OE = never, OR = never>(
       tracks: readonly AudioTrack.AudioTrack<IE, IR, OE, OR>[],

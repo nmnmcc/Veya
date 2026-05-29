@@ -8,7 +8,6 @@ import { MediabunnyEncoding } from "./MediabunnyEncoding";
 import { MediabunnyMultiplexer } from "./MediabunnyMultiplexer";
 
 export namespace MediabunnyAudioEncoder {
-  /** Options for encoding an audio stream with Mediabunny. */
   export interface Options {
     /** Audio codec configuration passed to `AudioSampleSource`. */
     readonly encoding?: AudioEncodingConfig | undefined;
@@ -20,7 +19,6 @@ export namespace MediabunnyAudioEncoder {
     readonly track?: AudioTrackMetadata | undefined;
   }
 
-  /** Encodes an audio stream into an in-memory media file. */
   export const encode = <E = never, R = never>(
     encodable: AudioClip.Encodable<E, R>,
     options: Options = {},

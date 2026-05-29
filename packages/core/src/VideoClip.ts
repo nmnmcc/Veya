@@ -4,21 +4,15 @@ import type { Clip, Size } from "./Base";
 import type { VideoColorSpace } from "./VideoColorSpace";
 
 export namespace VideoClip {
-  const RorGorB = Schema.Number.check(
-    Schema.isBetween({
-      minimum: 0,
-      maximum: 255,
-    }),
-  );
-  const A = Schema.Number.check(
-    Schema.isBetween({
-      minimum: 0,
-      maximum: 1,
-    }),
-  );
+  export type VideoClip<I, IE = never, IR = never, OE = never, OR = never> = Clip<I, Bitmap, IE, IR, OE, OR>;
+
+  export type Encodable<E = never, R = never> = Stream.Stream<Bitmap, E, R>;
+
+  const R_G_B = Schema.Number.check(Schema.isBetween({ minimum: 0, maximum: 255 }));
+  const A = Schema.Number.check(Schema.isBetween({ minimum: 0, maximum: 1 }));
 
   /** Runtime schema for an RGB color tuple. */
-  export const RGB = Schema.Tuple([RorGorB, RorGorB, RorGorB]);
+  export const RGB = Schema.Tuple([R_G_B, R_G_B, R_G_B]);
   /** RGB color tuple in red, green, and blue channel order. */
   export type RGB = typeof RGB.Type;
 
@@ -77,8 +71,4 @@ export namespace VideoClip {
       return new ImageData(data, width, height, { colorSpace });
     };
   }
-
-  export type VideoClip<I, IE = never, IR = never, OE = never, OR = never> = Clip<I, Bitmap, IE, IR, OE, OR>;
-
-  export type Encodable<E = never, R = never> = Stream.Stream<Bitmap, E, R>;
 }

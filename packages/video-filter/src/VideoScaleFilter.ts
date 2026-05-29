@@ -12,13 +12,11 @@ export namespace VideoScaleFilter {
   /** Uniform scale factor or separate horizontal and vertical scale factors. */
   export type ScaleFactor = number | readonly [scaleX: number, scaleY: number];
 
-  /** Options for resizing frames. */
   export interface ResizeOptions {
     /** Sampling algorithm. Defaults to `bilinear`. */
     readonly algorithm?: Algorithm | undefined;
   }
 
-  /** Options for fitting frames into a fixed size. */
   export interface FitOptions extends ResizeOptions {
     /** Fit strategy. Defaults to `contain`. */
     readonly mode?: FitMode | undefined;
@@ -26,7 +24,6 @@ export namespace VideoScaleFilter {
     readonly background?: VideoClip.RGBA | undefined;
   }
 
-  /** Fit options for helpers whose mode is already fixed. */
   export type FixedFitOptions = Omit<FitOptions, "mode">;
 
   /** Resizes every frame to an exact target size. */
@@ -36,9 +33,6 @@ export namespace VideoScaleFilter {
 
     return (bitmap) => resizeBitmap(bitmap, target, algorithm);
   };
-
-  /** Alias for `resize`. */
-  export const fill = resize;
 
   /** Scales every frame by a uniform or per-axis factor. */
   export const scale = (factor: ScaleFactor, options: ResizeOptions = {}): VideoFilter.Filter => {

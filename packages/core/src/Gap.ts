@@ -7,7 +7,6 @@ import { VideoContext } from "./VideoContext";
 import type { VideoTick } from "./VideoTick";
 
 export namespace Gap {
-  /** Transparent video frames that occupy time between clips. */
   export interface Gap<E = never, R = never> extends VideoClip.VideoClip<
     VideoTick,
     never,
@@ -16,7 +15,6 @@ export namespace Gap {
     R | VideoContext
   > {}
 
-  /** Creates a transparent gap for the requested number of frames. */
   export const make =
     <E = never, R = never>(duration: Effectable<number, E, R>): Gap<E, R> =>
     (stream) =>

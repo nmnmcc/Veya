@@ -1,13 +1,13 @@
 import { Effect, Stream } from "effect";
 
-import { Effectable, type Size, type VideoClip, type VideoTick } from "@veya/core";
+import { Effectable, type Size, type VideoClip } from "@veya/core";
 
 import { SvgDecoder } from "./SvgDecoder";
 import { SvgProber } from "./SvgProber";
 
 export namespace Svg {
-  export interface Svg<E = never, R = never> extends VideoClip.VideoClip<
-    VideoTick,
+  export interface Svg<I, E = never, R = never> extends VideoClip.VideoClip<
+    I,
     never,
     never,
     E | SvgDecoder.Error | SvgProber.Error,
@@ -23,10 +23,10 @@ export namespace Svg {
     readonly background?: Effectable<string, E, R> | undefined;
   };
 
-  export const make = <OE = never, OR = never>(
+  export const make = <I, OE = never, OR = never>(
     source: SvgDecoder.MediaSource,
     options: Options<OE, OR> = {},
-  ): Svg<OE, OR> => {
+  ): Svg<I, OE, OR> => {
     return (stream) =>
       Stream.unwrap(
         Effect.gen(function* () {

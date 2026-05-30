@@ -1,12 +1,12 @@
 import { Effect, pipe, Ref, Stream } from "effect";
 
-import { Effectable, type Size, type VideoClip, VideoColorSpace, VideoContext, type VideoTick } from "@veya/core";
+import { Effectable, type Size, type VideoClip, VideoColorSpace, VideoContext } from "@veya/core";
 
 import { CanvasRenderingContext } from "./CanvasRenderingContext";
 
 export namespace Canvas {
-  export interface Canvas<E = never, R = never> extends VideoClip.VideoClip<
-    VideoTick,
+  export interface Canvas<I, E = never, R = never> extends VideoClip.VideoClip<
+    I,
     never,
     never,
     E | CanvasRenderingContext.Error,
@@ -31,9 +31,8 @@ export namespace Canvas {
     readonly colorSpace: VideoColorSpace.VideoColorSpace;
   }
 
-  export type Draw<S, E, R> = (
-    /** Zero-based frame index. */
-    index: number,
+  export type Draw<I, S, E, R> = (
+    input: I,
     /** State returned by the previous draw call, or the initial state for the first frame. */
     state: S,
     /** Resolved output settings for the current clip. */
@@ -41,12 +40,12 @@ export namespace Canvas {
   ) => Effect.Effect<S, E, R | CanvasRenderingContext>;
 
   export const make =
-    <S, IE = never, IR = never, DE = never, DR = never, OE = never, OR = never>(
+    <I, S, IE = never, IR = never, DE = never, DR = never, OE = never, OR = never>(
       init: Effect.Effect<S, IE, IR>,
-      draw: Draw<S, DE, DR>,
+      draw: Draw<I, S, DE, DR>,
       duration: number,
       options: Options<OE, OR> = {},
-    ): Canvas<IE | DE | OE, IR | DR | OR> =>
+    ): Canvas<I, IE | DE | OE, IR | DR | OR> =>
     (stream) =>
       Stream.unwrap(
         Effect.gen(function* () {

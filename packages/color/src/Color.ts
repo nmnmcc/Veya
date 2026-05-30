@@ -1,16 +1,10 @@
 import { Effect, pipe, Stream } from "effect";
 
-import { VideoContext, type VideoTick } from "@veya/core";
+import { VideoContext } from "@veya/core";
 import { Effectable, type Size, type VideoClip } from "@veya/core";
 
 export namespace Color {
-  export interface Color<E = never, R = never> extends VideoClip.VideoClip<
-    VideoTick,
-    never,
-    never,
-    E,
-    R | VideoContext
-  > {}
+  export interface Color<I, E = never, R = never> extends VideoClip.VideoClip<I, never, never, E, R | VideoContext> {}
 
   export type Options<E = never, R = never> = {
     /** Frame size in pixels. Defaults to the active `VideoContext` size. */
@@ -18,7 +12,11 @@ export namespace Color {
   };
 
   export const make =
-    <OE = never, OR = never>(color: VideoClip.RGBA, duration: number, options: Options<OE, OR> = {}): Color<OE, OR> =>
+    <I, OE = never, OR = never>(
+      color: VideoClip.RGBA,
+      duration: number,
+      options: Options<OE, OR> = {},
+    ): Color<I, OE, OR> =>
     (stream) =>
       Stream.unwrap(
         Effect.gen(function* () {

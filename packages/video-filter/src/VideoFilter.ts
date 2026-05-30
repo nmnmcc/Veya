@@ -1,15 +1,15 @@
-import { Stream } from "effect";
+import { Function, Stream } from "effect";
 
-import type { VideoClip, VideoTick } from "@veya/core";
+import type { VideoClip } from "@veya/core";
 
 export namespace VideoFilter {
-  export interface VideoFilter<
-    I = VideoTick,
-    IE = never,
-    IR = never,
-    OE = never,
-    OR = never,
-  > extends VideoClip.VideoClip<I, IE, IR, OE, OR> {}
+  export interface VideoFilter<I, IE = never, IR = never, OE = never, OR = never> extends VideoClip.VideoClip<
+    I,
+    IE,
+    IR,
+    OE,
+    OR
+  > {}
 
   export type Filter = (bitmap: VideoClip.Bitmap) => VideoClip.Bitmap;
 
@@ -26,17 +26,32 @@ export namespace VideoFilter {
 
   export type PixelMapper = (pixel: VideoClip.RGBA, context: PixelContext) => VideoClip.RGBA;
 
-  export const make =
-    <I = VideoTick, IE = never, IR = never, OE = never, OR = never>(
+  export const make: {
+    (
+      filters: readonly Filter[],
+    ): <I, IE = never, IR = never, OE = never, OR = never>(
+      clip: VideoClip.VideoClip<I, IE, IR, OE, OR>,
+    ) => VideoFilter<I, IE, IR, OE, OR>;
+    <I, IE = never, IR = never, OE = never, OR = never>(
+      clip: VideoClip.VideoClip<I, IE, IR, OE, OR>,
+      filters: readonly Filter[],
+    ): VideoFilter<I, IE, IR, OE, OR>;
+  } = Function.dual(
+    2,
+    <I, IE = never, IR = never, OE = never, OR = never>(
       clip: VideoClip.VideoClip<I, IE, IR, OE, OR>,
       filters: readonly Filter[],
     ): VideoFilter<I, IE, IR, OE, OR> =>
-    (stream) =>
-      Stream.map(clip(stream), compose(filters));
+      (stream) =>
+        Stream.map(clip(stream), compose(filters)),
+  );
 
-  export const apply = (bitmap: VideoClip.Bitmap, filters: readonly Filter[]): VideoClip.Bitmap => {
+  export const apply: {
+    (filters: readonly Filter[]): (bitmap: VideoClip.Bitmap) => VideoClip.Bitmap;
+    (bitmap: VideoClip.Bitmap, filters: readonly Filter[]): VideoClip.Bitmap;
+  } = Function.dual(2, (bitmap: VideoClip.Bitmap, filters: readonly Filter[]): VideoClip.Bitmap => {
     return compose(filters)(bitmap);
-  };
+  });
 
   export const compose = (filters: readonly Filter[]): Filter => {
     return (bitmap) => filters.reduce((frame, filter) => filter(frame), bitmap);
@@ -73,7 +88,10 @@ export namespace VideoFilter {
   };
 
   /** Reads a pixel, clamping coordinates to the nearest pixel inside the bitmap. */
-  export const readPixel = (bitmap: VideoClip.Bitmap, x: number, y: number): VideoClip.RGBA => {
+  export const readPixel: {
+    (x: number, y: number): (bitmap: VideoClip.Bitmap) => VideoClip.RGBA;
+    (bitmap: VideoClip.Bitmap, x: number, y: number): VideoClip.RGBA;
+  } = Function.dual(3, (bitmap: VideoClip.Bitmap, x: number, y: number): VideoClip.RGBA => {
     if (bitmap.length === 0) {
       return [0, 0, 0, 0];
     }
@@ -88,7 +106,7 @@ export namespace VideoFilter {
     const clampedX = clampInteger(x, 0, row.length - 1);
 
     return normalizePixel(row[clampedX]);
-  };
+  });
 
   /** Creates an RGBA pixel with RGB clamped to byte values and alpha clamped to `[0, 1]`. */
   export const rgba = (red: number, green: number, blue: number, alpha: number): VideoClip.RGBA => {

@@ -13,7 +13,7 @@ export namespace VideoCompositor {
   export interface VideoCompositor {
     readonly composite: (
       layers: readonly VideoClip.Bitmap[],
-      options: VideoCompositeOptions,
+      options: Options,
     ) => Effect.Effect<VideoClip.Bitmap, Error>;
   }
 
@@ -25,7 +25,7 @@ export namespace VideoCompositor {
     export class CompositeFailed extends Data.TaggedError("CompositeFailed")<{}> {}
   }
 
-  export interface VideoCompositeOptions {
+  export interface Options {
     /** Output frame size in pixels. */
     readonly size: Size;
     /** Output color space for the composed frame. */

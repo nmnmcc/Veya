@@ -4,19 +4,12 @@ import type { Size } from "./Base";
 import { Effectable } from "./Effectable";
 import type { VideoClip } from "./VideoClip";
 import { VideoContext } from "./VideoContext";
-import type { VideoTick } from "./VideoTick";
 
 export namespace Gap {
-  export interface Gap<E = never, R = never> extends VideoClip.VideoClip<
-    VideoTick,
-    never,
-    never,
-    E,
-    R | VideoContext
-  > {}
+  export interface Gap<I, E = never, R = never> extends VideoClip.VideoClip<I, never, never, E, R | VideoContext> {}
 
   export const make =
-    <E = never, R = never>(duration: Effectable<number, E, R>): Gap<E, R> =>
+    <I, E = never, R = never>(duration: Effectable<number, E, R>): Gap<I, E, R> =>
     (stream) =>
       Stream.unwrap(
         VideoContext.use(({ size }) =>

@@ -1,4 +1,4 @@
-import { Effect, Schema, Stream } from "effect";
+import { Effect, Function, Schema, Stream } from "effect";
 
 import type { Clip, Size } from "./Base";
 import type { VideoColorSpace } from "./VideoColorSpace";
@@ -54,41 +54,80 @@ export namespace VideoClip {
     };
 
     /** Converts a Veya bitmap into browser `ImageData`. */
-    export const toImageData = (
-      bitmap: Bitmap,
-      [width, height]: Size = [bitmap[0]?.length!, bitmap.length],
-      colorSpace: VideoColorSpace.VideoColorSpace = "srgb",
-    ): ImageData => {
-      const data = new Uint8ClampedArray(width * height * 4);
-      let offset = 0;
+    export const toImageData: {
+      (size?: Size, colorSpace?: VideoColorSpace.VideoColorSpace): (bitmap: Bitmap) => ImageData;
+      (bitmap: Bitmap, size?: Size, colorSpace?: VideoColorSpace.VideoColorSpace): ImageData;
+    } = Function.dual(
+      (args) => isBitmap(args[0]),
+      (
+        bitmap: Bitmap,
+        [width, height]: Size = [bitmap[0]?.length!, bitmap.length],
+        colorSpace: VideoColorSpace.VideoColorSpace = "srgb",
+      ): ImageData => {
+        const data = new Uint8ClampedArray(width * height * 4);
+        let offset = 0;
 
-      for (let y = 0; y < height; y += 1) {
-        const row = bitmap[y];
+        for (let y = 0; y < height; y += 1) {
+          const row = bitmap[y];
 
-        for (let x = 0; x < width; x += 1) {
-          const pixel = Schema.decodeUnknownSync(RGBA)(row?.[x]);
+          for (let x = 0; x < width; x += 1) {
+            const pixel = Schema.decodeUnknownSync(RGBA)(row?.[x]);
 
-          data[offset + 0] = pixel[0];
-          data[offset + 1] = pixel[1];
-          data[offset + 2] = pixel[2];
-          data[offset + 3] = pixel[3] * 255;
-          offset += 4;
+            data[offset + 0] = pixel[0];
+            data[offset + 1] = pixel[1];
+            data[offset + 2] = pixel[2];
+            data[offset + 3] = pixel[3] * 255;
+            offset += 4;
+          }
         }
-      }
 
-      return new ImageData(data, width, height, { colorSpace });
-    };
+        return new ImageData(data, width, height, { colorSpace });
+      },
+    );
   }
 
-  export const toEncodable = <I, IE = never, IR = never, OE = never, OR = never>(
-    tick: Stream.Stream<I, IE, IR>,
-    clip: VideoClip<I, IE, IR, OE, OR>,
-  ): Effect.Effect<Encodable<IE | OE, Exclude<IR | OR, VideoContext>>, never, VideoContext> =>
-    Effect.gen(function* () {
-      const context = yield* VideoContext;
+  export const toEncodable: {
+    <I, IE = never, IR = never, OE = never, OR = never>(
+      clip: VideoClip<I, IE, IR, OE, OR>,
+    ): (
+      tick: Stream.Stream<I, IE, IR>,
+    ) => Effect.Effect<Encodable<IE | OE, Exclude<IR | OR, VideoContext>>, never, VideoContext>;
+    <I, IE = never, IR = never, OE = never, OR = never>(
+      tick: Stream.Stream<I, IE, IR>,
+      clip: VideoClip<I, IE, IR, OE, OR>,
+    ): Effect.Effect<Encodable<IE | OE, Exclude<IR | OR, VideoContext>>, never, VideoContext>;
+  } = Function.dual(
+    2,
+    <I, IE = never, IR = never, OE = never, OR = never>(
+      tick: Stream.Stream<I, IE, IR>,
+      clip: VideoClip<I, IE, IR, OE, OR>,
+    ): Effect.Effect<Encodable<IE | OE, Exclude<IR | OR, VideoContext>>, never, VideoContext> =>
+      Effect.gen(function* () {
+        const context = yield* VideoContext;
 
-      return Object.assign(clip(tick).pipe(Stream.provideService(VideoContext, context)), {
-        context,
-      });
-    });
+        return Object.assign(clip(tick).pipe(Stream.provideService(VideoContext, context)), {
+          context,
+        });
+      }),
+  );
+
+  const isBitmap = (value: unknown): value is Bitmap => {
+    if (!globalThis.Array.isArray(value)) {
+      return false;
+    }
+
+    const [row] = value;
+
+    if (row === undefined) {
+      return true;
+    }
+
+    if (!globalThis.Array.isArray(row)) {
+      return false;
+    }
+
+    const [pixel] = row;
+
+    return pixel === undefined || globalThis.Array.isArray(pixel);
+  };
 }

@@ -1,6 +1,6 @@
 import { Effect, pipe, Stream } from "effect";
 
-import { Effectable, type Size, type VideoClip, VideoColorSpace, VideoContext, type VideoTick } from "@veya/core";
+import { Effectable, type Size, type VideoClip, VideoColorSpace, VideoContext } from "@veya/core";
 
 import { VideoColorSpaceConverter } from "./VideoColorSpaceConverter";
 import { VideoDecoder } from "./VideoDecoder";
@@ -9,8 +9,8 @@ import { VideoProber } from "./VideoProber";
 import { VideoResampler } from "./VideoResampler";
 
 export namespace Video {
-  export interface Video<E = never, R = never> extends VideoClip.VideoClip<
-    VideoTick,
+  export interface Video<I, E = never, R = never> extends VideoClip.VideoClip<
+    I,
     never,
     never,
     E | VideoDecoder.Error | VideoProber.Error | VideoResampler.Error,
@@ -32,10 +32,10 @@ export namespace Video {
     readonly colorSpace?: Effectable<VideoColorSpace.VideoColorSpace, E, R> | undefined;
   };
 
-  export const make = <SE = never, SR = never, OE = never, OR = never>(
+  export const make = <I, SE = never, SR = never, OE = never, OR = never>(
     source: VideoDecoder.MediaSource<SE, SR>,
     options: Options<OE, OR> = {},
-  ): Video<SE | OE, SR | Exclude<OR, VideoMetadata>> => {
+  ): Video<I, SE | OE, SR | Exclude<OR, VideoMetadata>> => {
     return (stream) =>
       Stream.unwrap(
         Effect.gen(function* () {

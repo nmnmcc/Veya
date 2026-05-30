@@ -4,12 +4,11 @@ import type { VideoClip } from "./VideoClip";
 import { VideoColorSpace } from "./VideoColorSpace";
 import { VideoCompositor } from "./VideoCompositor";
 import { VideoContext } from "./VideoContext";
-import type { VideoTick } from "./VideoTick";
 import type { VideoTrack } from "./VideoTrack";
 
 export namespace VideoComposite {
-  export interface VideoComposite<IE = never, IR = never, OE = never, OR = never> extends VideoClip.VideoClip<
-    VideoTick,
+  export interface VideoComposite<I, IE = never, IR = never, OE = never, OR = never> extends VideoClip.VideoClip<
+    I,
     IE,
     IR,
     OE,
@@ -17,9 +16,9 @@ export namespace VideoComposite {
   > {}
 
   export const make =
-    <IE = never, IR = never, OE = never, OR = never>(
-      tracks: readonly VideoTrack.VideoTrack<IE, IR, OE, OR>[],
-    ): VideoComposite<IE, IR, OE | VideoCompositor.Error, OR | VideoContext | VideoCompositor> =>
+    <I, IE = never, IR = never, OE = never, OR = never>(
+      tracks: readonly VideoTrack.VideoTrack<I, IE, IR, OE, OR>[],
+    ): VideoComposite<I, IE, IR, OE | VideoCompositor.Error, OR | VideoContext | VideoCompositor> =>
     (stream) => {
       return pipe(
         tracks,

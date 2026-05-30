@@ -1,6 +1,6 @@
 import { Context, Data } from "effect";
 
-import type { VideoClip, VideoTick } from "@veya/core";
+import type { VideoClip } from "@veya/core";
 
 export class VideoResampler extends Context.Service<VideoResampler, VideoResampler.VideoResampler>()(
   "@veya/video/VideoResampler",
@@ -8,7 +8,7 @@ export class VideoResampler extends Context.Service<VideoResampler, VideoResampl
 
 export namespace VideoResampler {
   export interface VideoResampler {
-    readonly resample: <I = VideoTick, IE = never, IR = never, OE = never, OR = never>(
+    readonly resample: <I, IE = never, IR = never, OE = never, OR = never>(
       clip: VideoClip.VideoClip<I, IE, IR, OE, OR>,
       options: Options,
     ) => VideoClip.VideoClip<I, IE, IR, OE | Error, OR>;

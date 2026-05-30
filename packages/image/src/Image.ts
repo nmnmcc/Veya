@@ -1,13 +1,13 @@
 import { Effect, Stream } from "effect";
 
-import { Effectable, type Size, type VideoClip, type VideoTick } from "@veya/core";
+import { Effectable, type Size, type VideoClip } from "@veya/core";
 
 import { ImageDecoder } from "./ImageDecoder";
 import { ImageProber } from "./ImageProber";
 
 export namespace Image {
-  export interface Image<E = never, R = never> extends VideoClip.VideoClip<
-    VideoTick,
+  export interface Image<I, E = never, R = never> extends VideoClip.VideoClip<
+    I,
     never,
     never,
     E | ImageDecoder.Error | ImageProber.Error,
@@ -19,10 +19,10 @@ export namespace Image {
     readonly size?: Effectable<Size, E, R> | undefined;
   };
 
-  export const make = <SE = never, SR = never, OE = never, OR = never>(
+  export const make = <I, SE = never, SR = never, OE = never, OR = never>(
     source: ImageDecoder.MediaSource<SE, SR>,
     options: Options<OE, OR> = {},
-  ): Image<SE | OE, SR | OR> => {
+  ): Image<I, SE | OE, SR | OR> => {
     return (stream) =>
       Stream.unwrap(
         Effect.gen(function* () {

@@ -1,6 +1,6 @@
 import { P3, sRGB, to } from "colorjs.io/fn";
 import type { RGBColorSpace } from "colorjs.io/fn";
-import { Context, Layer, Schema } from "effect";
+import { Context, Function, Layer, Schema } from "effect";
 
 import { VideoClip, VideoColorSpace } from "@veya/core";
 
@@ -24,7 +24,10 @@ export namespace VideoColorSpaceConverter {
   }
 
   export interface VideoColorGamutConverter {
-    readonly convert: (bitmap: VideoClip.Bitmap, options: Options) => VideoClip.Bitmap;
+    readonly convert: {
+      (options: Options): (bitmap: VideoClip.Bitmap) => VideoClip.Bitmap;
+      (bitmap: VideoClip.Bitmap, options: Options): VideoClip.Bitmap;
+    };
   }
 
   export const make = (): VideoColorGamutConverter => ({
@@ -33,7 +36,10 @@ export namespace VideoColorSpaceConverter {
 
   export const layer = Layer.succeed(VideoColorSpaceConverter, make());
 
-  export const convert = (bitmap: VideoClip.Bitmap, options: Options): VideoClip.Bitmap => {
+  export const convert: {
+    (options: Options): (bitmap: VideoClip.Bitmap) => VideoClip.Bitmap;
+    (bitmap: VideoClip.Bitmap, options: Options): VideoClip.Bitmap;
+  } = Function.dual(2, (bitmap: VideoClip.Bitmap, options: Options): VideoClip.Bitmap => {
     const source = options.source ?? VideoColorSpace.Default;
     const target = options.target ?? VideoColorSpace.Default;
 
@@ -60,5 +66,5 @@ export namespace VideoColorSpaceConverter {
 
       return globalThis.Array.from({ length: row.length }, (_, x) => mapper(row[x]!));
     });
-  };
+  });
 }

@@ -72,9 +72,8 @@ export namespace Video {
           }
 
           const { resample } = yield* VideoResampler;
-          const decodedClip: VideoClip.VideoClip<VideoTick, never, never, SE | VideoDecoder.Error, SR> = () => decoded;
 
-          return resample(decodedClip, {
+          return resample(() => decoded, {
             source: sourceFramerate,
             target: framerate,
           })(stream);

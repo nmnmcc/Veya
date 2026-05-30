@@ -9,7 +9,7 @@ export class VideoResampler extends Context.Service<VideoResampler, VideoResampl
 export namespace VideoResampler {
   export interface VideoResampler {
     readonly resample: <I = VideoTick, IE = never, IR = never, OE = never, OR = never>(
-      frames: VideoClip.VideoClip<I, IE, IR, OE, OR>,
+      clip: VideoClip.VideoClip<I, IE, IR, OE, OR>,
       options: Options,
     ) => VideoClip.VideoClip<I, IE, IR, OE | Error, OR>;
   }

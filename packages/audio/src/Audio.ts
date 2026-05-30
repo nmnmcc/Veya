@@ -1,6 +1,6 @@
 import { Effect, pipe, Stream } from "effect";
 
-import { type AudioClip, AudioContext, type AudioTick, Effectable } from "@veya/core";
+import { AudioClip, AudioContext, type AudioTick, Effectable } from "@veya/core";
 
 import { AudioDecoder } from "./AudioDecoder";
 import { AudioMetadata } from "./AudioMetadata";
@@ -13,7 +13,7 @@ export namespace Audio {
     never,
     never,
     E | AudioDecoder.Error | AudioProber.Error | AudioResampler.Error,
-    R | AudioContext | AudioDecoder | AudioProber | AudioResampler
+    R | AudioDecoder | AudioProber | AudioResampler
   > {}
 
   export type Options<E = never, R = never> = {
@@ -28,8 +28,14 @@ export namespace Audio {
   export const make = <SE = never, SR = never, OE = never, OR = never>(
     source: AudioDecoder.MediaSource<SE, SR>,
     options: Options<OE, OR> = {},
-  ): Audio<SE | OE, SR | Exclude<OR, AudioMetadata>> => {
-    return (stream) =>
+  ): Effect.Effect<Audio<SE | OE, SR | Exclude<OR, AudioMetadata>>, never, AudioContext> => {
+    return AudioClip.make<
+      AudioTick,
+      never,
+      never,
+      SE | OE | AudioDecoder.Error | AudioProber.Error | AudioResampler.Error,
+      SR | Exclude<OR, AudioMetadata> | AudioContext | AudioDecoder | AudioProber | AudioResampler
+    >((stream) =>
       Stream.unwrap(
         Effect.gen(function* () {
           const { probe } = yield* AudioProber;
@@ -60,6 +66,7 @@ export namespace Audio {
             }),
           );
         }),
-      );
+      ),
+    );
   };
 }

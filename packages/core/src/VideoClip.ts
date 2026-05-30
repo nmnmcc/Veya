@@ -1,20 +1,31 @@
 import { Effect, Function, Schema, Stream } from "effect";
 
 import type { Clip, Size } from "./Base";
+import { Encodable } from "./Encodable";
 import type { VideoColorSpace } from "./VideoColorSpace";
 import { VideoContext } from "./VideoContext";
 
 export namespace VideoClip {
-  export type VideoClip<I, IE = never, IR = never, OE = never, OR = never> = Clip<I, Bitmap, IE, IR, OE, OR>;
-
-  export interface Encodable<E = never, R = never> extends Stream.Stream<Bitmap, E, R> {
-    readonly context: VideoContext.VideoContext;
-  }
+  export type VideoClip<I, IE = never, IR = never, OE = never, OR = never> = Clip<
+    VideoContext.VideoContext,
+    I,
+    Bitmap,
+    IE,
+    IR,
+    OE,
+    OR
+  >;
 
   /** Creates a video clip from a stream transformer. */
   export const make = <I, IE = never, IR = never, OE = never, OR = never>(
-    clip: VideoClip<I, IE, IR, OE, OR>,
-  ): VideoClip<I, IE, IR, OE, OR> => clip;
+    clip: (stream: Stream.Stream<I, IE, IR>) => Stream.Stream<Bitmap, OE, OR>,
+  ): Effect.Effect<VideoClip<I, IE, IR, OE, Exclude<OR, VideoContext>>, never, VideoContext> =>
+    Effect.gen(function* () {
+      const context = yield* VideoContext;
+
+      return (stream: Stream.Stream<I, IE, IR>) =>
+        Encodable.make(clip(stream).pipe(Stream.provideService(VideoContext, context)), context);
+    });
 
   const R_G_B = Schema.Number.check(Schema.isBetween({ minimum: 0, maximum: 255 }));
   const A = Schema.Number.check(Schema.isBetween({ minimum: 0, maximum: 1 }));
@@ -85,31 +96,6 @@ export namespace VideoClip {
       },
     );
   }
-
-  export const toEncodable: {
-    <I, IE = never, IR = never, OE = never, OR = never>(
-      clip: VideoClip<I, IE, IR, OE, OR>,
-    ): (
-      tick: Stream.Stream<I, IE, IR>,
-    ) => Effect.Effect<Encodable<IE | OE, Exclude<IR | OR, VideoContext>>, never, VideoContext>;
-    <I, IE = never, IR = never, OE = never, OR = never>(
-      tick: Stream.Stream<I, IE, IR>,
-      clip: VideoClip<I, IE, IR, OE, OR>,
-    ): Effect.Effect<Encodable<IE | OE, Exclude<IR | OR, VideoContext>>, never, VideoContext>;
-  } = Function.dual(
-    2,
-    <I, IE = never, IR = never, OE = never, OR = never>(
-      tick: Stream.Stream<I, IE, IR>,
-      clip: VideoClip<I, IE, IR, OE, OR>,
-    ): Effect.Effect<Encodable<IE | OE, Exclude<IR | OR, VideoContext>>, never, VideoContext> =>
-      Effect.gen(function* () {
-        const context = yield* VideoContext;
-
-        return Object.assign(clip(tick).pipe(Stream.provideService(VideoContext, context)), {
-          context,
-        });
-      }),
-  );
 
   const isBitmap = (value: unknown): value is Bitmap => {
     if (!globalThis.Array.isArray(value)) {

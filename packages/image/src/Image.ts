@@ -1,6 +1,6 @@
 import { Effect, Stream } from "effect";
 
-import { Effectable, type Size, type VideoClip } from "@veya/core";
+import { Effectable, type Size, VideoClip, VideoContext } from "@veya/core";
 
 import { ImageDecoder } from "./ImageDecoder";
 import { ImageProber } from "./ImageProber";
@@ -22,8 +22,8 @@ export namespace Image {
   export const make = <I, SE = never, SR = never, OE = never, OR = never>(
     source: ImageDecoder.MediaSource<SE, SR>,
     options: Options<OE, OR> = {},
-  ): Image<I, SE | OE, SR | OR> => {
-    return (stream) =>
+  ): Effect.Effect<Image<I, SE | OE, SR | OR>, never, VideoContext> => {
+    return VideoClip.make((stream) =>
       Stream.unwrap(
         Effect.gen(function* () {
           const { decode } = yield* ImageDecoder;
@@ -39,6 +39,7 @@ export namespace Image {
             Stream.map(() => bitmap),
           );
         }),
-      );
+      ),
+    );
   };
 }

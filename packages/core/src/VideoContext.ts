@@ -13,7 +13,7 @@ export namespace VideoContext {
     readonly size: Size;
     /** Output frame rate in frames per second. */
     readonly framerate: number;
-    /** Output color space. Defaults to `srgb` when omitted. */
-    readonly colorSpace?: VideoColorSpace.VideoColorSpace;
+    /** Output color space. */
+    readonly colorSpace: VideoColorSpace.VideoColorSpace;
   }
 }

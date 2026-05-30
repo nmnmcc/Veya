@@ -2,7 +2,7 @@ import { Effect, Stream } from "effect";
 import { AudioSample, AudioSampleSource, WavOutputFormat } from "mediabunny";
 import type { AudioEncodingConfig, AudioTrackMetadata, OutputFormat } from "mediabunny";
 
-import { type AudioClip } from "@veya/core";
+import { type AudioClip, type AudioEncodable } from "@veya/core";
 
 import { MediabunnyEncoding } from "./MediabunnyEncoding";
 import { MediabunnyMultiplexer } from "./MediabunnyMultiplexer";
@@ -20,7 +20,7 @@ export namespace MediabunnyAudioEncoder {
   }
 
   export const encode = <E = never, R = never>(
-    encodable: AudioClip.Encodable<E, R>,
+    encodable: AudioEncodable<E, R>,
     options: Options = {},
   ): Effect.Effect<MediabunnyEncoding.Result, E | MediabunnyEncoding.Error, R> =>
     Effect.gen(function* () {

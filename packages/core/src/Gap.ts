@@ -2,15 +2,16 @@ import { Effect, pipe, Stream } from "effect";
 
 import type { Size } from "./Base";
 import { Effectable } from "./Effectable";
-import type { VideoClip } from "./VideoClip";
+import { VideoClip } from "./VideoClip";
 import { VideoContext } from "./VideoContext";
 
 export namespace Gap {
-  export interface Gap<I, E = never, R = never> extends VideoClip.VideoClip<I, never, never, E, R | VideoContext> {}
+  export interface Gap<I, E = never, R = never> extends VideoClip.VideoClip<I, never, never, E, R> {}
 
-  export const make =
-    <I, E = never, R = never>(duration: Effectable<number, E, R>): Gap<I, E, R> =>
-    (stream) =>
+  export const make = <I, E = never, R = never>(
+    duration: Effectable<number, E, R>,
+  ): Effect.Effect<Gap<I, E, R>, never, VideoContext> =>
+    VideoClip.make((stream) =>
       Stream.unwrap(
         VideoContext.use(({ size }) =>
           Effect.map(Effectable.wrap(duration), (duration) =>
@@ -21,7 +22,8 @@ export namespace Gap {
             ),
           ),
         ),
-      );
+      ),
+    );
 
   const makeZeroBitmap = ([width, height]: Size): VideoClip.Bitmap => {
     return globalThis.Array.from({ length: height }, () =>

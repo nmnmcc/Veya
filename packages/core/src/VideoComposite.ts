@@ -1,7 +1,6 @@
 import { Array, Effect, pipe, Stream } from "effect";
 
-import type { VideoClip } from "./VideoClip";
-import { VideoColorSpace } from "./VideoColorSpace";
+import { VideoClip } from "./VideoClip";
 import { VideoCompositor } from "./VideoCompositor";
 import { VideoContext } from "./VideoContext";
 import type { VideoTrack } from "./VideoTrack";
@@ -15,11 +14,10 @@ export namespace VideoComposite {
     OR
   > {}
 
-  export const make =
-    <I, IE = never, IR = never, OE = never, OR = never>(
-      tracks: readonly VideoTrack.VideoTrack<I, IE, IR, OE, OR>[],
-    ): VideoComposite<I, IE, IR, OE | VideoCompositor.Error, OR | VideoContext | VideoCompositor> =>
-    (stream) => {
+  export const make = <I, IE = never, IR = never, OE = never, OR = never>(
+    tracks: readonly VideoTrack.VideoTrack<I, IE, IR, OE, OR>[],
+  ): Effect.Effect<VideoComposite<I, IE, IR, OE | VideoCompositor.Error, OR | VideoCompositor>, never, VideoContext> =>
+    VideoClip.make<I, IE, IR, OE | VideoCompositor.Error, OR | VideoContext | VideoCompositor>((stream) => {
       return pipe(
         tracks,
         ([head, ...tail]) => {
@@ -36,7 +34,7 @@ export namespace VideoComposite {
             Effect.flatMap(({ colorSpace, size }) =>
               VideoCompositor.use(({ composite }) =>
                 composite(frames, {
-                  colorSpace: colorSpace ?? VideoColorSpace.Default,
+                  colorSpace,
                   size,
                 }),
               ),
@@ -44,5 +42,5 @@ export namespace VideoComposite {
           ),
         ),
       );
-    };
+    });
 }

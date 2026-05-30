@@ -1,6 +1,6 @@
 import { Effect, pipe, Ref, Stream } from "effect";
 
-import { Effectable, type Size, type VideoClip, VideoColorSpace, VideoContext } from "@veya/core";
+import { Effectable, type Size, VideoClip, VideoColorSpace, VideoContext } from "@veya/core";
 
 import { CanvasRenderingContext } from "./CanvasRenderingContext";
 
@@ -10,7 +10,7 @@ export namespace Canvas {
     never,
     never,
     E | CanvasRenderingContext.Error,
-    R | VideoContext | CanvasRenderingContext
+    R | CanvasRenderingContext
   > {}
 
   export type Options<E = never, R = never> = {
@@ -39,14 +39,19 @@ export namespace Canvas {
     options: ResolvedOptions,
   ) => Effect.Effect<S, E, R | CanvasRenderingContext>;
 
-  export const make =
-    <I, S, IE = never, IR = never, DE = never, DR = never, OE = never, OR = never>(
-      init: Effect.Effect<S, IE, IR>,
-      draw: Draw<I, S, DE, DR>,
-      duration: number,
-      options: Options<OE, OR> = {},
-    ): Canvas<I, IE | DE | OE, IR | DR | OR> =>
-    (stream) =>
+  export const make = <I, S, IE = never, IR = never, DE = never, DR = never, OE = never, OR = never>(
+    init: Effect.Effect<S, IE, IR>,
+    draw: Draw<I, S, DE, DR>,
+    duration: number,
+    options: Options<OE, OR> = {},
+  ): Effect.Effect<Canvas<I, IE | DE | OE, IR | DR | OR>, never, VideoContext> =>
+    VideoClip.make<
+      I,
+      never,
+      never,
+      IE | DE | OE | CanvasRenderingContext.Error,
+      IR | DR | OR | VideoContext | CanvasRenderingContext
+    >((stream) =>
       Stream.unwrap(
         Effect.gen(function* () {
           const video = yield* VideoContext;
@@ -81,5 +86,6 @@ export namespace Canvas {
             Stream.provideService(CanvasRenderingContext.Context2D, context),
           );
         }),
-      );
+      ),
+    );
 }

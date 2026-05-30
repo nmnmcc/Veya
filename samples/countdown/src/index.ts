@@ -17,34 +17,34 @@ const outputPath = fileURLToPath(new URL("../dist/countdown.mp4", import.meta.ur
 const videoContext = VideoContext.of({
   framerate: 1,
   size: [3, 7],
+  colorSpace: "srgb",
 });
-
-const track = VideoTrack.make(
-  pipe(
-    Array.reverse(digits),
-    Array.map((digit) =>
-      VideoClip.make((stream: VideoTick.Frames) =>
-        Stream.unwrap(
-          Effect.gen(function* () {
-            const { framerate } = yield* VideoContext;
-
-            return stream.pipe(
-              Stream.take(framerate),
-              Stream.map(() => digit),
-            );
-          }),
-        ),
-      ),
-    ),
-  ),
-);
 
 const program = Effect.gen(function* () {
   const fs = yield* FileSystem.FileSystem;
+  const clips = yield* Effect.all(
+    pipe(
+      Array.reverse(digits),
+      Array.map((digit) =>
+        VideoClip.make((stream: VideoTick.Frames) =>
+          Stream.unwrap(
+            Effect.gen(function* () {
+              const { framerate } = yield* VideoContext;
 
-  const encodable = yield* VideoClip.toEncodable(VideoTick.frames(), track).pipe(
-    Effect.provideService(VideoContext, videoContext),
+              return stream.pipe(
+                Stream.take(framerate),
+                Stream.map(() => digit),
+              );
+            }),
+          ),
+        ),
+      ),
+    ),
+    { concurrency: "unbounded" },
   );
+  const track = yield* VideoTrack.make(clips);
+
+  const encodable = track(VideoTick.frames());
   const result = yield* MediabunnyVideoEncoder.encode(encodable, {
     encoding: {
       alpha: "keep",
@@ -59,4 +59,6 @@ const program = Effect.gen(function* () {
   yield* Console.log(`Wrote ${outputPath}`);
 });
 
-Effect.runPromise(program.pipe(Effect.provide(NodeServices.layer))).catch(console.error);
+Effect.runPromise(
+  program.pipe(Effect.provideService(VideoContext, videoContext), Effect.provide(NodeServices.layer)),
+).catch(console.error);

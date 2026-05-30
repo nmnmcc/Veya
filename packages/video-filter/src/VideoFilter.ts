@@ -1,6 +1,6 @@
-import { Function, Stream } from "effect";
+import { Effect, Function, Stream } from "effect";
 
-import type { VideoClip } from "@veya/core";
+import { VideoClip, VideoContext } from "@veya/core";
 
 export namespace VideoFilter {
   export interface VideoFilter<I, IE = never, IR = never, OE = never, OR = never> extends VideoClip.VideoClip<
@@ -31,19 +31,18 @@ export namespace VideoFilter {
       filters: readonly Filter[],
     ): <I, IE = never, IR = never, OE = never, OR = never>(
       clip: VideoClip.VideoClip<I, IE, IR, OE, OR>,
-    ) => VideoFilter<I, IE, IR, OE, OR>;
+    ) => Effect.Effect<VideoFilter<I, IE, IR, OE, OR>, never, VideoContext>;
     <I, IE = never, IR = never, OE = never, OR = never>(
       clip: VideoClip.VideoClip<I, IE, IR, OE, OR>,
       filters: readonly Filter[],
-    ): VideoFilter<I, IE, IR, OE, OR>;
+    ): Effect.Effect<VideoFilter<I, IE, IR, OE, OR>, never, VideoContext>;
   } = Function.dual(
     2,
     <I, IE = never, IR = never, OE = never, OR = never>(
       clip: VideoClip.VideoClip<I, IE, IR, OE, OR>,
       filters: readonly Filter[],
-    ): VideoFilter<I, IE, IR, OE, OR> =>
-      (stream) =>
-        Stream.map(clip(stream), compose(filters)),
+    ): Effect.Effect<VideoFilter<I, IE, IR, OE, OR>, never, VideoContext> =>
+      VideoClip.make<I, IE, IR, OE, OR>((stream) => Stream.map(clip(stream), compose(filters))),
   );
 
   export const apply: {

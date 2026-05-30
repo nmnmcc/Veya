@@ -1,6 +1,6 @@
 import { Array, Effect, pipe, Stream } from "effect";
 
-import type { AudioClip } from "./AudioClip";
+import { AudioClip } from "./AudioClip";
 import { AudioContext } from "./AudioContext";
 import { AudioMixer } from "./AudioMixer";
 import type { AudioTick } from "./AudioTick";
@@ -15,11 +15,10 @@ export namespace AudioMix {
     OR
   > {}
 
-  export const make =
-    <IE = never, IR = never, OE = never, OR = never>(
-      tracks: readonly AudioTrack.AudioTrack<IE, IR, OE, OR>[],
-    ): AudioMix<IE, IR, OE | AudioMixer.Error, OR | AudioContext | AudioMixer> =>
-    (stream) => {
+  export const make = <IE = never, IR = never, OE = never, OR = never>(
+    tracks: readonly AudioTrack.AudioTrack<IE, IR, OE, OR>[],
+  ): Effect.Effect<AudioMix<IE, IR, OE | AudioMixer.Error, OR | AudioMixer>, never, AudioContext> =>
+    AudioClip.make<AudioTick, IE, IR, OE | AudioMixer.Error, OR | AudioContext | AudioMixer>((stream) => {
       return pipe(
         tracks,
         ([head, ...tail]) => {
@@ -42,5 +41,5 @@ export namespace AudioMix {
           ),
         ),
       );
-    };
+    });
 }

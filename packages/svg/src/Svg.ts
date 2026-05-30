@@ -1,6 +1,6 @@
 import { Effect, Stream } from "effect";
 
-import { Effectable, type Size, type VideoClip } from "@veya/core";
+import { Effectable, type Size, VideoClip, VideoContext } from "@veya/core";
 
 import { SvgDecoder } from "./SvgDecoder";
 import { SvgProber } from "./SvgProber";
@@ -26,8 +26,8 @@ export namespace Svg {
   export const make = <I, OE = never, OR = never>(
     source: SvgDecoder.MediaSource,
     options: Options<OE, OR> = {},
-  ): Svg<I, OE, OR> => {
-    return (stream) =>
+  ): Effect.Effect<Svg<I, OE, OR>, never, VideoContext> => {
+    return VideoClip.make((stream) =>
       Stream.unwrap(
         Effect.gen(function* () {
           const { decode } = yield* SvgDecoder;
@@ -49,6 +49,7 @@ export namespace Svg {
             Stream.map(() => bitmap),
           );
         }),
-      );
+      ),
+    );
   };
 }

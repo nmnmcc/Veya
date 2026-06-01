@@ -18,7 +18,7 @@ export namespace AudioMix {
   export const make = <IE = never, IR = never, OE = never, OR = never>(
     tracks: readonly AudioTrack.AudioTrack<IE, IR, OE, OR>[],
   ): Effect.Effect<AudioMix<IE, IR, OE | AudioMixer.Error, OR | AudioMixer>, never, AudioContext> =>
-    AudioClip.make<AudioTick, IE, IR, OE | AudioMixer.Error, OR | AudioContext | AudioMixer>((stream) => {
+    AudioClip.make((stream) => {
       return pipe(
         tracks,
         ([head, ...tail]) => {

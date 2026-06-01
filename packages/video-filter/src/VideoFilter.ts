@@ -42,7 +42,7 @@ export namespace VideoFilter {
       clip: VideoClip.VideoClip<I, IE, IR, OE, OR>,
       filters: readonly Filter[],
     ): Effect.Effect<VideoFilter<I, IE, IR, OE, OR>, never, VideoContext> =>
-      VideoClip.make<I, IE, IR, OE, OR>((stream) => Stream.map(clip(stream), compose(filters))),
+      VideoClip.make((stream) => Stream.map(clip(stream), compose(filters))),
   );
 
   export const apply: {

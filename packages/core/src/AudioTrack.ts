@@ -20,7 +20,7 @@ export namespace AudioTrack {
     OE,
     OR
   >[]): Effect.Effect<AudioTrack<IE, IR, OE, OR>, never, AudioContext> =>
-    AudioClip.make<AudioTick, IE, IR, OE, OR>((stream) => {
+    AudioClip.make((stream) => {
       if (!head) return Stream.empty;
 
       const first: Stream.Stream<AudioClip.Channel[], OE, OR> = head(stream);

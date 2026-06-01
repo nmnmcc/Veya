@@ -16,7 +16,7 @@ export namespace Color {
     duration: number,
     options: Options<OE, OR> = {},
   ): Effect.Effect<Color<I, OE, OR>, never, VideoContext> =>
-    VideoClip.make<I, never, never, OE, OR | VideoContext>((stream) =>
+    VideoClip.make((stream) =>
       Stream.unwrap(
         Effect.gen(function* () {
           const context = yield* VideoContext;

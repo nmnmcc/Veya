@@ -1,4 +1,4 @@
-import { Effect, pipe, Stream } from "effect";
+import { Effect, Option, pipe, Stream } from "effect";
 
 import { Effectable, type Size, VideoClip, VideoColorSpace, VideoContext } from "@veya/core";
 import { VideoResampler } from "@veya/core";
@@ -14,7 +14,7 @@ export namespace Video {
     never,
     never,
     E | VideoDecoder.Error | VideoProber.Error | VideoResampler.Error,
-    R | VideoDecoder | VideoColorSpaceConverter | VideoProber | VideoResampler
+    R | VideoDecoder | VideoColorSpaceConverter | VideoProber
   > {}
 
   export type Options<E = never, R = never> = {
@@ -36,19 +36,7 @@ export namespace Video {
     source: VideoDecoder.MediaSource<SE, SR>,
     options: Options<OE, OR> = {},
   ): Effect.Effect<Video<I, SE | OE, SR | Exclude<OR, VideoMetadata>>, never, VideoContext> => {
-    return VideoClip.make<
-      I,
-      never,
-      never,
-      SE | OE | VideoDecoder.Error | VideoProber.Error | VideoResampler.Error,
-      | SR
-      | Exclude<OR, VideoMetadata>
-      | VideoContext
-      | VideoDecoder
-      | VideoColorSpaceConverter
-      | VideoProber
-      | VideoResampler
-    >((stream) =>
+    return VideoClip.make((stream) =>
       Stream.unwrap(
         Effect.gen(function* () {
           const { probe } = yield* VideoProber;
@@ -57,33 +45,33 @@ export namespace Video {
           const { colorSpace, framerate } = yield* VideoContext;
           const metadata = yield* probe(source);
 
-          const decodeOptions = yield* Effect.all(Effectable.map(options), { concurrency: "unbounded" }).pipe(
+          const resolvedOptions = yield* Effect.all(Effectable.map(options), { concurrency: "unbounded" }).pipe(
             Effect.provideService(VideoMetadata, metadata),
           );
 
           const decoded = pipe(
-            decode(source, decodeOptions),
+            decode(source, resolvedOptions),
             Stream.map((bitmap) =>
               convert(bitmap, {
-                source: decodeOptions.colorSpace,
+                source: resolvedOptions.colorSpace,
                 target: colorSpace,
               }),
             ),
           );
 
           const sourceFramerate = metadata.framerate;
-
           if (!sourceFramerate || sourceFramerate === framerate) {
             return decoded;
           }
 
-          const { resample } = yield* VideoResampler;
-          const decodedClip = yield* VideoClip.make<I, never, never, VideoDecoder.Error | SE, SR>(() => decoded);
+          const { resample } = yield* Effect.serviceOption(VideoResampler).pipe(
+            Effect.map(Option.getOrElse(() => VideoResampler.make())),
+          );
 
-          return (yield* resample(decodedClip, {
+          return resample(yield* VideoClip.make(() => decoded), {
             source: sourceFramerate,
             target: framerate,
-          }))(stream);
+          })(stream);
         }),
       ),
     );

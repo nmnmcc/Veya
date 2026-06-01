@@ -16,6 +16,8 @@ export namespace VideoClip {
     OR
   >;
 
+  export type Encodable<E = never, R = never> = ReturnType<VideoClip<any, any, any, E, R>>;
+
   /** Creates a video clip from a stream transformer. */
   export const make = <I, IE = never, IR = never, OE = never, OR = never>(
     clip: (stream: Stream.Stream<I, IE, IR>) => Stream.Stream<Bitmap, OE, OR>,

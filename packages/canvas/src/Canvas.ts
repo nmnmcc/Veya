@@ -45,13 +45,7 @@ export namespace Canvas {
     duration: number,
     options: Options<OE, OR> = {},
   ): Effect.Effect<Canvas<I, IE | DE | OE, IR | DR | OR>, never, VideoContext> =>
-    VideoClip.make<
-      I,
-      never,
-      never,
-      IE | DE | OE | CanvasRenderingContext.Error,
-      IR | DR | OR | VideoContext | CanvasRenderingContext
-    >((stream) =>
+    VideoClip.make((stream) =>
       Stream.unwrap(
         Effect.gen(function* () {
           const video = yield* VideoContext;

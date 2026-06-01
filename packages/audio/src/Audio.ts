@@ -29,13 +29,7 @@ export namespace Audio {
     source: AudioDecoder.MediaSource<SE, SR>,
     options: Options<OE, OR> = {},
   ): Effect.Effect<Audio<SE | OE, SR | Exclude<OR, AudioMetadata>>, never, AudioContext> => {
-    return AudioClip.make<
-      AudioTick,
-      never,
-      never,
-      SE | OE | AudioDecoder.Error | AudioProber.Error | AudioResampler.Error,
-      SR | Exclude<OR, AudioMetadata> | AudioContext | AudioDecoder | AudioProber | AudioResampler
-    >((stream) =>
+    return AudioClip.make((stream) =>
       Stream.unwrap(
         Effect.gen(function* () {
           const { probe } = yield* AudioProber;

@@ -17,7 +17,7 @@ export namespace Silence {
   export const make = <E = never, R = never>(
     samples: Effectable<number, E, R>,
   ): Effect.Effect<Silence<E, R>, never, AudioContext> =>
-    AudioClip.make<AudioTick, never, never, E, R | AudioContext>((stream) =>
+    AudioClip.make((stream) =>
       Stream.fromEffect(
         AudioContext.use(({ channels }) =>
           Effect.map(Effectable.wrap(samples), (samples) =>

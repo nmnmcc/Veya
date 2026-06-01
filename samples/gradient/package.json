@@ -1,0 +1,16 @@
+{
+  "name": "@veya/sample-gradient",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "yarn run -T tsx src/index.ts"
+  },
+  "dependencies": {
+    "@effect/platform-node": "4.0.0-beta.73",
+    "@mediabunny/server": "1.45.4",
+    "@veya/core": "workspace:^",
+    "@veya/mediabunny": "workspace:^",
+    "effect": "4.0.0-beta.73",
+    "mediabunny": "1.45.4"
+  }
+}

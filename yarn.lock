@@ -1238,6 +1238,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@veya/sample-gradient@workspace:samples/gradient":
+  version: 0.0.0-use.local
+  resolution: "@veya/sample-gradient@workspace:samples/gradient"
+  dependencies:
+    "@effect/platform-node": "npm:4.0.0-beta.73"
+    "@mediabunny/server": "npm:1.45.4"
+    "@veya/core": "workspace:^"
+    "@veya/mediabunny": "workspace:^"
+    effect: "npm:4.0.0-beta.73"
+    mediabunny: "npm:1.45.4"
+  languageName: unknown
+  linkType: soft
+
 "@veya/svg-resvg@workspace:packages/svg-resvg":
   version: 0.0.0-use.local
   resolution: "@veya/svg-resvg@workspace:packages/svg-resvg"

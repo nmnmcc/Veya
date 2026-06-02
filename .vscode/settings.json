@@ -13,6 +13,8 @@
     "mediabunny",
     "Mediabunny",
     "millis",
+    "OKHSL",
+    "OKLCH",
     "Rasterizable",
     "Renderable",
     "Resampler",

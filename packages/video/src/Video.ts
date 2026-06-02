@@ -1,9 +1,8 @@
 import { Effect, Option, pipe, Stream } from "effect";
 
-import { Effectable, type Size, VideoClip, VideoColorSpace, VideoContext } from "@veya/core";
+import { Effectable, type Size, VideoClip, type VideoColor, VideoContext } from "@veya/core";
 import { VideoResampler } from "@veya/core";
 
-import { VideoColorSpaceConverter } from "./VideoColorSpaceConverter";
 import { VideoDecoder } from "./VideoDecoder";
 import { VideoMetadata } from "./VideoMetadata";
 import { VideoProber } from "./VideoProber";
@@ -14,7 +13,7 @@ export namespace Video {
     never,
     never,
     E | VideoDecoder.Error | VideoProber.Error | VideoResampler.Error,
-    R | VideoDecoder | VideoColorSpaceConverter | VideoProber
+    R | VideoDecoder | VideoProber
   > {}
 
   export type Options<E = never, R = never> = {
@@ -29,7 +28,7 @@ export namespace Video {
     /** Playback speed multiplier. */
     readonly speed?: Effectable<number, E, R> | undefined;
     /** Source color space. Defaults to probed metadata when available. */
-    readonly colorSpace?: Effectable<VideoColorSpace.VideoColorSpace, E, R> | undefined;
+    readonly colorSpace?: Effectable<VideoColor.ColorSpace, E, R> | undefined;
   };
 
   export const make = <I, SE = never, SR = never, OE = never, OR = never>(
@@ -41,19 +40,22 @@ export namespace Video {
         Effect.gen(function* () {
           const { probe } = yield* VideoProber;
           const { decode } = yield* VideoDecoder;
-          const { convert } = yield* VideoColorSpaceConverter;
           const { colorSpace, framerate } = yield* VideoContext;
           const metadata = yield* probe(source);
 
           const resolvedOptions = yield* Effect.all(Effectable.map(options), { concurrency: "unbounded" }).pipe(
             Effect.provideService(VideoMetadata, metadata),
           );
+          const sourceColorSpace = resolvedOptions.colorSpace ?? metadata.colorSpace;
 
           const decoded = pipe(
-            decode(source, resolvedOptions),
+            decode(source, {
+              ...resolvedOptions,
+              ...(sourceColorSpace === undefined ? {} : { colorSpace: sourceColorSpace }),
+            }),
             Stream.map((bitmap) =>
-              convert(bitmap, {
-                source: resolvedOptions.colorSpace,
+              VideoClip.Bitmap.convertColorSpace(bitmap, {
+                source: sourceColorSpace,
                 target: colorSpace,
               }),
             ),

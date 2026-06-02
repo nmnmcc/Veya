@@ -1,6 +1,6 @@
 import { Context, Data, Effect, Layer } from "effect";
 
-import { type Size, VideoClip } from "@veya/core";
+import { type Size, VideoClip, VideoColor } from "@veya/core";
 
 export class CanvasRenderingContext extends Context.Service<
   CanvasRenderingContext,
@@ -27,8 +27,13 @@ export class CanvasRenderingContext extends Context.Service<
 
           return context;
         }),
-      snapshot: (context, size: Size) => {
-        return VideoClip.Bitmap.fromImageData(context.getImageData(0, 0, ...size));
+      snapshot: (context, size: Size, options = {}) => {
+        const settings: ImageDataSettings = {
+          ...(options.colorSpace === undefined ? {} : { colorSpace: options.colorSpace }),
+        };
+        const image = context.getImageData(0, 0, ...size, settings);
+
+        return VideoClip.Bitmap.fromImageData(image);
       },
     }),
   );
@@ -43,7 +48,15 @@ export namespace CanvasRenderingContext {
       size: Size,
       options?: CanvasRenderingContext2DSettings,
     ) => Effect.Effect<CanvasRenderingContext2D, Error>;
-    readonly snapshot: (context: CanvasRenderingContext2D, size: Size) => VideoClip.Bitmap;
+    readonly snapshot: (
+      context: CanvasRenderingContext2D,
+      size: Size,
+      options?: SnapshotOptions,
+    ) => VideoClip.Bitmap;
+  }
+
+  export interface SnapshotOptions {
+    readonly colorSpace?: VideoColor.ColorSpace | undefined;
   }
 
   /** Effect service that exposes the current 2D context while a draw callback runs. */

@@ -6,25 +6,21 @@ import type { AudioTick } from "./AudioTick";
 import { Effectable } from "./Effectable";
 
 export namespace Silence {
-  export interface Silence<E = never, R = never> extends AudioClip.AudioClip<
-    AudioTick,
-    never,
-    never,
-    E,
-    R | AudioContext
-  > {}
+  export interface Silence<E = never, R = never> extends AudioClip.AudioClip<AudioTick, never, never, E, R> {}
 
   export const make = <E = never, R = never>(
     samples: Effectable<number, E, R>,
   ): Effect.Effect<Silence<E, R>, never, AudioContext> =>
     AudioClip.make((stream) =>
-      Stream.fromEffect(
+      Stream.unwrap(
         AudioContext.use(({ channels }) =>
           Effect.map(Effectable.wrap(samples), (samples) =>
-            globalThis.Array.from({ length: channels }, () =>
-              stream.pipe(
-                Stream.take(samples),
-                Stream.map(() => 0),
+            Stream.succeed(
+              globalThis.Array.from({ length: channels }, () =>
+                stream.pipe(
+                  Stream.take(samples),
+                  Stream.map(() => 0),
+                ),
               ),
             ),
           ),

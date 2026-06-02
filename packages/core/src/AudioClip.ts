@@ -15,6 +15,8 @@ export namespace AudioClip {
     OR
   >;
 
+  export type Encodable<E = never, R = never> = ReturnType<AudioClip<never, never, never, E, R>>;
+
   /** Creates an audio clip from a stream transformer. */
   export const make = <I, IE = never, IR = never, OE = never, OR = never>(
     clip: (stream: Stream.Stream<I, IE, IR>) => Stream.Stream<Channel[], OE, OR>,

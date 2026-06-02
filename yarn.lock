@@ -1066,6 +1066,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@texel/color@npm:^1.1.11":
+  version: 1.1.11
+  resolution: "@texel/color@npm:1.1.11"
+  checksum: 10c0/f2a0976d5f9da000d76eafbb154961462897280d16984fda4d7009b230b224ad79d606b747d23099ad50e9dc07321e0d9f2dd51a1114a1cf03621c8253dc2239
+  languageName: node
+  linkType: hard
+
 "@trivago/prettier-plugin-sort-imports@npm:^6.0.2":
   version: 6.0.2
   resolution: "@trivago/prettier-plugin-sort-imports@npm:6.0.2"
@@ -1201,6 +1208,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@veya/core@workspace:packages/core"
   dependencies:
+    "@texel/color": "npm:^1.1.11"
     effect: "npm:4.0.0-beta.73"
   languageName: unknown
   linkType: soft
@@ -1246,6 +1254,7 @@ __metadata:
     "@mediabunny/server": "npm:1.45.4"
     "@veya/core": "workspace:^"
     "@veya/mediabunny": "workspace:^"
+    "@veya/video": "workspace:^"
     effect: "npm:4.0.0-beta.73"
     mediabunny: "npm:1.45.4"
   languageName: unknown
@@ -1280,12 +1289,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@veya/video@workspace:packages/video":
+"@veya/video@workspace:^, @veya/video@workspace:packages/video":
   version: 0.0.0-use.local
   resolution: "@veya/video@workspace:packages/video"
   dependencies:
     "@veya/core": "workspace:*"
-    colorjs.io: "npm:^0.6.1"
     effect: "npm:4.0.0-beta.73"
   languageName: unknown
   linkType: soft
@@ -1405,13 +1413,6 @@ __metadata:
   version: 1.1.1
   resolution: "cluster-key-slot@npm:1.1.1"
   checksum: 10c0/079b1ae86b20e2d53308a877b08de5e830722a45c07810569d0dab4955bed569da33ac9f79998289d014adf02cca7223a0647cb0ee6548a12ab3c4f9beac1377
-  languageName: node
-  linkType: hard
-
-"colorjs.io@npm:^0.6.1":
-  version: 0.6.1
-  resolution: "colorjs.io@npm:0.6.1"
-  checksum: 10c0/972aff12d88e86726898ff110aa15ea57a0348a3b958aeb93f4d6ae2d0ca91e487864e4d0d98b53943cc3ac3f747fb01b5ba3b6d922848d5c6888cb56e470b84
   languageName: node
   linkType: hard
 

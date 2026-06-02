@@ -1,11 +1,11 @@
 import { Context, Data, Layer, Stream } from "effect";
 
 import { Encodable } from "./Encodable";
-import type { VideoClip } from "./VideoClip";
+import { VideoClip } from "./VideoClip";
 import { VideoContext } from "./VideoContext";
 
 export class VideoResampler extends Context.Service<VideoResampler, VideoResampler.VideoResampler>()(
-  "@veya/video/VideoResampler",
+  "@veya/core/VideoResampler",
 ) {}
 
 export namespace VideoResampler {
@@ -16,7 +16,22 @@ export namespace VideoResampler {
     ) => VideoClip.VideoClip<I, IE, IR, OE | Error, OR>;
   }
 
-  export const make = (): VideoResampler => ({
+  export interface Options {
+    /** Source frame rate in frames per second. */
+    readonly source?: number;
+    /** Target frame rate in frames per second. */
+    readonly target: number;
+  }
+
+  export class Error extends Data.TaggedError("Error")<{
+    readonly cause?: unknown;
+    readonly reason: Error.ResampleFailed;
+  }> {}
+  export namespace Error {
+    export class ResampleFailed extends Data.TaggedError("ResampleFailed")<{}> {}
+  }
+
+  export const service = VideoResampler.of({
     resample: (clip, options) => (stream) => {
       const encodable = clip(stream);
       const source = options.source ?? encodable.context.framerate;
@@ -27,30 +42,15 @@ export namespace VideoResampler {
         return Encodable.make(Stream.fail(makeError(source, target)), context);
       }
 
-      if (source === target) {
-        return Encodable.make(encodable, context);
-      }
+      if (source === target) return Encodable.make(encodable, context);
 
       return Encodable.make(resampleStream(encodable, source, target), context);
     },
   });
 
-  export const layer = Layer.succeed(VideoResampler, make());
+  export const make = () => service;
 
-  export class Error extends Data.TaggedError("Error")<{
-    readonly cause?: unknown;
-    readonly reason: Error.ResampleFailed;
-  }> {}
-  export namespace Error {
-    export class ResampleFailed extends Data.TaggedError("ResampleFailed")<{}> {}
-  }
-
-  export interface Options {
-    /** Source frame rate in frames per second. */
-    readonly source?: number;
-    /** Target frame rate in frames per second. */
-    readonly target: number;
-  }
+  export const layer = Layer.succeed(VideoResampler, service);
 
   interface State {
     readonly source: number;
@@ -66,11 +66,11 @@ export namespace VideoResampler {
       Stream.mapAccum<State, VideoClip.Bitmap, VideoClip.Bitmap>(
         () => ({ source: 0, target: 0 }),
         (state, bitmap) => {
-          const bitmaps: VideoClip.Bitmap[] = [];
+          const frames: VideoClip.Bitmap[] = [];
           let targetFrame = state.target;
 
           while (targetFrame * source < (state.source + 1) * target) {
-            bitmaps.push(bitmap);
+            frames.push(bitmap);
             targetFrame += 1;
           }
 
@@ -79,7 +79,7 @@ export namespace VideoResampler {
               source: state.source + 1,
               target: targetFrame,
             },
-            bitmaps,
+            frames,
           ];
         },
       ),

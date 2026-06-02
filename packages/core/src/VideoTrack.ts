@@ -15,13 +15,17 @@ export namespace VideoTrack {
         Effect.gen(function* () {
           const context = yield* VideoContext;
           const { resample } = yield* Effect.serviceOption(VideoResampler).pipe(
-            Effect.map(Option.getOrElse(() => VideoResampler.make())),
+            Effect.map(Option.getOrElse(() => VideoResampler.service)),
           );
 
-          const resampled = Iterable.map(clips, (clip) => resample(clip, { target: context.framerate }));
+          const resampled = Iterable.map(clips, (clip) => {
+            const encodable = resample(clip, { target: context.framerate })(stream);
+
+            return Stream.map(encodable, (bitmap) => VideoClip.Bitmap.fit(bitmap, encodable.context.size, context.size));
+          });
           const empty: Stream.Stream<VideoClip.Bitmap, OE | VideoResampler.Error, OR> = Stream.empty;
 
-          return Iterable.reduce(resampled, empty, (track, clip) => Stream.concat(track, clip(stream)));
+          return Iterable.reduce(resampled, empty, (track, clip) => Stream.concat(track, clip));
         }),
       );
     });

@@ -3,7 +3,7 @@ import type { Effect } from "effect";
 
 import type { Size } from "./Base";
 import type { VideoClip } from "./VideoClip";
-import type { VideoColorSpace } from "./VideoColorSpace";
+import type { VideoColor } from "./VideoColor";
 
 export class VideoCompositor extends Context.Service<VideoCompositor, VideoCompositor.VideoCompositor>()(
   "@veya/core/VideoCompositor",
@@ -29,6 +29,6 @@ export namespace VideoCompositor {
     /** Output frame size in pixels. */
     readonly size: Size;
     /** Output color space for the composed frame. */
-    readonly colorSpace: VideoColorSpace.VideoColorSpace;
+    readonly colorSpace: VideoColor.ColorSpace;
   }
 }

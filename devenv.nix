@@ -14,7 +14,7 @@ with pkgs;
 
   languages.javascript = {
     enable = true;
-    package = nodejs-slim_24;
+    package = nodejs_24;
 
     yarn = {
       enable = true;

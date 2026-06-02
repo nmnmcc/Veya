@@ -18,7 +18,8 @@ export namespace CanvasCompositor {
 
             yield* Effect.try({
               try: () => {
-                const image = VideoClip.Bitmap.toImageData(layer, options.size, options.colorSpace);
+                const image = VideoClip.Bitmap.toImageData(layer, options.size, options.colorSpace) as ImageData;
+
                 layerCanvasContext.putImageData(image, 0, 0);
                 context.drawImage(layerCanvasContext.canvas, 0, 0);
               },
@@ -27,7 +28,7 @@ export namespace CanvasCompositor {
           }
 
           return yield* Effect.try({
-            try: () => snapshot(context, options.size),
+            try: () => snapshot(context, options.size, { colorSpace: options.colorSpace }),
             catch: toCompositeError,
           });
         }).pipe(Effect.mapError(toCompositeError)),

@@ -1,7 +1,7 @@
 import { Effect, pipe, Stream } from "effect";
 
 import { VideoContext } from "@veya/core";
-import { Effectable, type Size, VideoClip } from "@veya/core";
+import { Effectable, type Size, VideoClip, VideoColor } from "@veya/core";
 
 export namespace Color {
   export interface Color<I, E = never, R = never> extends VideoClip.VideoClip<I, never, never, E, R> {}
@@ -12,7 +12,7 @@ export namespace Color {
   };
 
   export const make = <I, OE = never, OR = never>(
-    color: VideoClip.RGBA,
+    color: VideoColor.RGBA,
     duration: number,
     options: Options<OE, OR> = {},
   ): Effect.Effect<Color<I, OE, OR>, never, VideoContext> =>
@@ -23,18 +23,14 @@ export namespace Color {
           const { size } = yield* Effect.all(Effectable.options({ size: context.size }, options), {
             concurrency: "unbounded",
           });
-          const frame = makeBitmap(size, color);
+          const bitmap = VideoClip.Bitmap.make(size, VideoClip.Pixel.fromColor(color));
 
           return pipe(
             stream,
             Stream.take(duration),
-            Stream.map(() => frame),
+            Stream.map(() => bitmap),
           );
         }),
       ),
     );
-
-  const makeBitmap = ([width, height]: Size, color: VideoClip.RGBA): VideoClip.Bitmap => {
-    return globalThis.Array.from({ length: height }, () => globalThis.Array.from({ length: width }, () => [...color]));
-  };
 }

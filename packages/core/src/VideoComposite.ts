@@ -1,4 +1,4 @@
-import { Array, Effect, pipe, Stream } from "effect";
+import { Array, Effect, Stream } from "effect";
 
 import { VideoClip } from "./VideoClip";
 import { VideoCompositor } from "./VideoCompositor";
@@ -14,33 +14,33 @@ export namespace VideoComposite {
     OR
   > {}
 
-  export const make = <I, IE = never, IR = never, OE = never, OR = never>(
-    tracks: readonly VideoTrack.VideoTrack<I, IE, IR, OE, OR>[],
-  ): Effect.Effect<VideoComposite<I, IE, IR, OE | VideoCompositor.Error, OR | VideoCompositor>, never, VideoContext> =>
+  export const make = <I, IE = never, IR = never, OE = never, OR = never>([
+    head,
+    ...tail
+  ]: readonly VideoTrack.VideoTrack<I, IE, IR, OE, OR>[]): Effect.Effect<
+    VideoComposite<I, IE, IR, OE | VideoCompositor.Error, OR | VideoCompositor>,
+    never,
+    VideoContext
+  > =>
     VideoClip.make((stream) => {
-      return pipe(
-        tracks,
-        ([head, ...tail]) => {
-          if (!head) return Stream.empty;
+      if (!head) return Stream.empty;
 
-          return Array.reduce(
-            tail,
-            Stream.map(head(stream), (frame) => [frame]),
-            (frames, track) => Stream.zipWith(frames, track(stream), (frames, frame) => Array.append(frames, frame)),
-          );
-        },
-        Stream.mapEffect((frames) =>
-          VideoContext.pipe(
-            Effect.flatMap(({ colorSpace, size }) =>
-              VideoCompositor.use(({ composite }) =>
-                composite(frames, {
-                  colorSpace,
-                  size,
-                }),
-              ),
-            ),
-          ),
-        ),
+      const groups = Array.reduce(
+        tail,
+        Stream.map(head(stream), (frame) => [frame]),
+        (frames, track) => Stream.zipWith(frames, track(stream), (frames, frame) => Array.append(frames, frame)),
+      );
+
+      return Stream.mapEffect(groups, (frames) =>
+        Effect.gen(function* () {
+          const { colorSpace, size } = yield* VideoContext;
+          const { composite } = yield* VideoCompositor;
+
+          return yield* composite(frames, {
+            colorSpace,
+            size,
+          });
+        }),
       );
     });
 }

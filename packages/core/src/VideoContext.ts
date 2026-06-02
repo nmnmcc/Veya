@@ -1,7 +1,7 @@
 import { Context } from "effect";
 
 import type { Size } from "./Base";
-import type { VideoColorSpace } from "./VideoColorSpace";
+import type { VideoColor } from "./VideoColor";
 
 export class VideoContext extends Context.Service<VideoContext, VideoContext.VideoContext>()(
   "@veya/core/VideoContext",
@@ -14,6 +14,6 @@ export namespace VideoContext {
     /** Output frame rate in frames per second. */
     readonly framerate: number;
     /** Output color space. */
-    readonly colorSpace: VideoColorSpace.VideoColorSpace;
+    readonly colorSpace: VideoColor.ColorSpace;
   }
 }

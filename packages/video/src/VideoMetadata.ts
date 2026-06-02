@@ -1,6 +1,6 @@
 import { Context } from "effect";
 
-import type { Size, VideoColorSpace } from "@veya/core";
+import type { Size, VideoColor } from "@veya/core";
 
 export class VideoMetadata extends Context.Service<VideoMetadata, VideoMetadata.VideoMetadata>()(
   "@veya/video/VideoMetadata",
@@ -15,6 +15,6 @@ export namespace VideoMetadata {
     /** Number of frames in the source. */
     readonly frames?: number;
     /** Source color space, when known. */
-    readonly colorSpace?: VideoColorSpace.VideoColorSpace;
+    readonly colorSpace?: VideoColor.ColorSpace;
   }
 }

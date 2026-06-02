@@ -42,11 +42,11 @@ export namespace Svg {
             ),
             { concurrency: "unbounded" },
           );
-          const bitmap = yield* decode(source, decodeOptions);
+          const frame = yield* decode(source, decodeOptions);
 
           return stream.pipe(
             Stream.take(1),
-            Stream.map(() => bitmap),
+            Stream.map(() => frame),
           );
         }),
       ),

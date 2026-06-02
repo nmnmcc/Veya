@@ -1,4 +1,4 @@
-import { Array, Effect, pipe, Stream } from "effect";
+import { Array, Effect, Stream } from "effect";
 
 import { AudioClip } from "./AudioClip";
 import { AudioContext } from "./AudioContext";
@@ -15,31 +15,28 @@ export namespace AudioMix {
     OR
   > {}
 
-  export const make = <IE = never, IR = never, OE = never, OR = never>(
-    tracks: readonly AudioTrack.AudioTrack<IE, IR, OE, OR>[],
-  ): Effect.Effect<AudioMix<IE, IR, OE | AudioMixer.Error, OR | AudioMixer>, never, AudioContext> =>
+  export const make = <IE = never, IR = never, OE = never, OR = never>([head, ...tail]: readonly AudioTrack.AudioTrack<
+    IE,
+    IR,
+    OE,
+    OR
+  >[]): Effect.Effect<AudioMix<IE, IR, OE | AudioMixer.Error, OR | AudioMixer>, never, AudioContext> =>
     AudioClip.make((stream) => {
-      return pipe(
-        tracks,
-        ([head, ...tail]) => {
-          if (!head) return Stream.empty;
+      if (!head) return Stream.empty;
 
-          return Array.reduce(
-            tail,
-            Stream.map(head(stream), (channels) => [channels]),
-            (channelGroups, track) =>
-              Stream.zipWith(channelGroups, track(stream), (channelGroups, channels) =>
-                Array.append(channelGroups, channels),
-              ),
-          );
-        },
-        Stream.mapEffect((channelGroups) =>
-          AudioContext.pipe(
-            Effect.flatMap(({ samplerate, channels }) =>
-              AudioMixer.use(({ mix }) => mix(channelGroups, { samplerate, channels })),
-            ),
-          ),
-        ),
+      const groups = Array.reduce(
+        tail,
+        Stream.map(head(stream), (channels) => [channels]),
+        (groups, track) => Stream.zipWith(groups, track(stream), (groups, channels) => Array.append(groups, channels)),
+      );
+
+      return Stream.mapEffect(groups, (groups) =>
+        Effect.gen(function* () {
+          const { samplerate, channels } = yield* AudioContext;
+          const { mix } = yield* AudioMixer;
+
+          return yield* mix(groups, { samplerate, channels });
+        }),
       );
     });
 }

@@ -32,11 +32,11 @@ export namespace Image {
           const decodeOptions = yield* Effect.all(Effectable.options({ size: metadata.size }, options), {
             concurrency: "unbounded",
           });
-          const bitmap = yield* decode(source, decodeOptions);
+          const frame = yield* decode(source, decodeOptions);
 
           return stream.pipe(
             Stream.take(1),
-            Stream.map(() => bitmap),
+            Stream.map(() => frame),
           );
         }),
       ),

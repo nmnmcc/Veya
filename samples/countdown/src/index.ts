@@ -3,11 +3,11 @@ import { fileURLToPath } from "node:url";
 
 import { NodeServices } from "@effect/platform-node";
 import { registerMediabunnyServer } from "@mediabunny/server";
-import { Array, Console, Effect, FileSystem, pipe, Stream } from "effect";
+import { Array, Console, Duration, Effect, FileSystem, pipe, Stream } from "effect";
 import { QUALITY_HIGH } from "mediabunny";
 
 import { VideoClip, VideoContext, VideoTick, VideoTrack } from "@veya/core";
-import { MediabunnyVideoEncoder } from "@veya/mediabunny";
+import { Mediabunny } from "@veya/mediabunny";
 
 import { digits } from "./digits";
 
@@ -45,18 +45,21 @@ const program = Effect.gen(function* () {
   const track = yield* VideoTrack.make(clips);
 
   const encodable = track(VideoTick.frames());
-  const result = yield* MediabunnyVideoEncoder.encode(encodable, {
-    encoding: {
-      alpha: "keep",
-      bitrate: QUALITY_HIGH,
-      codec: "vp9",
-      hardwareAcceleration: "prefer-software",
+  const [duration, result] = yield* Mediabunny.encode({
+    video: {
+      encodable,
+      encoding: {
+        alpha: "keep",
+        bitrate: QUALITY_HIGH,
+        codec: "vp9",
+        hardwareAcceleration: "prefer-software",
+      },
     },
-  });
+  }).pipe(Effect.timed);
 
   yield* fs.makeDirectory(dirname(outputPath), { recursive: true });
   yield* fs.writeFile(outputPath, result.buffer);
-  yield* Console.log(`Wrote ${outputPath}`);
+  yield* Console.log(`Wrote ${outputPath}, took ${Duration.toSeconds(duration)}s`);
 });
 
 Effect.runPromise(

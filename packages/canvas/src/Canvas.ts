@@ -1,6 +1,6 @@
 import { Effect, pipe, Ref, Stream } from "effect";
 
-import { Effectable, type Size, VideoClip, VideoColorSpace, VideoContext } from "@veya/core";
+import { Effectable, type Size, VideoClip, VideoColor, VideoContext } from "@veya/core";
 
 import { CanvasRenderingContext } from "./CanvasRenderingContext";
 
@@ -19,7 +19,7 @@ export namespace Canvas {
     /** Frame rate in frames per second. Defaults to the active `VideoContext` framerate. */
     readonly framerate?: Effectable<number, E, R> | undefined;
     /** Canvas color space. Defaults to the active `VideoContext` color space or `srgb`. */
-    readonly colorSpace?: Effectable<VideoColorSpace.VideoColorSpace, E, R> | undefined;
+    readonly colorSpace?: Effectable<VideoColor.ColorSpace, E, R> | undefined;
   };
 
   export interface ResolvedOptions {
@@ -28,7 +28,7 @@ export namespace Canvas {
     /** Frame rate in frames per second. */
     readonly framerate: number;
     /** Canvas color space. */
-    readonly colorSpace: VideoColorSpace.VideoColorSpace;
+    readonly colorSpace: VideoColor.ColorSpace;
   }
 
   export type Draw<I, S, E, R> = (
@@ -37,7 +37,7 @@ export namespace Canvas {
     state: S,
     /** Resolved output settings for the current clip. */
     options: ResolvedOptions,
-  ) => Effect.Effect<S, E, R | CanvasRenderingContext>;
+  ) => Effect.Effect<S, E, R | CanvasRenderingContext.Context2D>;
 
   export const make = <I, S, IE = never, IR = never, DE = never, DR = never, OE = never, OR = never>(
     init: Effect.Effect<S, IE, IR>,
@@ -55,7 +55,7 @@ export namespace Canvas {
               {
                 size: video.size,
                 framerate: video.framerate,
-                colorSpace: video.colorSpace ?? VideoColorSpace.Default,
+                colorSpace: video.colorSpace ?? VideoColor.DefaultColorSpace,
               },
               options,
             ),
@@ -74,7 +74,13 @@ export namespace Canvas {
                 const r = yield* draw(index, s, _options);
                 yield* Ref.set(state, r);
 
-                return snapshot(context, _options.size);
+                return VideoClip.Bitmap.convertColorSpace(
+                  snapshot(context, _options.size, { colorSpace: _options.colorSpace }),
+                  {
+                    source: _options.colorSpace,
+                    target: video.colorSpace,
+                  },
+                );
               }),
             ),
             Stream.provideService(CanvasRenderingContext.Context2D, context),

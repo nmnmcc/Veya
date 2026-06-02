@@ -3,7 +3,7 @@ import type { Effect } from "effect";
 
 import type { AudioClip } from "./AudioClip";
 
-export class AudioMixer extends Context.Service<AudioMixer, AudioMixer.AudioCompositor>()("@veya/core/AudioMixer") {}
+export class AudioMixer extends Context.Service<AudioMixer, AudioMixer.AudioMixer>()("@veya/core/AudioMixer") {}
 
 export namespace AudioMixer {
   export class Error extends Data.TaggedError("Error")<{
@@ -21,10 +21,12 @@ export namespace AudioMixer {
     readonly channels: number;
   }
 
-  export interface AudioCompositor {
+  export interface AudioMixer {
     readonly mix: (
       channels: readonly AudioClip.Channel[][],
       options: AudioMixOptions,
     ) => Effect.Effect<AudioClip.Channel[], Error>;
   }
+
+  export interface AudioCompositor extends AudioMixer {}
 }

@@ -2,7 +2,6 @@ import { Resvg } from "@resvg/resvg-js";
 import type { ResvgRenderOptions } from "@resvg/resvg-js";
 import { Effect, Layer } from "effect";
 
-import type { Size, VideoClip } from "@veya/core";
 import { SvgDecoder } from "@veya/svg";
 
 export namespace ResvgDecoder {
@@ -11,75 +10,40 @@ export namespace ResvgDecoder {
     readonly render?: ResvgRenderOptions | undefined;
   }
 
-  export const make = (options: Options = {}): SvgDecoder.SvgDecoder => ({
-    decode: (source, decodeOptions) => {
-      const renderOptions = makeRenderOptions(options.render, decodeOptions);
-
+  export const make = (defaults: Options = {}): SvgDecoder.SvgDecoder => ({
+    decode: (source, options) => {
       return Effect.gen(function* () {
-        const rendered = yield* Effect.try({
-          try: () => {
-            const resvg = new Resvg(source, renderOptions);
-
-            return resvg.render();
-          },
+        const { width, height, pixels } = yield* Effect.try({
+          try: () =>
+            new Resvg(source, {
+              ...defaults,
+              ...(options.size ? { fitTo: { mode: "width" as const, value: options.size[0] } } : {}),
+              ...(options.fitTo === undefined ? {} : { fitTo: options.fitTo }),
+              ...(options.background === undefined ? {} : { background: options.background }),
+            }).render(),
           catch: (cause) =>
             new SvgDecoder.Error({
               cause,
               reason: new SvgDecoder.Error.DecodeFailed(),
             }),
         });
-        const size = [rendered.width, rendered.height] as const;
+        const expectedBytes = width * height * 4;
+        if (pixels.length < expectedBytes) {
+          return yield* new SvgDecoder.Error({
+            reason: new SvgDecoder.Error.InvalidPixelBuffer({
+              actualBytes: pixels.length,
+              expectedBytes,
+            }),
+          });
+        }
 
-        return yield* pixelsToBitmap(rendered.pixels, size);
+        const bitmap = new Uint8ClampedArray(expectedBytes);
+        bitmap.set(pixels.subarray(0, expectedBytes));
+
+        return bitmap;
       });
     },
   });
 
   export const layer = (options: Options = {}) => Layer.succeed(SvgDecoder, make(options));
-
-  const makeRenderOptions = (
-    defaults: ResvgRenderOptions | undefined,
-    options: SvgDecoder.DecodeOptions,
-  ): ResvgRenderOptions => {
-    const { background, fitTo, size } = options;
-
-    return {
-      ...defaults,
-      ...(size ? { fitTo: { mode: "width" as const, value: size[0] } } : {}),
-      ...(fitTo === undefined ? {} : { fitTo }),
-      ...(background === undefined ? {} : { background }),
-    };
-  };
-
-  const pixelsToBitmap = (
-    pixels: Uint8Array,
-    [width, height]: Size,
-  ): Effect.Effect<VideoClip.Bitmap, SvgDecoder.Error> =>
-    Effect.gen(function* () {
-      const expectedBytes = width * height * 4;
-      if (pixels.length < expectedBytes) {
-        return yield* new SvgDecoder.Error({
-          reason: new SvgDecoder.Error.InvalidPixelBuffer({
-            actualBytes: pixels.length,
-            expectedBytes,
-          }),
-        });
-      }
-
-      let offset = 0;
-
-      return globalThis.Array.from({ length: height }, () =>
-        globalThis.Array.from({ length: width }, () => {
-          const pixel = [
-            pixels[offset] ?? 0,
-            pixels[offset + 1] ?? 0,
-            pixels[offset + 2] ?? 0,
-            (pixels[offset + 3] ?? 0) / 255,
-          ] as const;
-          offset += 4;
-
-          return pixel;
-        }),
-      );
-    });
 }

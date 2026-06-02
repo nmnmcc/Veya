@@ -1,8 +1,8 @@
 import { Effect, pipe, Stream } from "effect";
 
-import type { Size } from "./Base";
 import { Effectable } from "./Effectable";
 import { VideoClip } from "./VideoClip";
+import { VideoColor } from "./VideoColor";
 import { VideoContext } from "./VideoContext";
 
 export namespace Gap {
@@ -18,16 +18,10 @@ export namespace Gap {
             pipe(
               stream,
               Stream.take(duration),
-              Stream.map(() => makeZeroBitmap(size)),
+              Stream.map(() => VideoClip.Bitmap.make(size, VideoClip.Pixel.fromColor(VideoColor.Transparent))),
             ),
           ),
         ),
       ),
     );
-
-  const makeZeroBitmap = ([width, height]: Size): VideoClip.Bitmap => {
-    return globalThis.Array.from({ length: height }, () =>
-      globalThis.Array.from({ length: width }, () => [0, 0, 0, 0]),
-    );
-  };
 }

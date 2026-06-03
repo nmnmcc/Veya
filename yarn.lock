@@ -1186,7 +1186,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@veya/canvas@workspace:packages/canvas":
+"@veya/canvas@workspace:^, @veya/canvas@workspace:packages/canvas":
   version: 0.0.0-use.local
   resolution: "@veya/canvas@workspace:packages/canvas"
   dependencies:
@@ -1254,13 +1254,42 @@ __metadata:
     "@mediabunny/server": "npm:1.45.4"
     "@veya/core": "workspace:^"
     "@veya/mediabunny": "workspace:^"
-    "@veya/video": "workspace:^"
     effect: "npm:4.0.0-beta.73"
     mediabunny: "npm:1.45.4"
   languageName: unknown
   linkType: soft
 
-"@veya/svg-resvg@workspace:packages/svg-resvg":
+"@veya/sample-intro-svg@workspace:samples/intro-svg":
+  version: 0.0.0-use.local
+  resolution: "@veya/sample-intro-svg@workspace:samples/intro-svg"
+  dependencies:
+    "@effect/platform-node": "npm:4.0.0-beta.73"
+    "@mediabunny/server": "npm:1.45.4"
+    "@veya/core": "workspace:^"
+    "@veya/mediabunny": "workspace:^"
+    "@veya/svg": "workspace:^"
+    "@veya/svg-resvg": "workspace:^"
+    effect: "npm:4.0.0-beta.73"
+    mediabunny: "npm:1.45.4"
+  languageName: unknown
+  linkType: soft
+
+"@veya/sample-intro@workspace:samples/intro":
+  version: 0.0.0-use.local
+  resolution: "@veya/sample-intro@workspace:samples/intro"
+  dependencies:
+    "@effect/platform-node": "npm:4.0.0-beta.73"
+    "@mediabunny/server": "npm:1.45.4"
+    "@veya/canvas": "workspace:^"
+    "@veya/core": "workspace:^"
+    "@veya/mediabunny": "workspace:^"
+    effect: "npm:4.0.0-beta.73"
+    mediabunny: "npm:1.45.4"
+    pureimage: "npm:^0.4.18"
+  languageName: unknown
+  linkType: soft
+
+"@veya/svg-resvg@workspace:^, @veya/svg-resvg@workspace:packages/svg-resvg":
   version: 0.0.0-use.local
   resolution: "@veya/svg-resvg@workspace:packages/svg-resvg"
   dependencies:
@@ -1271,7 +1300,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@veya/svg@workspace:*, @veya/svg@workspace:packages/svg":
+"@veya/svg@workspace:*, @veya/svg@workspace:^, @veya/svg@workspace:packages/svg":
   version: 0.0.0-use.local
   resolution: "@veya/svg@workspace:packages/svg"
   dependencies:
@@ -1280,16 +1309,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@veya/video-filter@workspace:packages/video-filter":
-  version: 0.0.0-use.local
-  resolution: "@veya/video-filter@workspace:packages/video-filter"
-  dependencies:
-    "@veya/core": "workspace:*"
-    effect: "npm:4.0.0-beta.73"
-  languageName: unknown
-  linkType: soft
-
-"@veya/video@workspace:^, @veya/video@workspace:packages/video":
+"@veya/video@workspace:packages/video":
   version: 0.0.0-use.local
   resolution: "@veya/video@workspace:packages/video"
   dependencies:
@@ -1842,6 +1862,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"jpeg-js@npm:^0.4.4":
+  version: 0.4.4
+  resolution: "jpeg-js@npm:0.4.4"
+  checksum: 10c0/4d0d5097f8e55d8bbce6f1dc32ffaf3f43f321f6222e4e6490734fdc6d005322e3bd6fb992c2df7f5b587343b1441a1c333281dc3285bc9116e369fd2a2b43a7
+  languageName: node
+  linkType: hard
+
 "js-tokens@npm:^4.0.0":
   version: 4.0.0
   resolution: "js-tokens@npm:4.0.0"
@@ -2106,6 +2133,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"opentype.js@npm:^0.4.3":
+  version: 0.4.11
+  resolution: "opentype.js@npm:0.4.11"
+  bin:
+    ot: ./bin/ot
+  checksum: 10c0/bf22117eef76a48dbe15908bc59fd5b8d02569dbd3f0f1f484bd1e9176d9b98b2f39e0e09b67ec07aa25c03ca019ece5d5b86fa5dbeec319c1ce2af60f47bb86
+  languageName: node
+  linkType: hard
+
 "p-cancelable@npm:^2.1.1":
   version: 2.1.1
   resolution: "p-cancelable@npm:2.1.1"
@@ -2150,6 +2186,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"pngjs@npm:^7.0.0":
+  version: 7.0.0
+  resolution: "pngjs@npm:7.0.0"
+  checksum: 10c0/0d4c7a0fd476a9c33df7d0a2a73e1d56537628a668841f6995c2bca070cf30819f9254a64363266bc14ef2fee47659dd3b4f2b18eec7ab65143015139f497b38
+  languageName: node
+  linkType: hard
+
 "prettier@npm:^3.8.3":
   version: 3.8.3
   resolution: "prettier@npm:3.8.3"
@@ -2177,6 +2220,17 @@ __metadata:
   version: 8.4.0
   resolution: "pure-rand@npm:8.4.0"
   checksum: 10c0/6414bbc1c6f45fb774173431c7205e79783b77cfae0e2145e741b6999363554dbd2f4210d2a5bc08683e0b2f6823198c9308766b1d0911e1dccd7beb8842f860
+  languageName: node
+  linkType: hard
+
+"pureimage@npm:^0.4.18":
+  version: 0.4.18
+  resolution: "pureimage@npm:0.4.18"
+  dependencies:
+    jpeg-js: "npm:^0.4.4"
+    opentype.js: "npm:^0.4.3"
+    pngjs: "npm:^7.0.0"
+  checksum: 10c0/aa2f8f00577afa26ce01ff6a833ff97b888e5758d6172334decd05333e69b31673bb009b98257b6a1f04201ac89d7cdc6650a056542a1fca9cc1b642ba445dfe
   languageName: node
   linkType: hard
 

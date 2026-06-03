@@ -10,6 +10,8 @@
     { "path": "./packages/canvas" },
     { "path": "./packages/audio" },
     { "path": "./packages/mediabunny" },
-    { "path": "./samples/countdown" }
+    { "path": "./samples/countdown" },
+    { "path": "./samples/intro" },
+    { "path": "./samples/intro-svg" }
   ]
 }

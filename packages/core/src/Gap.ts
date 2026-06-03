@@ -4,6 +4,7 @@ import { Effectable } from "./Effectable";
 import { VideoClip } from "./VideoClip";
 import { VideoColor } from "./VideoColor";
 import { VideoContext } from "./VideoContext";
+import { VideoFrame } from "./VideoFrame";
 
 export namespace Gap {
   export interface Gap<I, E = never, R = never> extends VideoClip.VideoClip<I, never, never, E, R> {}
@@ -18,7 +19,7 @@ export namespace Gap {
             pipe(
               stream,
               Stream.take(duration),
-              Stream.map(() => VideoClip.Bitmap.make(size, VideoClip.Pixel.fromColor(VideoColor.Transparent))),
+              Stream.map(() => VideoFrame.make(size, VideoColor.Transparent)),
             ),
           ),
         ),

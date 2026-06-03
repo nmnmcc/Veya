@@ -1,14 +1,13 @@
 import { Context, Data } from "effect";
 import type { Effect } from "effect";
 
-import type { Size } from "@veya/core";
-import type { VideoClip } from "@veya/core";
+import type { Size, VideoFrame } from "@veya/core";
 
 export class SvgDecoder extends Context.Service<SvgDecoder, SvgDecoder.SvgDecoder>()("@veya/svg/SvgDecoder") {}
 
 export namespace SvgDecoder {
   export interface SvgDecoder {
-    readonly decode: (source: MediaSource, options: DecodeOptions) => Effect.Effect<VideoClip.Bitmap, Error>;
+    readonly decode: (source: MediaSource, options: DecodeOptions) => Effect.Effect<VideoFrame, Error>;
   }
 
   /** SVG input as a markup string. */

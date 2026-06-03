@@ -1,7 +1,14 @@
 import { Effect, Option, pipe, Stream } from "effect";
 
-import { Effectable, type Size, VideoClip, type VideoColor, VideoContext } from "@veya/core";
-import { VideoResampler } from "@veya/core";
+import {
+  Effectable,
+  type Size,
+  VideoClip,
+  type VideoColor,
+  VideoContext,
+  VideoFrame,
+  VideoResampler,
+} from "@veya/core";
 
 import { VideoDecoder } from "./VideoDecoder";
 import { VideoMetadata } from "./VideoMetadata";
@@ -43,18 +50,18 @@ export namespace Video {
           const { colorSpace, framerate } = yield* VideoContext;
           const metadata = yield* probe(source);
 
-          const resolvedOptions = yield* Effect.all(Effectable.map(options), { concurrency: "unbounded" }).pipe(
+          const decodeOptions = yield* Effect.all(Effectable.map(options), { concurrency: "unbounded" }).pipe(
             Effect.provideService(VideoMetadata, metadata),
           );
-          const sourceColorSpace = resolvedOptions.colorSpace ?? metadata.colorSpace;
+          const sourceColorSpace = decodeOptions.colorSpace ?? metadata.colorSpace;
 
           const decoded = pipe(
             decode(source, {
-              ...resolvedOptions,
+              ...decodeOptions,
               ...(sourceColorSpace === undefined ? {} : { colorSpace: sourceColorSpace }),
             }),
-            Stream.map((bitmap) =>
-              VideoClip.Bitmap.convertColorSpace(bitmap, {
+            Stream.map((frame) =>
+              VideoFrame.convertColorSpace(frame, {
                 source: sourceColorSpace,
                 target: colorSpace,
               }),
@@ -67,7 +74,7 @@ export namespace Video {
           }
 
           const { resample } = yield* Effect.serviceOption(VideoResampler).pipe(
-            Effect.map(Option.getOrElse(() => VideoResampler.make())),
+            Effect.map(Option.getOrElse(() => VideoResampler.service)),
           );
 
           return resample(yield* VideoClip.make(() => decoded), {

@@ -1,5 +1,5 @@
 {
-  "name": "@veya/sample-intro",
+  "name": "@veya/sample-dvd-veya",
   "private": true,
   "type": "module",
   "scripts": {
@@ -8,12 +8,9 @@
   "dependencies": {
     "@effect/platform-node": "4.0.0-beta.73",
     "@mediabunny/server": "1.45.4",
-    "@veya/canvas": "workspace:^",
-    "@veya/canvas-pureimage": "workspace:^",
     "@veya/core": "workspace:^",
     "@veya/mediabunny": "workspace:^",
     "effect": "4.0.0-beta.73",
-    "mediabunny": "1.45.4",
-    "pureimage": "^0.4.18"
+    "mediabunny": "1.45.4"
   }
 }

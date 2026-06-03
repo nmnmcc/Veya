@@ -8,11 +8,11 @@ export namespace Effectable {
     return Effect.isEffect(input) ? input : Effect.succeed(input);
   };
 
-  export type Success<T> = T extends Effect.Effect<any, any, any> ? Effect.Success<T> : T;
-  export type Error<T> = T extends Effect.Effect<any, any, any> ? Effect.Error<T> : never;
-  export type Services<T> = T extends Effect.Effect<any, any, any> ? Effect.Services<T> : never;
+  type Success<T> = T extends Effect.Effect<any, any, any> ? Effect.Success<T> : T;
+  type Error<T> = T extends Effect.Effect<any, any, any> ? Effect.Error<T> : never;
+  type Services<T> = T extends Effect.Effect<any, any, any> ? Effect.Services<T> : never;
 
-  export type ToEffect<T> = Effect.Effect<Success<T>, Error<T>, Services<T>>;
+  type ToEffect<T> = Effect.Effect<Success<T>, Error<T>, Services<T>>;
 
   export const map = <A extends Record<any, Effectable<any, any, any>>>(
     input: A,

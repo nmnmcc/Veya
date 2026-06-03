@@ -1,4 +1,4 @@
-import { Effect, pipe, Stream } from "effect";
+import { Effect, Stream } from "effect";
 
 import { AudioClip, AudioContext, type AudioTick, Effectable } from "@veya/core";
 
@@ -37,13 +37,10 @@ export namespace Audio {
           const { samplerate: targetSamplerate } = yield* AudioContext;
           const metadata = yield* probe(source);
 
-          const decoded = decode(
-            source,
-            yield* pipe(
-              Effect.all(Effectable.map(options), { concurrency: "unbounded" }),
-              Effect.provideService(AudioMetadata, metadata),
-            ),
-          )(stream);
+          const decodeOptions = yield* Effect.all(Effectable.map(options), { concurrency: "unbounded" }).pipe(
+            Effect.provideService(AudioMetadata, metadata),
+          );
+          const decoded = decode(source, decodeOptions)(stream);
 
           const sourceSamplerate = metadata.samplerate;
 

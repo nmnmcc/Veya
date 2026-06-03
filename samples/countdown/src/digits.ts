@@ -1,6 +1,6 @@
 import { Array as EffectArray, pipe } from "effect";
 
-import { VideoClip, VideoColor } from "@veya/core";
+import { VideoColor, VideoFrame } from "@veya/core";
 
 export type Bit = 0 | 1;
 export type Digit = readonly [
@@ -13,7 +13,7 @@ export type Digit = readonly [
   readonly [Bit, Bit, Bit],
 ];
 
-export const digits: readonly VideoClip.Bitmap[] = pipe(
+export const digits: readonly VideoFrame[] = pipe(
   [
     [
       [1, 1, 1],
@@ -115,11 +115,11 @@ export const digits: readonly VideoClip.Bitmap[] = pipe(
 
       for (let x = 0; x < row.length; x += 1) {
         if (row[x] === 1) {
-          VideoClip.Bitmap.set(channels, size, x, y, VideoClip.Pixel.fromColor(VideoColor.White));
+          VideoFrame.set(channels, size, x, y, VideoColor.White);
         }
       }
     }
 
-    return VideoClip.Bitmap.fromChannelsUnsafe(channels);
+    return channels;
   }),
 );

@@ -1,0 +1,21 @@
+{
+  "name": "@veya/canvas-pureimage",
+  "type": "module",
+  "types": "./dist/index.d.mts",
+  "dependencies": {
+    "@veya/canvas": "workspace:*",
+    "@veya/core": "workspace:*",
+    "effect": "4.0.0-beta.73",
+    "pureimage": "^0.4.18"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./package.json": "./package.json"
+  },
+  "publishConfig": {
+    "exports": {
+      ".": "./dist/index.mjs",
+      "./package.json": "./package.json"
+    }
+  }
+}

@@ -3,6 +3,7 @@ import { Context, Data, Layer, Stream } from "effect";
 import { Encodable } from "./Encodable";
 import { VideoClip } from "./VideoClip";
 import { VideoContext } from "./VideoContext";
+import { VideoFrame } from "./VideoFrame";
 
 export class VideoResampler extends Context.Service<VideoResampler, VideoResampler.VideoResampler>()(
   "@veya/core/VideoResampler",
@@ -48,8 +49,6 @@ export namespace VideoResampler {
     },
   });
 
-  export const make = () => service;
-
   export const layer = Layer.succeed(VideoResampler, service);
 
   interface State {
@@ -58,19 +57,19 @@ export namespace VideoResampler {
   }
 
   const resampleStream = <E, R>(
-    stream: Stream.Stream<VideoClip.Bitmap, E, R>,
+    stream: Stream.Stream<VideoFrame, E, R>,
     source: number,
     target: number,
-  ): Stream.Stream<VideoClip.Bitmap, E, R> =>
+  ): Stream.Stream<VideoFrame, E, R> =>
     stream.pipe(
-      Stream.mapAccum<State, VideoClip.Bitmap, VideoClip.Bitmap>(
+      Stream.mapAccum<State, VideoFrame, VideoFrame>(
         () => ({ source: 0, target: 0 }),
-        (state, bitmap) => {
-          const frames: VideoClip.Bitmap[] = [];
+        (state, frame) => {
+          const frames: VideoFrame[] = [];
           let targetFrame = state.target;
 
           while (targetFrame * source < (state.source + 1) * target) {
-            frames.push(bitmap);
+            frames.push(frame);
             targetFrame += 1;
           }
 

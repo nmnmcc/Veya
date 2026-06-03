@@ -27,6 +27,7 @@ export namespace ResvgDecoder {
               reason: new SvgDecoder.Error.DecodeFailed(),
             }),
         });
+
         const expectedBytes = width * height * 4;
         if (pixels.length < expectedBytes) {
           return yield* new SvgDecoder.Error({
@@ -37,10 +38,10 @@ export namespace ResvgDecoder {
           });
         }
 
-        const bitmap = new Uint8ClampedArray(expectedBytes);
-        bitmap.set(pixels.subarray(0, expectedBytes));
+        const frame = new Uint8ClampedArray(expectedBytes);
+        frame.set(pixels.subarray(0, expectedBytes));
 
-        return bitmap;
+        return frame;
       });
     },
   });

@@ -1,6 +1,6 @@
 import { Effect, pipe, Ref, Stream } from "effect";
 
-import { Effectable, type Size, VideoClip, VideoColor, VideoContext } from "@veya/core";
+import { Effectable, type Size, VideoClip, VideoColor, VideoContext, VideoFrame } from "@veya/core";
 
 import { CanvasRenderingContext } from "./CanvasRenderingContext";
 
@@ -74,7 +74,7 @@ export namespace Canvas {
                 const r = yield* draw(index, s, _options);
                 yield* Ref.set(state, r);
 
-                return VideoClip.Bitmap.convertColorSpace(
+                return VideoFrame.convertColorSpace(
                   snapshot(context, _options.size, { colorSpace: _options.colorSpace }),
                   {
                     source: _options.colorSpace,

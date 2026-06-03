@@ -8,10 +8,10 @@
     { "path": "./packages/svg-resvg" },
     { "path": "./packages/color" },
     { "path": "./packages/canvas" },
+    { "path": "./packages/canvas-pureimage" },
     { "path": "./packages/audio" },
     { "path": "./packages/mediabunny" },
     { "path": "./samples/countdown" },
-    { "path": "./samples/intro" },
-    { "path": "./samples/intro-svg" }
+    { "path": "./samples/intro" }
   ]
 }

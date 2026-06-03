@@ -5,19 +5,20 @@ import { fileURLToPath } from "node:url";
 
 import { NodeServices } from "@effect/platform-node";
 import { registerMediabunnyServer } from "@mediabunny/server";
-import { Console, Duration, Effect, FileSystem, Layer } from "effect";
+import { Console, Duration, Effect, FileSystem } from "effect";
 import { QUALITY_HIGH } from "mediabunny";
 import * as PImage from "pureimage";
 
 import { Canvas, CanvasRenderingContext, type CanvasRenderingContext2D } from "@veya/canvas";
-import { VideoClip, VideoContext, VideoTick } from "@veya/core";
+import { PureImageCanvasRenderingContext } from "@veya/canvas-pureimage";
+import { VideoContext, VideoTick } from "@veya/core";
 import { Mediabunny } from "@veya/mediabunny";
 
 registerMediabunnyServer();
 
 const outputPath = fileURLToPath(new URL("../dist/intro.mp4", import.meta.url));
 
-const FRAMERATE = 24;
+const FRAMERATE = 60;
 const DURATION_SECONDS = 8;
 const TOTAL_FRAMES = FRAMERATE * DURATION_SECONDS;
 const WIDTH = 1280;
@@ -37,38 +38,6 @@ if (fontPath === undefined) {
 }
 
 PImage.registerFont(fontPath, FONT_FAMILY).loadSync();
-
-interface PureImageBitmap {
-  readonly width: number;
-  readonly height: number;
-  readonly data: Uint8Array | Uint8ClampedArray;
-  readonly getContext: (type: "2d") => unknown;
-}
-
-const pureImageCanvasLayer = Layer.sync(CanvasRenderingContext, () => {
-  const bitmaps = new WeakMap<object, PureImageBitmap>();
-
-  return CanvasRenderingContext.of({
-    make: ([width, height]) =>
-      Effect.sync(() => {
-        const bitmap = PImage.make(width, height) as PureImageBitmap;
-        const context = bitmap.getContext("2d") as object;
-
-        bitmaps.set(context, bitmap);
-
-        return context as CanvasRenderingContext2D;
-      }),
-    snapshot: (context) => {
-      const bitmap = bitmaps.get(context as object);
-
-      if (bitmap === undefined) {
-        throw new Error("PureImage context was not created by this sample.");
-      }
-
-      return VideoClip.Bitmap.fromChannelsUnsafe(bitmap.data);
-    },
-  });
-});
 
 const clip = Canvas.make<number, Record<string, never>>(
   Effect.succeed({}),
@@ -403,7 +372,7 @@ function findFontPath(): string | undefined {
 Effect.runPromise(
   program.pipe(
     Effect.provideService(VideoContext, videoContext),
-    Effect.provide(pureImageCanvasLayer),
+    Effect.provide(PureImageCanvasRenderingContext.layer),
     Effect.provide(NodeServices.layer),
   ),
 ).catch(console.error);

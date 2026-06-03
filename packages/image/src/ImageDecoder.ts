@@ -1,7 +1,7 @@
 import { Context, Data } from "effect";
 import type { Effect, Stream } from "effect";
 
-import type { Size, VideoClip } from "@veya/core";
+import type { Size, VideoFrame } from "@veya/core";
 
 export class ImageDecoder extends Context.Service<ImageDecoder, ImageDecoder.ImageDecoder>()(
   "@veya/image/ImageDecoder",
@@ -12,7 +12,7 @@ export namespace ImageDecoder {
     readonly decode: <E = never, R = never>(
       source: MediaSource<E, R>,
       options: DecodeOptions,
-    ) => Effect.Effect<VideoClip.Bitmap, E | Error, R>;
+    ) => Effect.Effect<VideoFrame, E | Error, R>;
   }
 
   /** Image input as a byte array or a stream of byte chunks. */

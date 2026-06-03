@@ -19,7 +19,7 @@ import type {
   VideoTrackMetadata,
 } from "mediabunny";
 
-import { type AudioClip, VideoClip, type VideoColor } from "@veya/core";
+import { type AudioClip, VideoClip, type VideoColor, VideoFrame } from "@veya/core";
 
 export namespace Mediabunny {
   export interface Result {
@@ -181,22 +181,22 @@ export namespace Mediabunny {
     },
   ): Effect.Effect<void, E | Error, R> =>
     Effect.gen(function* () {
-      let frame = 0;
+      let frameIndex = 0;
 
-      yield* Stream.runForEach(encodable, (bitmap) =>
+      yield* Stream.runForEach(encodable, (frame) =>
         Effect.tryPromise({
           try: async () => {
             const totalStart = globalThis.performance.now();
             const frameToSampleStart = totalStart;
-            const sample = bitmapToSample(bitmap, {
+            const sample = frameToSample(frame, {
               colorSpace: options.colorSpace,
               duration: 1 / options.framerate,
               size: options.size,
-              timestamp: frame / options.framerate,
+              timestamp: frameIndex / options.framerate,
             });
             const frameToSampleMs = globalThis.performance.now() - frameToSampleStart;
-            const currentFrame = frame;
-            frame += 1;
+            const currentFrame = frameIndex;
+            frameIndex += 1;
             let addSampleMs = 0;
             let closeSampleMs = 0;
 
@@ -330,8 +330,8 @@ export namespace Mediabunny {
       catch: toEncodeFailed,
     });
 
-  const bitmapToSample = (
-    bitmap: VideoClip.Bitmap,
+  const frameToSample = (
+    frame: VideoFrame,
     options: {
       readonly colorSpace: VideoColor.ColorSpace;
       readonly duration: number;
@@ -341,7 +341,7 @@ export namespace Mediabunny {
   ): VideoSample => {
     const [width, height] = options.size;
 
-    return new VideoSample(VideoClip.Bitmap.toByteData(bitmap, options.size), {
+    return new VideoSample(frame, {
       codedHeight: height,
       codedWidth: width,
       colorSpace: toSampleColorSpace(options.colorSpace),

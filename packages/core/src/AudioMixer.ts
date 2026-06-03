@@ -27,6 +27,4 @@ export namespace AudioMixer {
       options: AudioMixOptions,
     ) => Effect.Effect<AudioClip.Channel[], Error>;
   }
-
-  export interface AudioCompositor extends AudioMixer {}
 }

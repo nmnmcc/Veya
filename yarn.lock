@@ -1186,7 +1186,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@veya/canvas@workspace:^, @veya/canvas@workspace:packages/canvas":
+"@veya/canvas-pureimage@workspace:^, @veya/canvas-pureimage@workspace:packages/canvas-pureimage":
+  version: 0.0.0-use.local
+  resolution: "@veya/canvas-pureimage@workspace:packages/canvas-pureimage"
+  dependencies:
+    "@veya/canvas": "workspace:*"
+    "@veya/core": "workspace:*"
+    effect: "npm:4.0.0-beta.73"
+    pureimage: "npm:^0.4.18"
+  languageName: unknown
+  linkType: soft
+
+"@veya/canvas@workspace:*, @veya/canvas@workspace:^, @veya/canvas@workspace:packages/canvas":
   version: 0.0.0-use.local
   resolution: "@veya/canvas@workspace:packages/canvas"
   dependencies:
@@ -1246,6 +1257,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@veya/sample-dvd-veya@workspace:samples/dvd-veya":
+  version: 0.0.0-use.local
+  resolution: "@veya/sample-dvd-veya@workspace:samples/dvd-veya"
+  dependencies:
+    "@effect/platform-node": "npm:4.0.0-beta.73"
+    "@mediabunny/server": "npm:1.45.4"
+    "@veya/core": "workspace:^"
+    "@veya/mediabunny": "workspace:^"
+    effect: "npm:4.0.0-beta.73"
+    mediabunny: "npm:1.45.4"
+  languageName: unknown
+  linkType: soft
+
 "@veya/sample-gradient@workspace:samples/gradient":
   version: 0.0.0-use.local
   resolution: "@veya/sample-gradient@workspace:samples/gradient"
@@ -1259,21 +1283,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@veya/sample-intro-svg@workspace:samples/intro-svg":
-  version: 0.0.0-use.local
-  resolution: "@veya/sample-intro-svg@workspace:samples/intro-svg"
-  dependencies:
-    "@effect/platform-node": "npm:4.0.0-beta.73"
-    "@mediabunny/server": "npm:1.45.4"
-    "@veya/core": "workspace:^"
-    "@veya/mediabunny": "workspace:^"
-    "@veya/svg": "workspace:^"
-    "@veya/svg-resvg": "workspace:^"
-    effect: "npm:4.0.0-beta.73"
-    mediabunny: "npm:1.45.4"
-  languageName: unknown
-  linkType: soft
-
 "@veya/sample-intro@workspace:samples/intro":
   version: 0.0.0-use.local
   resolution: "@veya/sample-intro@workspace:samples/intro"
@@ -1281,6 +1290,7 @@ __metadata:
     "@effect/platform-node": "npm:4.0.0-beta.73"
     "@mediabunny/server": "npm:1.45.4"
     "@veya/canvas": "workspace:^"
+    "@veya/canvas-pureimage": "workspace:^"
     "@veya/core": "workspace:^"
     "@veya/mediabunny": "workspace:^"
     effect: "npm:4.0.0-beta.73"
@@ -1289,7 +1299,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@veya/svg-resvg@workspace:^, @veya/svg-resvg@workspace:packages/svg-resvg":
+"@veya/svg-resvg@workspace:packages/svg-resvg":
   version: 0.0.0-use.local
   resolution: "@veya/svg-resvg@workspace:packages/svg-resvg"
   dependencies:
@@ -1300,7 +1310,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@veya/svg@workspace:*, @veya/svg@workspace:^, @veya/svg@workspace:packages/svg":
+"@veya/svg@workspace:*, @veya/svg@workspace:packages/svg":
   version: 0.0.0-use.local
   resolution: "@veya/svg@workspace:packages/svg"
   dependencies:

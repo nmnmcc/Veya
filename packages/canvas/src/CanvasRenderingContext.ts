@@ -1,6 +1,6 @@
 import { Context, Data, Effect, Layer } from "effect";
 
-import { type Size, VideoClip, VideoColor } from "@veya/core";
+import { type Size, VideoColor, VideoFrame } from "@veya/core";
 
 export class CanvasRenderingContext extends Context.Service<
   CanvasRenderingContext,
@@ -33,7 +33,7 @@ export class CanvasRenderingContext extends Context.Service<
         };
         const image = context.getImageData(0, 0, ...size, settings);
 
-        return VideoClip.Bitmap.fromImageData(image);
+        return new Uint8ClampedArray(image.data);
       },
     }),
   );
@@ -48,11 +48,7 @@ export namespace CanvasRenderingContext {
       size: Size,
       options?: CanvasRenderingContext2DSettings,
     ) => Effect.Effect<CanvasRenderingContext2D, Error>;
-    readonly snapshot: (
-      context: CanvasRenderingContext2D,
-      size: Size,
-      options?: SnapshotOptions,
-    ) => VideoClip.Bitmap;
+    readonly snapshot: (context: CanvasRenderingContext2D, size: Size, options?: SnapshotOptions) => VideoFrame;
   }
 
   export interface SnapshotOptions {

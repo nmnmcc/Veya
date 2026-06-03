@@ -3,6 +3,7 @@ export * from "./Encodable";
 export * from "./VideoResampler";
 export * from "./AudioTick";
 export * from "./VideoTick";
+export * from "./VideoFrame";
 export * from "./VideoClip";
 export * from "./VideoColor";
 export * from "./AudioClip";

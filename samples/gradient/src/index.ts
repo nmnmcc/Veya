@@ -6,7 +6,7 @@ import { registerMediabunnyServer } from "@mediabunny/server";
 import { Console, Duration, Effect, FileSystem, Stream } from "effect";
 import { QUALITY_HIGH } from "mediabunny";
 
-import { VideoClip, VideoColor, VideoContext, VideoTick } from "@veya/core";
+import { VideoClip, VideoColor, VideoContext, VideoFrame, VideoTick } from "@veya/core";
 import { Mediabunny } from "@veya/mediabunny";
 
 registerMediabunnyServer();
@@ -32,7 +32,7 @@ const videoContext = VideoContext.of({
   colorSpace: "srgb",
 });
 
-const renderGradientFrame = (index: number): VideoClip.Bitmap => {
+const renderGradientFrame = (index: number): VideoFrame => {
   const progress = index / TOTAL_FRAMES;
   const baseHue = progress * 360;
   const row = new Uint8ClampedArray(ROW_CHANNELS);
@@ -41,10 +41,10 @@ const renderGradientFrame = (index: number): VideoClip.Bitmap => {
     const [red, green, blue, alpha] = VideoColor.hsl(baseHue + (HUE_OFFSETS[x] ?? 0), SATURATION, LIGHTNESS);
     const offset = x * 4;
 
-    row[offset + 0] = Math.round(red * 255);
-    row[offset + 1] = Math.round(green * 255);
-    row[offset + 2] = Math.round(blue * 255);
-    row[offset + 3] = Math.round(alpha * 255);
+    row[offset + 0] = red;
+    row[offset + 1] = green;
+    row[offset + 2] = blue;
+    row[offset + 3] = alpha;
   }
 
   const channels = new Uint8ClampedArray(FRAME_CHANNELS);
@@ -53,7 +53,7 @@ const renderGradientFrame = (index: number): VideoClip.Bitmap => {
     channels.set(row, offset);
   }
 
-  return VideoClip.Bitmap.fromChannelsUnsafe(channels);
+  return channels;
 };
 
 const program = Effect.gen(function* () {
@@ -66,7 +66,7 @@ const program = Effect.gen(function* () {
         Effect.sync(() => renderGradientFrame(index)).pipe(
           Effect.timed,
           Effect.tap(([duration]) => Effect.log(`Rendered ${index}, took ${Duration.toSeconds(duration)}s`)),
-          Effect.map(([, bitmap]) => bitmap),
+          Effect.map(([, frame]) => frame),
         ),
       ),
     ),
@@ -80,7 +80,7 @@ const program = Effect.gen(function* () {
       encoding: {
         bitrate: QUALITY_HIGH,
         codec: "avc",
-        hardwareAcceleration: "prefer-hardware",
+        hardwareAcceleration: "prefer-software",
       },
     },
   });
